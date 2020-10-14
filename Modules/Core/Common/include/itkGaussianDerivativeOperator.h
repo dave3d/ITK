@@ -56,7 +56,7 @@ extern ITKCommon_EXPORT std::ostream &
  *
  * GaussianDerivativeOperator can be used to calculate Gaussian derivatives
  * by taking its inner product with to a Neighborhood
- * (NeighborhooIterator) that is swept across an image region.
+ * (NeighborhoodIterator) that is swept across an image region.
  * It is a directional operator.  N successive applications
  * oriented along each dimensional direction will calculate separable,
  * efficient, N-D Gaussian derivatives of an image region.
@@ -69,7 +69,7 @@ extern ITKCommon_EXPORT std::ostream &
  *     it performs only smoothing as a standard itk::GaussianOperator)
  *
  * (3) The "maximum error" allowed in the discrete Gaussian
- * function.  "Maximum errror" is defined as the difference between the area
+ * function.  "Maximum error" is defined as the difference between the area
  * under the discrete Gaussian curve and the area under the continuous
  * Gaussian. Maximum error affects the Gaussian operator size. Care should
  * be taken not to make this value too small relative to the variance

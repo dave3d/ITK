@@ -597,7 +597,7 @@ private:
   }
 
 
-  /* Implementation detail using EigenLib that do not peform a copy.
+  /* Implementation detail using EigenLib that do not perform a copy.
    * It needs the existence of a pointer to matrix data. \sa GetPointerToMatrixData
    * If new types want to use this method, an appropriate overload of GetPointerToMatrixData
    * should be included.
@@ -702,7 +702,7 @@ private:
     return 1;
   }
 
-  /* Implementation detail using EigenLib that do not peform a copy.
+  /* Implementation detail using EigenLib that do not perform a copy.
    * It needs the existence of a pointer to matrix data. \sa GetPointerToMatrixData
    * If new types want to use this method, an appropriate overload of GetPointerToMatrixData
    * should be included.
@@ -894,7 +894,7 @@ private:
     return QMatrix::ValueType();
   }
 
-  /* Implementation detail using EigenLib that do not peform a copy.
+  /* Implementation detail using EigenLib that do not perform a copy.
    * It needs the existence of a pointer to matrix data. \sa GetPointerToMatrixData
    * If new types want to use this method, an appropriate overload of GetPointerToMatrixData
    * should be included.
@@ -1054,7 +1054,7 @@ private:
     return 1;
   }
 
-  /* Implementation detail using EigenLib that do not peform a copy.
+  /* Implementation detail using EigenLib that do not perform a copy.
    * It needs the existence of a pointer to matrix data. \sa GetPointerToMatrixData
    * If new types want to use this method, an appropriate overload of GetPointerToMatrixData
    * should be included.

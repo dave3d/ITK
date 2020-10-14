@@ -359,7 +359,7 @@ public:
    * If \c LetArrayManageMemory is true, then this class will free the
    * memory when this object is destroyed.
    *
-   * \warning This overload receives a non-modiable array, and yet it will let
+   * \warning This overload receives a non-modifiable array, and yet it will let
    * the end-user try to modify it through \c VariableLengthVector interface.
    * Use this constructor with care as this may lead to undefined behaviour.
    * Prefer using `VariableLengthVector<const TValue>` instead of
@@ -1205,7 +1205,7 @@ struct VariableLengthVectorExpression
     : m_lhs(lhs)
     , m_rhs(rhs)
   {
-    // Not neccessary actually as end-user/developer is not expected to
+    // Not necessary actually as end-user/developer is not expected to
     // provide new BinaryOperations
     itkStaticAssert((itk::mpl::IsBaseOf<Details::op::BinaryOperationConcept, TBinaryOp>::Value),
                     "The Binary Operation shall inherit from BinaryOperationConcept");
