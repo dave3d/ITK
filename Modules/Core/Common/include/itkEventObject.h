@@ -193,7 +193,7 @@ operator<<(std::ostream & os, const EventObject & e)
   };
 
 /**
- *      Delclare some common ITK events
+ *      Declare some common ITK events
  */
 itkEventMacroDeclaration(NoEvent, EventObject) itkEventMacroDeclaration(AnyEvent, EventObject)
   itkEventMacroDeclaration(DeleteEvent, AnyEvent) itkEventMacroDeclaration(StartEvent, AnyEvent)

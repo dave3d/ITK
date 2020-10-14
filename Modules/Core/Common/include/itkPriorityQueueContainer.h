@@ -99,7 +99,7 @@ public:
 // be as long as you define the comparison operators, and the identifier will
 // set according to the size of the vector you want to create.
 //
-// this implementation is used for min sorted priorityqueue
+// this implementation is used for min sorted priority queue
 template <typename TElement, typename TElementPriority = double, typename TElementIdentifier = IdentifierType>
 class ITK_TEMPLATE_EXPORT MinPriorityQueueElementWrapper
   : public ElementWrapperInterface<MinPriorityQueueElementWrapper<TElement, TElementPriority, TElementIdentifier>,
@@ -149,7 +149,7 @@ public:
 
 
 // ------------------------------------------------------------------------
-// this implementation is used for max sorted priorityqueue
+// this implementation is used for max sorted priority queue
 // most of the job is already done, just need to overload the less
 // and greater ops.
 template <typename TElement, typename TElementPriority = double, typename TElementIdentifier = IdentifierType>

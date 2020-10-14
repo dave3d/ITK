@@ -74,7 +74,7 @@ public:
    * TimeStamps implicitly in their construction.  */
   TimeStamp() { m_ModifiedTime = 0; }
 
-  /** Destoy this instance. */
+  /** Destroy this instance. */
   void
   Delete()
   {

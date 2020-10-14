@@ -725,7 +725,7 @@ public:
 
   /** UpdateOutputData() is part of the pipeline infrastructure to
    * communicate between ProcessObjects and DataObjects. The method of
-   * the superclass is overriden to check if the requested image
+   * the superclass is overridden to check if the requested image
    * region has zero pixels. This is needed so that filters can set an
    * input's requested region to zero, to indicate that it does not
    * need to be updated or executed.

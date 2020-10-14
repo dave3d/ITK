@@ -64,7 +64,7 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ByteSwapper, Object);
 
-  /** Query the machine Endian-ness. */
+  /** Query the machine Endianness. */
   static bool
   SystemIsBigEndian();
 

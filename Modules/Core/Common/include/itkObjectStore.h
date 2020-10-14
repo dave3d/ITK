@@ -50,7 +50,7 @@ extern ITKCommon_EXPORT std::ostream &
  * \brief A specialized memory management object for allocating and destroying
  * contiguous blocks of objects.
  *
- * ObjectStore implements a dynamically sizeable free memory store, from which
+ * ObjectStore implements a dynamically sizable free memory store, from which
  * instantiated objects can be borrowed and returned without always invoking
  * calls to new/delete.  This type of memory management is useful in situations
  * where calls to new/delete may be expensive, such as a multithreaded
