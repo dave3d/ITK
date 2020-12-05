@@ -142,7 +142,7 @@ public:
   /** Get the interpolator. */
   itkGetModifiableObjectMacro(Interpolator, InterpolatorType);
 
-  /** Evalulate the image derivative by central differencing at specified index.
+  /** Evaluate the image derivative by central differencing at specified index.
    *
    *  No bounds checking is done.
    *  The point is assumed to lie within the image buffer.
@@ -155,7 +155,7 @@ public:
   OutputType
   EvaluateAtIndex(const IndexType & index) const override;
 
-  /** Evalulate the image derivative by central differencing at non-integer
+  /** Evaluate the image derivative by central differencing at non-integer
    *  point.
    *
    *  No bounds checking is done.
@@ -171,7 +171,7 @@ public:
   OutputType
   Evaluate(const PointType & point) const override;
 
-  /** Evalulate the image derivative by central differencing at non-integer
+  /** Evaluate the image derivative by central differencing at non-integer
    *  index.
    *
    *  No bounds checking is done.
@@ -217,7 +217,7 @@ private:
     using Type = T;
   };
 
-  /** Specialized versions of EvaluteAtIndex() method to handle scalar or vector pixel types.*/
+  /** Specialized versions of EvaluateAtIndex() method to handle scalar or vector pixel types.*/
   template <typename Type>
   inline void
   EvaluateAtIndexSpecialized(const IndexType & index,
@@ -229,7 +229,7 @@ private:
                              OutputType &      derivative,
                              OutputTypeSpecializationStructType<Type>) const;
 
-  /** Specialized versions of EvaluteAtContinuousIndex() method to handle scalar or vector pixel types.*/
+  /** Specialized versions of EvaluateAtContinuousIndex() method to handle scalar or vector pixel types.*/
   template <typename Type>
   inline void
   EvaluateAtContinuousIndexSpecialized(const ContinuousIndexType & index,
@@ -241,7 +241,7 @@ private:
                                        OutputType &                derivative,
                                        OutputTypeSpecializationStructType<Type>) const;
 
-  /** Specialized versions of Evalute() method to handle scalar or vector pixel types.*/
+  /** Specialized versions of Evaluate() method to handle scalar or vector pixel types.*/
   // NOTE: for some unknown reason, making these methods inline (as those above are inlined) makes them run *slower*.
   template <typename Type>
   void
