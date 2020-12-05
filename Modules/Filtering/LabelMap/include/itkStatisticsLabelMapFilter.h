@@ -32,15 +32,14 @@ namespace itk
  * \author Gaetan Lehmann. Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France.
  *
  * This implementation was taken from the Insight Journal paper:
- * https://hdl.handle.net/1926/584  or
- * http://www.insight-journal.org/browse/publication/176
+ * https://www.insight-journal.org/browse/publication/176
  *
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  * \ingroup ITKLabelMap
  */
 template <typename TImage, typename TFeatureImage>
 class ITK_TEMPLATE_EXPORT StatisticsLabelMapFilter
-  : public ShapeLabelMapFilter<TImage, Image<typename TImage::PixelType, TImage ::ImageDimension>>
+  : public ShapeLabelMapFilter<TImage, Image<typename TImage::PixelType, TImage::ImageDimension>>
 {
 public:
   ITK_DISALLOW_COPY_AND_MOVE(StatisticsLabelMapFilter);

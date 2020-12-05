@@ -241,7 +241,8 @@ function(check_compiler_optimization_flags c_optimization_flags_var cxx_optimiza
     set(InstructionSetOptimizationFlags
        # https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
        # NOTE the corei7 release date was 2008
-       -mtune=native # Tune the code for the computer used compile ITK, but allow running on generic cpu archetectures
+       #-mtune=native # Tune the code for the computer used compile ITK, but allow running on generic cpu archetectures
+       -mtune=generic # for reproducible results https://github.com/InsightSoftwareConsortium/ITK/issues/1939
        -march=corei7 # Use ABI settings to support corei7 (circa 2008 ABI feature sets, core-avx circa 2013)
        )
   endif()
@@ -325,29 +326,6 @@ macro(check_compiler_platform_flags)
       ("${CMAKE_CXX_COMPILER_VERSION}" VERSION_EQUAL "4.8") OR
       ("${CMAKE_CXX_COMPILER_VERSION}" VERSION_GREATER "4.8" AND "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.9") ))
       set(ITK_REQUIRED_CXX_FLAGS "${ITK_REQUIRED_CXX_FLAGS} -Wno-array-bounds")
-    endif()
-
-    if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
-      set(_safe_cmake_required_flags "${CMAKE_REQUIRED_FLAGS}")
-      set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fuse-ld=gold")
-      CHECK_CXX_SOURCE_COMPILES("int main() { return 0;}" have_gold)
-      set(CMAKE_REQUIRED_FLAGS "${_safe_cmake_required_flags}")
-      if(have_gold)
-        set(_use_gold_linker_default ON)
-        set(_gold_linker_failure_condition_0 "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.9.0")
-        set(_gold_linker_failure_condition_1  NOT BUILD_SHARED_LIBS AND "${CMAKE_CXX_COMPILER_VERSION}" VERSION_EQUAL "4.9.0")
-        if( (${_gold_linker_failure_condition_0}) OR (${_gold_linker_failure_condition_1}) )
-          set(_use_gold_linker_default OFF)
-        endif()
-        option(ITK_USE_GOLD_LINKER "Use the gold linker instead of ld." ${_use_gold_linker_default})
-        mark_as_advanced(ITK_USE_GOLD_LINKER)
-        # The gold linker is approximately 3X faster.
-        if(ITK_USE_GOLD_LINKER)
-          set(CMAKE_EXE_LINKER_FLAGS "-fuse-ld=gold ${CMAKE_EXE_LINKER_FLAGS}")
-          set(CMAKE_MODULE_LINKER_FLAGS "-fuse-ld=gold ${CMAKE_MODULE_LINKER_FLAGS}")
-          set(CMAKE_SHARED_LINKER_FLAGS "-fuse-ld=gold ${CMAKE_SHARED_LINKER_FLAGS}")
-        endif()
-      endif()
     endif()
 
     if(APPLE)

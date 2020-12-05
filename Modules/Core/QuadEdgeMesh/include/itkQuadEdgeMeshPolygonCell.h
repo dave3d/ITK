@@ -31,7 +31,7 @@ namespace itk
  * \author Alexandre Gouaillard, Leonardo Florez-Valencia, Eric Boix
  *
  * This implementation was contributed as a paper to the Insight Journal
- * https://hdl.handle.net/1926/306
+ * https://www.insight-journal.org/browse/publication/122
  *
  * \ingroup ITKQuadEdgeMesh
  */
@@ -223,7 +223,7 @@ public:
     }
     else
     {
-      return &m_PointIds[m_PointIds.size() - 1] + 1;
+      return &m_PointIds.back() + 1;
     }
   }
 
@@ -252,7 +252,7 @@ public:
     }
     else
     {
-      return &m_PointIds[m_PointIds.size() - 1] + 1;
+      return &m_PointIds.back() + 1;
     }
   }
 

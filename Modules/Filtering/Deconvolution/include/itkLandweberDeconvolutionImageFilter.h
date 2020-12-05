@@ -21,7 +21,7 @@
 #include "itkIterativeDeconvolutionImageFilter.h"
 
 #include "itkComplexConjugateImageAdaptor.h"
-#include "itkTernaryFunctorImageFilter.h"
+#include "itkTernaryGeneratorImageFilter.h"
 
 namespace itk
 {
@@ -89,7 +89,7 @@ public:
  *
  * "Deconvolution: infrastructure and reference algorithms"
  * by Gaetan Lehmann
- * https://hdl.handle.net/10380/3207
+ * https://www.insight-journal.org/browse/publication/753
  *
  * \author Gaetan Lehmann, Biologie du Developpement et de la Reproduction, INRA de Jouy-en-Josas, France
  * \author Cory Quammen, The University of North Carolina at Chapel Hill
@@ -163,11 +163,10 @@ private:
 
   using LandweberFunctor =
     Functor::LandweberMethod<InternalComplexType, InternalComplexType, InternalComplexType, InternalComplexType>;
-  using LandweberFilterType = TernaryFunctorImageFilter<InternalComplexImageType,
-                                                        InternalComplexImageType,
-                                                        InternalComplexImageType,
-                                                        InternalComplexImageType,
-                                                        LandweberFunctor>;
+  using LandweberFilterType = TernaryGeneratorImageFilter<InternalComplexImageType,
+                                                          InternalComplexImageType,
+                                                          InternalComplexImageType,
+                                                          InternalComplexImageType>;
 
   typename LandweberFilterType::Pointer m_LandweberFilter;
   typename IFFTFilterType::Pointer      m_IFFTFilter;
