@@ -47,7 +47,8 @@ void
 itkSLICImageFilter(const std::string & inFileName,
                    const std::string & outFileName,
                    const unsigned int  gridSize,
-                   bool                enforceConnectivity)
+                   bool                enforceConnectivity,
+                   unsigned int        maxIterations = 0)
 {
 
   const unsigned int Dimension = TInputImageType::ImageDimension;
@@ -65,6 +66,15 @@ itkSLICImageFilter(const std::string & inFileName,
   filter->SetInput(reader->GetOutput());
   filter->SetSuperGridSize(gridSize);
   filter->SetEnforceConnectivity(enforceConnectivity);
+
+  fprintf(stderr, "GridSize = %d\n", gridSize);
+  fprintf(stderr, "EnforceConnectivity = %d\n", (int)enforceConnectivity);
+  fprintf(stderr, "MaxIter = %d\n", maxIterations);
+  if (maxIterations > 0)
+  {
+    filter->SetMaximumNumberOfIterations(maxIterations);
+  }
+
   filter->DebugOn();
 
 
@@ -94,6 +104,7 @@ itkSLICImageFilterTest(int argc, char * argv[])
 
   const bool         enforceConnectivity = (argc > 4) ? std::stoi(argv[4]) : true;
   const unsigned int gridSize = (argc > 3) ? std::stoi(argv[3]) : 20;
+  const unsigned int maxIterations = (argc > 5) ? std::stoi(argv[5]) : 99;
   const char *       inFileName = argv[1];
   const char *       outFileName = argv[2];
 
@@ -114,21 +125,23 @@ itkSLICImageFilterTest(int argc, char * argv[])
     case 2:
       if (numberOfComponents == 1)
       {
-        itkSLICImageFilter<itk::Image<float, 2>>(inFileName, outFileName, gridSize, enforceConnectivity);
+        itkSLICImageFilter<itk::Image<float, 2>>(inFileName, outFileName, gridSize, enforceConnectivity, maxIterations);
       }
       else
       {
-        itkSLICImageFilter<itk::VectorImage<float, 2>>(inFileName, outFileName, gridSize, enforceConnectivity);
+        itkSLICImageFilter<itk::VectorImage<float, 2>>(
+          inFileName, outFileName, gridSize, enforceConnectivity, maxIterations);
       }
       break;
     case 3:
       if (numberOfComponents == 1)
       {
-        itkSLICImageFilter<itk::Image<float, 3>>(inFileName, outFileName, gridSize, enforceConnectivity);
+        itkSLICImageFilter<itk::Image<float, 3>>(inFileName, outFileName, gridSize, enforceConnectivity, maxIterations);
       }
       else
       {
-        itkSLICImageFilter<itk::VectorImage<float, 3>>(inFileName, outFileName, gridSize, enforceConnectivity);
+        itkSLICImageFilter<itk::VectorImage<float, 3>>(
+          inFileName, outFileName, gridSize, enforceConnectivity, maxIterations);
       }
       break;
     default:

@@ -36,6 +36,12 @@ itk_add_test(NAME itkSLICImageFilterTest3
     "DATA{Data/Input/VM1111Shrink-LAB.mha}"
     "${ITK_TEST_OUTPUT_DIR}/itkSLICImageFilterTestOutput3.png" 25 1)
 
+itk_add_test(NAME DaveTest
+  COMMAND ${itk-module}TestDriver
+   itkSLICImageFilterTest
+    "DATA{Data/Input/VM1111Shrink-RGB.png}"
+    "${ITK_TEST_OUTPUT_DIR}/itkSLICImageFilterTestOutput1.png" 50 0 1)
+
 
 set(${itk-module}GTests
   itkSLICImageFilterGTest.cxx)
