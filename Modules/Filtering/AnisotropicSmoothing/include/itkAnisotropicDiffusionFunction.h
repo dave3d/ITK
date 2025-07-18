@@ -189,14 +189,14 @@ public:
     m_ConductanceParameter = c;
   }
 
-  const double &
+  [[nodiscard]] const double &
   GetConductanceParameter() const
   {
     return m_ConductanceParameter;
   }
 
   /** Set/Get the average gradient magnitude squared. */
-  const double &
+  [[nodiscard]] const double &
   GetAverageGradientMagnitudeSquared() const
   {
     return m_AverageGradientMagnitudeSquared;
@@ -218,7 +218,7 @@ public:
 
   /** The anisotropic diffusion classes don't use this particular parameter
    * so it's safe to return a null value. */
-  void *
+  [[nodiscard]] void *
   GetGlobalDataPointer() const override
   {
     return nullptr;
@@ -233,11 +233,9 @@ public:
 
 protected:
   AnisotropicDiffusionFunction()
-  {
-    m_AverageGradientMagnitudeSquared = 0.0;
-    m_ConductanceParameter = 1.0; // default value
-    m_TimeStep = 0.125f;          // default value
-  }
+    : m_ConductanceParameter(1.0) // default value
+    , m_TimeStep(0.125f)          // default value
+  {}
 
   ~AnisotropicDiffusionFunction() override = default;
 

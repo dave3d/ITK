@@ -38,11 +38,10 @@ namespace itk
 {
 // Default constructor
 IPLCommonImageIO::IPLCommonImageIO()
+  : m_SystemByteOrder(ByteSwapper<int>::SystemIsBigEndian() ? IOByteOrderEnum::BigEndian
+                                                            : IOByteOrderEnum::LittleEndian)
+  , m_FilenameList(new IPLFileNameList)
 {
-  m_SystemByteOrder =
-    ByteSwapper<int>::SystemIsBigEndian() ? IOByteOrderEnum::BigEndian : IOByteOrderEnum::LittleEndian;
-  m_ImageHeader = nullptr;
-  m_FilenameList = new IPLFileNameList;
   this->SetComponentType(IOComponentEnum::SHORT);
 }
 
@@ -73,7 +72,7 @@ IPLCommonImageIO::GetComponentSize() const
 void
 IPLCommonImageIO::Read(void * buffer)
 {
-  auto * img_buffer = (short *)buffer;
+  auto * img_buffer = static_cast<short *>(buffer);
   auto   it = m_FilenameList->begin();
   auto   itend = m_FilenameList->end();
 
@@ -209,7 +208,7 @@ IPLCommonImageIO::ReadImageInformation()
     {
       continue;
     }
-    GEImageHeader * curImageHeader;
+    GEImageHeader * curImageHeader = nullptr;
     try
     {
       curImageHeader = this->ReadHeader(fullPath.c_str());
@@ -337,11 +336,11 @@ IPLCommonImageIO::GetStringAt(std::ifstream & f, std::streamoff Offset, char * b
 int
 IPLCommonImageIO::GetIntAt(std::ifstream & f, std::streamoff Offset, int * ip, bool throw_exception)
 {
-  int tmp;
+  int tmp = 0;
 
-  if (this->GetStringAt(f, Offset, (char *)&tmp, sizeof(int), throw_exception) == 0)
+  if (this->GetStringAt(f, Offset, reinterpret_cast<char *>(&tmp), sizeof(int), throw_exception) == 0)
   {
-    *ip = this->hdr2Int((char *)&tmp);
+    *ip = this->hdr2Int(reinterpret_cast<char *>(&tmp));
   }
   else
   {
@@ -353,11 +352,11 @@ IPLCommonImageIO::GetIntAt(std::ifstream & f, std::streamoff Offset, int * ip, b
 int
 IPLCommonImageIO::GetShortAt(std::ifstream & f, std::streamoff Offset, short * ip, bool throw_exception)
 {
-  short tmp;
+  short tmp = 0;
 
-  if (this->GetStringAt(f, Offset, (char *)&tmp, sizeof(short), throw_exception) == 0)
+  if (this->GetStringAt(f, Offset, reinterpret_cast<char *>(&tmp), sizeof(short), throw_exception) == 0)
   {
-    *ip = this->hdr2Short((char *)&tmp);
+    *ip = this->hdr2Short(reinterpret_cast<char *>(&tmp));
   }
   else
   {
@@ -369,11 +368,11 @@ IPLCommonImageIO::GetShortAt(std::ifstream & f, std::streamoff Offset, short * i
 int
 IPLCommonImageIO::GetFloatAt(std::ifstream & f, std::streamoff Offset, float * ip, bool throw_exception)
 {
-  float tmp;
+  float tmp = NAN;
 
-  if (this->GetStringAt(f, Offset, (char *)&tmp, sizeof(float), throw_exception) == 0)
+  if (this->GetStringAt(f, Offset, reinterpret_cast<char *>(&tmp), sizeof(float), throw_exception) == 0)
   {
-    *ip = this->hdr2Float((char *)&tmp);
+    *ip = this->hdr2Float(reinterpret_cast<char *>(&tmp));
   }
   else
   {
@@ -385,11 +384,11 @@ IPLCommonImageIO::GetFloatAt(std::ifstream & f, std::streamoff Offset, float * i
 int
 IPLCommonImageIO::GetDoubleAt(std::ifstream & f, std::streamoff Offset, double * ip, bool throw_exception)
 {
-  double tmp;
+  double tmp = NAN;
 
-  if (this->GetStringAt(f, Offset, (char *)&tmp, sizeof(double), throw_exception) == 0)
+  if (this->GetStringAt(f, Offset, reinterpret_cast<char *>(&tmp), sizeof(double), throw_exception) == 0)
   {
-    *ip = this->hdr2Double((char *)&tmp);
+    *ip = this->hdr2Double(reinterpret_cast<char *>(&tmp));
   }
   else
   {
@@ -401,7 +400,7 @@ IPLCommonImageIO::GetDoubleAt(std::ifstream & f, std::streamoff Offset, double *
 short
 IPLCommonImageIO::hdr2Short(char * hdr)
 {
-  short shortValue;
+  short shortValue = 0;
 
   memcpy(&shortValue, hdr, sizeof(short));
   ByteSwapper<short>::SwapFromSystemToBigEndian(&shortValue);
@@ -411,7 +410,7 @@ IPLCommonImageIO::hdr2Short(char * hdr)
 int
 IPLCommonImageIO::hdr2Int(char * hdr)
 {
-  int intValue;
+  int intValue = 0;
 
   memcpy(&intValue, hdr, sizeof(int));
   ByteSwapper<int>::SwapFromSystemToBigEndian(&intValue);
@@ -421,7 +420,7 @@ IPLCommonImageIO::hdr2Int(char * hdr)
 float
 IPLCommonImageIO::hdr2Float(char * hdr)
 {
-  float floatValue;
+  float floatValue = NAN;
 
   memcpy(&floatValue, hdr, 4);
   ByteSwapper<float>::SwapFromSystemToBigEndian(&floatValue);
@@ -432,7 +431,7 @@ IPLCommonImageIO::hdr2Float(char * hdr)
 double
 IPLCommonImageIO::hdr2Double(char * hdr)
 {
-  double doubleValue;
+  double doubleValue = NAN;
 
   memcpy(&doubleValue, hdr, sizeof(double));
   ByteSwapper<double>::SwapFromSystemToBigEndian(&doubleValue);
@@ -493,12 +492,12 @@ int
 IPLCommonImageIO::statTimeToAscii(void * clock, char * timeString, int len)
 {
 
-  auto               tclock = (time_t)*((int *)clock);
+  auto               tclock = static_cast<time_t>(*(static_cast<int *>(clock)));
   const char * const asciiTime = ctime(&tclock);
 
   strncpy(timeString, asciiTime, len);
   timeString[len - 1] = '\0';
-  char * newline;
+  char * newline = nullptr;
   if ((newline = strrchr(timeString, '\n')) != nullptr || (newline = strrchr(timeString, '\r')))
   {
     *newline = '\0';

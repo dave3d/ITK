@@ -22,6 +22,7 @@
 
 #include "itkIntTypes.h"
 #include <ostream>
+#include <type_traits>
 
 namespace itk
 {
@@ -70,7 +71,11 @@ public:
    * Enums used to manipulate the component type. The component type
    * refers to the actual storage class associated with either a
    * SCALAR pixel type or elements of a compound pixel.
+   *
+   * \note The enum `CHAR` represents `signed char` (not just plain `char`).
    */
+  ITK_CLANG_PRAGMA_PUSH
+  ITK_CLANG_SUPPRESS_Wduplicate_enum
   enum class IOComponent : uint8_t
   {
     UNKNOWNCOMPONENTTYPE,
@@ -86,8 +91,19 @@ public:
     ULONGLONG,
     FLOAT,
     DOUBLE,
-    LDOUBLE
+    LDOUBLE,
+    UINT8 = UCHAR,
+    INT8 = CHAR,
+    UINT16 = USHORT,
+    INT16 = SHORT,
+    UINT32 = std::is_same_v<uint32_t, unsigned long> ? ULONG : UINT,
+    INT32 = std::is_same_v<int32_t, long> ? LONG : INT,
+    UINT64 = std::is_same_v<uint64_t, unsigned long> ? ULONG : ULONGLONG,
+    INT64 = std::is_same_v<int64_t, long> ? LONG : LONGLONG,
+    FLOAT32 = FLOAT,
+    FLOAT64 = DOUBLE
   };
+  ITK_CLANG_PRAGMA_POP
 
   /**
    * \ingroup ITKCommon

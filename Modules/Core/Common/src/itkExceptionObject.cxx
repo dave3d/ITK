@@ -40,8 +40,8 @@ public:
     , m_Description(std::move(description))
     , m_File(std::move(file))
     , m_Line(line)
+    , m_What(m_File)
   {
-    m_What = m_File;
     m_What += ':' + std::to_string(m_Line) + ':';
     if (!m_Location.empty())
     {
@@ -182,8 +182,6 @@ ExceptionObject::Print(std::ostream & os) const
   os << indent << "itk::" << this->GetNameOfClass() << " (" << this << ")\n";
 
   // Print self
-  indent.GetNextIndent();
-
   if (m_ExceptionData != nullptr)
   {
     const ExceptionData & data = *(m_ExceptionData);

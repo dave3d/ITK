@@ -24,9 +24,8 @@
 /** Set up dummy implementations of TemporalProcessObject and
  * TemporalDataObject for testing
  */
-namespace itk
-{
-namespace TemporalProcessObjectTest
+
+namespace itk::TemporalProcessObjectTest
 {
 
 using SizeValueType = itk::SizeValueType;
@@ -133,17 +132,17 @@ public:
   }
 
   /** Access members */
-  SizeValueType
+  [[nodiscard]] SizeValueType
   GetCallerId() const
   {
     return m_CallerId;
   }
-  RecordTypeEnum
+  [[nodiscard]] RecordTypeEnum
   GetRecordType() const
   {
     return m_RecordType;
   }
-  MethodTypeEnum
+  [[nodiscard]] MethodTypeEnum
   GetMethodType() const
   {
     return m_MethodType;
@@ -519,8 +518,7 @@ private:
   SizeValueType m_IdNumber{ 0 };
 };
 
-} // end namespace TemporalProcessObjectTest
-} // end namespace itk
+} // namespace itk::TemporalProcessObjectTest
 
 
 int

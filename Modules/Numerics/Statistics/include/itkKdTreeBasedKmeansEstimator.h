@@ -27,9 +27,7 @@
 #include "itkSimpleDataObjectDecorator.h"
 #include "itkNumericTraitsArrayPixel.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /**
  * \class KdTreeBasedKmeansEstimator
@@ -193,7 +191,7 @@ protected:
     virtual ~CandidateVector() = default;
 
     /** returns the number of candidate = k */
-    int
+    [[nodiscard]] int
     Size() const
     {
       return static_cast<int>(m_Candidates.size());
@@ -341,8 +339,7 @@ private:
   MeasurementVectorSizeType             m_MeasurementVectorSize{ 0 };
   MembershipFunctionVectorObjectPointer m_MembershipFunctionsObject{};
 }; // end of class
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkKdTreeBasedKmeansEstimator.hxx"

@@ -34,12 +34,7 @@ public:
 
   DataObjectIterator() = default;
 
-  DataObjectIterator(const DataObjectIterator & iter)
-  {
-    m_Iterator = iter.m_Iterator;
-    m_Begin = iter.m_Begin;
-    m_End = iter.m_End;
-  }
+  DataObjectIterator(const DataObjectIterator & iter) = default;
 
   DataObjectIterator &
   operator=(const DataObjectIterator & iter)
@@ -59,7 +54,7 @@ public:
     return m_Iterator->second;
   }
 
-  const DataObjectIdentifierType &
+  [[nodiscard]] const DataObjectIdentifierType &
   GetName() const
   {
     return m_Iterator->first;
@@ -94,7 +89,7 @@ public:
     m_Iterator = m_Begin;
   }
 
-  bool
+  [[nodiscard]] bool
   IsAtEnd() const
   {
     return m_Iterator == m_End;

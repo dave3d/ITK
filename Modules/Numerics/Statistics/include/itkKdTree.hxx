@@ -18,10 +18,7 @@
 #ifndef itkKdTree_hxx
 #define itkKdTree_hxx
 
-
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TSample>
 KdTreeNonterminalNode<TSample>::KdTreeNonterminalNode(unsigned int    partitionDimension,
@@ -50,18 +47,15 @@ KdTreeWeightedCentroidNonterminalNode<TSample>::KdTreeWeightedCentroidNontermina
                                                                                       Superclass *    right,
                                                                                       CentroidType &  centroid,
                                                                                       unsigned int    size)
-{
-  this->m_PartitionDimension = partitionDimension;
-  this->m_PartitionValue = partitionValue;
-  this->m_Left = left;
-  this->m_Right = right;
-  this->m_WeightedCentroid = centroid;
-  this->m_MeasurementVectorSize = NumericTraits<CentroidType>::GetLength(centroid);
-
-  this->m_Centroid = this->m_WeightedCentroid / static_cast<double>(size);
-
-  this->m_Size = size;
-}
+  : m_MeasurementVectorSize(NumericTraits<CentroidType>::GetLength(centroid))
+  , m_PartitionDimension(partitionDimension)
+  , m_PartitionValue(partitionValue)
+  , m_WeightedCentroid(centroid)
+  , m_Centroid(this->m_WeightedCentroid / static_cast<double>(size))
+  , m_Size(size)
+  , m_Left(left)
+  , m_Right(right)
+{}
 
 template <typename TSample>
 void
@@ -74,15 +68,13 @@ KdTreeWeightedCentroidNonterminalNode<TSample>::GetParameters(unsigned int &    
 
 template <typename TSample>
 KdTree<TSample>::KdTree()
-{
-  this->m_EmptyTerminalNode = new KdTreeTerminalNode<TSample>();
+  : m_Sample(nullptr)
+  , m_BucketSize(16)
+  , m_Root(nullptr)
+  , m_EmptyTerminalNode(new KdTreeTerminalNode<TSample>())
+  , m_DistanceMetric(DistanceMetricType::New())
 
-  this->m_DistanceMetric = DistanceMetricType::New();
-  this->m_Sample = nullptr;
-  this->m_Root = nullptr;
-  this->m_BucketSize = 16;
-  this->m_MeasurementVectorSize = 0;
-}
+{}
 
 template <typename TSample>
 KdTree<TSample>::~KdTree()
@@ -228,10 +220,6 @@ KdTree<TSample>::NearestNeighborSearchLoop(const KdTreeNodeType *        node,
                                            MeasurementVectorType &       upperBound,
                                            NearestNeighbors &            nearestNeighbors) const
 {
-  unsigned int       i;
-  InstanceIdentifier tempId;
-  double             tempDistance;
-
   if (node->IsTerminal())
   {
     // terminal node
@@ -241,10 +229,10 @@ KdTree<TSample>::NearestNeighborSearchLoop(const KdTreeNodeType *        node,
       return 0;
     }
 
-    for (i = 0; i < node->Size(); ++i)
+    for (unsigned int i = 0; i < node->Size(); ++i)
     {
-      tempId = node->GetInstanceIdentifier(i);
-      tempDistance = this->m_DistanceMetric->Evaluate(query, this->m_Sample->GetMeasurementVector(tempId));
+      InstanceIdentifier tempId = node->GetInstanceIdentifier(i);
+      double tempDistance = this->m_DistanceMetric->Evaluate(query, this->m_Sample->GetMeasurementVector(tempId));
       if (tempDistance < nearestNeighbors.GetLargestDistance())
       {
         nearestNeighbors.ReplaceFarthestNeighbor(tempId, tempDistance);
@@ -259,17 +247,16 @@ KdTree<TSample>::NearestNeighborSearchLoop(const KdTreeNodeType *        node,
     return 0;
   }
 
-  unsigned int    partitionDimension;
+  unsigned int    partitionDimension = 0;
   MeasurementType partitionValue;
-  MeasurementType tempValue;
   node->GetParameters(partitionDimension, partitionValue);
 
   //
   // Check the point associated with the nonterminal node
   // and potentially add it to the list of nearest neighbors
   //
-  tempId = node->GetInstanceIdentifier(0);
-  tempDistance = this->m_DistanceMetric->Evaluate(query, this->m_Sample->GetMeasurementVector(tempId));
+  InstanceIdentifier tempId = node->GetInstanceIdentifier(0);
+  double tempDistance = this->m_DistanceMetric->Evaluate(query, this->m_Sample->GetMeasurementVector(tempId));
   if (tempDistance < nearestNeighbors.GetLargestDistance())
   {
     nearestNeighbors.ReplaceFarthestNeighbor(tempId, tempDistance);
@@ -281,7 +268,7 @@ KdTree<TSample>::NearestNeighborSearchLoop(const KdTreeNodeType *        node,
   if (query[partitionDimension] <= partitionValue)
   {
     // search the closer child node
-    tempValue = upperBound[partitionDimension];
+    MeasurementType tempValue = upperBound[partitionDimension];
     upperBound[partitionDimension] = partitionValue;
     if (this->NearestNeighborSearchLoop(node->Left(), query, lowerBound, upperBound, nearestNeighbors))
     {
@@ -301,7 +288,7 @@ KdTree<TSample>::NearestNeighborSearchLoop(const KdTreeNodeType *        node,
   else
   {
     // search the closer child node
-    tempValue = lowerBound[partitionDimension];
+    MeasurementType tempValue = lowerBound[partitionDimension];
     lowerBound[partitionDimension] = partitionValue;
     if (this->NearestNeighborSearchLoop(node->Right(), query, lowerBound, upperBound, nearestNeighbors))
     {
@@ -360,7 +347,7 @@ KdTree<TSample>::SearchLoop(const KdTreeNodeType *         node,
                             InstanceIdentifierVectorType & neighbors) const
 {
   InstanceIdentifier tempId;
-  double             tempDistance;
+  double             tempDistance = NAN;
 
   if (node->IsTerminal())
   {
@@ -398,7 +385,7 @@ KdTree<TSample>::SearchLoop(const KdTreeNodeType *         node,
     }
   }
 
-  unsigned int    partitionDimension;
+  unsigned int    partitionDimension = 0;
   MeasurementType partitionValue;
   MeasurementType tempValue;
   node->GetParameters(partitionDimension, partitionValue);
@@ -541,7 +528,7 @@ KdTree<TSample>::PrintTree(KdTreeNodeType * node,
     return;
   }
 
-  unsigned int    partitionDimension;
+  unsigned int    partitionDimension = 0;
   MeasurementType partitionValue;
 
   node->GetParameters(partitionDimension, partitionValue);
@@ -583,7 +570,7 @@ template <typename TSample>
 void
 KdTree<TSample>::PlotTree(KdTreeNodeType * node, std::ostream & os) const
 {
-  unsigned int    partitionDimension;
+  unsigned int    partitionDimension = 0;
   MeasurementType partitionValue;
 
   node->GetParameters(partitionDimension, partitionValue);
@@ -627,7 +614,6 @@ KdTree<TSample>::PlotTree(KdTreeNodeType * node, std::ostream & os) const
     this->PlotTree(right, os);
   }
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

@@ -20,9 +20,7 @@
 #include "itkHistogram.h"
 #include "itkMahalanobisDistanceMetric.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TSample>
 class MyCovarianceSampleFilter : public CovarianceSampleFilter<TSample>
@@ -46,7 +44,7 @@ public:
     constexpr unsigned int index = 3;
     Superclass::MakeOutput(index);
   }
-  unsigned int
+  [[nodiscard]] unsigned int
   GetMeasurementVectorSize() const
   {
     return this->Superclass::GetMeasurementVectorSize();
@@ -56,8 +54,8 @@ private:
   MyCovarianceSampleFilter() = default;
   ~MyCovarianceSampleFilter() override = default;
 };
-} // namespace Statistics
-} // namespace itk
+} // namespace itk::Statistics
+
 
 int
 itkCovarianceSampleFilterTest3(int, char *[])
@@ -131,7 +129,7 @@ itkCovarianceSampleFilterTest3(int, char *[])
 
     const double MahalanobisDistance2 = MahalanobisDistance * MahalanobisDistance;
 
-    auto frequency = (AbsoluteFrequencyType)std::floor(1e5 * std::exp(-0.5 * MahalanobisDistance2));
+    auto frequency = static_cast<AbsoluteFrequencyType>(std::floor(1e5 * std::exp(-0.5 * MahalanobisDistance2)));
 
     itr.SetFrequency(frequency);
     ++itr;

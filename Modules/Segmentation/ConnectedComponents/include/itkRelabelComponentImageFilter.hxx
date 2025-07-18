@@ -277,21 +277,21 @@ RelabelComponentImageFilter<TInputImage, TOutputImage>::PrintSelf(std::ostream &
   os << indent << "MinimumObjectSizes: " << m_MinimumObjectSize << std::endl;
   os << indent << "SortByObjectSize: " << m_SortByObjectSize << std::endl;
 
-  typename ObjectSizeInPixelsContainerType::const_iterator it;
-  ObjectSizeInPhysicalUnitsContainerType::const_iterator   fit;
-  SizeValueType                                            i;
-
   // limit the number of objects to print
-  const SizeValueType numPrint = std::min<SizeValueType>(m_NumberOfObjectsToPrint, m_SizeOfObjectsInPixels.size());
-
-  for (i = 0, it = m_SizeOfObjectsInPixels.begin(), fit = m_SizeOfObjectsInPhysicalUnits.begin(); i < numPrint;
-       ++it, ++fit, ++i)
   {
-    os << indent << "Object #" << i + 1 << ": " << *it << " pixels, " << *fit << " physical units" << std::endl;
-  }
-  if (numPrint < m_SizeOfObjectsInPixels.size())
-  {
-    os << indent << "..." << std::endl;
+    const SizeValueType numPrint = std::min<SizeValueType>(m_NumberOfObjectsToPrint, m_SizeOfObjectsInPixels.size());
+    {
+      auto it = m_SizeOfObjectsInPixels.begin();
+      auto fit = m_SizeOfObjectsInPhysicalUnits.begin();
+      for (SizeValueType i = 0; i < numPrint; ++it, ++fit, ++i)
+      {
+        os << indent << "Object #" << i + 1 << ": " << *it << " pixels, " << *fit << " physical units" << std::endl;
+      }
+    }
+    if (numPrint < m_SizeOfObjectsInPixels.size())
+    {
+      os << indent << "..." << std::endl;
+    }
   }
 }
 } // end namespace itk

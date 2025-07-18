@@ -18,23 +18,16 @@
 #ifndef itkSampleClassifierFilter_hxx
 #define itkSampleClassifierFilter_hxx
 
-
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TSample>
 SampleClassifierFilter<TSample>::SampleClassifierFilter()
+  : m_DecisionRule(nullptr) /** Initialize decision rule */
 {
-  this->m_NumberOfClasses = 0;
-
   this->SetNumberOfRequiredInputs(3);
   this->SetNumberOfRequiredOutputs(1);
 
   this->ProcessObject::SetNthOutput(0, this->MakeOutput(0));
-
-  /** Initialize decision rule */
-  m_DecisionRule = nullptr;
 }
 
 template <typename TSample>
@@ -179,7 +172,6 @@ SampleClassifierFilter<TSample>::GetOutput() const -> const MembershipSampleType
 {
   return static_cast<const MembershipSampleType *>(this->ProcessObject::GetOutput(0));
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

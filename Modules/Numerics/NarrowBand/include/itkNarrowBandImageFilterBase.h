@@ -171,7 +171,7 @@ public:
   }
 
   /** Get the narrow band total radius. */
-  float
+  [[nodiscard]] float
   GetNarrowBandTotalRadius() const
   {
     return m_NarrowBand->GetTotalRadius();
@@ -190,7 +190,7 @@ public:
   }
 
   /** Get the narrow band inner radius. */
-  float
+  [[nodiscard]] float
   GetNarrowBandInnerRadius() const
   {
     return m_NarrowBand->GetInnerRadius();
@@ -220,14 +220,12 @@ public:
 
 protected:
   NarrowBandImageFilterBase()
+    : m_NarrowBand(NarrowBandType::New())
+    , m_ReinitializationFrequency(6)
+    , m_IsoSurfaceValue(0.0)
   {
-    m_NarrowBand = NarrowBandType::New();
     m_NarrowBand->SetTotalRadius(4);
     m_NarrowBand->SetInnerRadius(2);
-    m_ReinitializationFrequency = 6;
-    m_IsoSurfaceValue = 0.0;
-    m_Step = 0;
-    m_Touched = false;
   }
 
   ~NarrowBandImageFilterBase() override = default;

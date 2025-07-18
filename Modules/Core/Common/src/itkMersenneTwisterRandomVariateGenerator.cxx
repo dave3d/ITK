@@ -21,9 +21,7 @@
 
 #include <atomic>
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 namespace
 {
@@ -255,7 +253,7 @@ MersenneTwisterRandomVariateGenerator::GetIntegerVariate(const IntegerType n)
   used |= used >> 16;
 
   // Draw numbers until one is found in [0,n]
-  IntegerType i;
+  IntegerType i = 0;
   do
   {
     i = GetIntegerVariate() & used; // toss unused bits to shorten search
@@ -286,5 +284,4 @@ MersenneTwisterRandomVariateGenerator::PrintSelf(std::ostream & os, Indent inden
   os << indent << "Values left before next reload: " << m_Left << std::endl;
 }
 
-} // end namespace Statistics
-} // end namespace itk
+} // namespace itk::Statistics

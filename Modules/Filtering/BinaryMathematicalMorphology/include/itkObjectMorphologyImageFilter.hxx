@@ -31,15 +31,13 @@ namespace itk
 template <typename TInputImage, typename TOutputImage, typename TKernel>
 ObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>::ObjectMorphologyImageFilter()
   : m_Kernel()
+  , m_ObjectValue(NumericTraits<PixelType>::OneValue())
 {
   m_DefaultBoundaryCondition.SetConstant(PixelType{});
   m_BoundaryCondition = &m_DefaultBoundaryCondition;
 
-  m_UseBoundaryCondition = false;
   this->DynamicMultiThreadingOn();
   this->ThreaderUpdateProgressOff();
-
-  m_ObjectValue = NumericTraits<PixelType>::OneValue();
 }
 
 template <typename TInputImage, typename TOutputImage, typename TKernel>
@@ -173,15 +171,11 @@ ObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>::IsObjectPixelOn
 {
   static const auto s = static_cast<unsigned int>(std::pow(3.0, double{ ImageDimension }));
 
-  PixelType    tf;
-  unsigned int i;
-  bool         isInside = true;
-
   if (m_UseBoundaryCondition)
   {
-    for (i = 0; i < s; ++i)
+    for (unsigned int i = 0; i < s; ++i)
     {
-      tf = iNIter.GetPixel(i);
+      PixelType tf = iNIter.GetPixel(i);
       if (Math::NotExactlyEquals(tf, m_ObjectValue))
       {
         return true;
@@ -190,9 +184,10 @@ ObjectMorphologyImageFilter<TInputImage, TOutputImage, TKernel>::IsObjectPixelOn
   }
   else
   {
-    for (i = 0; i < s; ++i)
+    for (unsigned int i = 0; i < s; ++i)
     {
-      tf = iNIter.GetPixel(i, isInside);
+      bool      isInside = true;
+      PixelType tf = iNIter.GetPixel(i, isInside);
       if (Math::NotExactlyEquals(tf, m_ObjectValue) && isInside)
       {
         return true;

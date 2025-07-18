@@ -34,11 +34,7 @@ namespace itk
 static constexpr char GE_PROD_STR[] = "SIGNA";
 // Default constructor
 GE5ImageIO::GE5ImageIO() = default;
-
-GE5ImageIO::~GE5ImageIO()
-{
-  // Purposefully left blank
-}
+GE5ImageIO::~GE5ImageIO() = default;
 
 int
 GE5ImageIO::CheckGE5xImages(const char * const imageFileTemplate, std::string & reason)
@@ -181,7 +177,7 @@ GE5ImageIO::ReadHeader(const char * FileNameToRead)
   this->OpenFileForReading(f, FileNameToRead);
 
   Ge5xPixelHeader imageHdr; // GE 5x Header
-  f.read((char *)&imageHdr, sizeof(imageHdr));
+  f.read(reinterpret_cast<char *>(&imageHdr), sizeof(imageHdr));
   if (f.fail())
   {
     itkExceptionMacro("GE5ImageIO IO error while reading  " << FileNameToRead << " ." << std::endl
@@ -200,15 +196,11 @@ GE5ImageIO::ReadHeader(const char * FileNameToRead)
   // if they don't have a header, we have to make assumptions
   // about where they start and hope we're right; below, the offset
   // is computed once the X & Y dims are known
-  bool pixelHdrFlag;
+  bool pixelHdrFlag = false;
   if (imageHdr.GENESIS_IH_img_magic == GE_5X_MAGIC_NUMBER)
   {
     pixelHdrFlag = true;
     curImage->offset = imageHdr.GENESIS_IH_img_hdr_length;
-  }
-  else
-  {
-    pixelHdrFlag = false;
   }
   strncpy(curImage->filename, FileNameToRead, IOCommon::ITK_MAXPATHLEN);
 

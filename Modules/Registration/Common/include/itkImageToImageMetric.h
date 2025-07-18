@@ -374,12 +374,7 @@ protected:
   class FixedImageSamplePoint
   {
   public:
-    FixedImageSamplePoint()
-    {
-      point.Fill(0.0);
-      value = 0;
-      valueIndex = 0;
-    }
+    FixedImageSamplePoint() { point.Fill(0.0); }
 
     ~FixedImageSamplePoint() = default;
 
@@ -395,8 +390,8 @@ protected:
 
   public:
     FixedImagePointType point;
-    double              value;
-    unsigned int        valueIndex;
+    double              value{ 0 };
+    unsigned int        valueIndex{ 0 };
   };
 
   bool                     m_UseFixedImageIndexes{ false };
@@ -592,7 +587,7 @@ protected:
     ConstantPointerWrapper(ImageToImageMetric * i2i_metricPointer)
       : m_ConstMetricPointer{ i2i_metricPointer }
     {}
-    const ImageToImageMetric *
+    [[nodiscard]] const ImageToImageMetric *
     GetConstMetricPointer() const
     {
       return m_ConstMetricPointer;
@@ -615,12 +610,12 @@ protected:
     MultiThreaderWorkUnitInfoImageToImageMetricWrapper(const void * workunitInfoAsVoid)
       : m_WorkUnitInfo(static_cast<const typename MultiThreaderType::WorkUnitInfo *>(workunitInfoAsVoid))
     {}
-    ThreadIdType
+    [[nodiscard]] ThreadIdType
     GetThreadId() const
     {
       return m_WorkUnitInfo->WorkUnitID;
     }
-    const ImageToImageMetric *
+    [[nodiscard]] const ImageToImageMetric *
     GetConstImageToImageMetricPointer() const
     {
       return (static_cast<ConstantPointerWrapper *>(m_WorkUnitInfo->UserData))->GetConstMetricPointer();

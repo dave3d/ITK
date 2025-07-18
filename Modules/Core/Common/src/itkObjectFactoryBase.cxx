@@ -419,7 +419,7 @@ ObjectFactoryBase::LoadLibrariesInPath(const char * path)
           /**
            * initialize class members if load worked
            */
-          newfactory->m_LibraryHandle = (void *)lib;
+          newfactory->m_LibraryHandle = static_cast<void *>(lib);
           newfactory->m_LibraryPath = fullpath;
           newfactory->m_LibraryDate = 0; // unused for now...
 
@@ -466,10 +466,7 @@ ObjectFactoryBase::ReHash()
  */
 ObjectFactoryBase::ObjectFactoryBase()
   : m_OverrideMap{ std::make_unique<OverrideMap>() }
-{
-  m_LibraryHandle = nullptr;
-  m_LibraryDate = 0;
-}
+{}
 
 /**
  * Unload the library and free the path string

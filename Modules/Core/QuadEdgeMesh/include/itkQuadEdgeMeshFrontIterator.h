@@ -110,12 +110,7 @@ protected:
     {}
     virtual ~FrontAtom() = default;
     FrontAtom &
-    operator=(const FrontAtom & r)
-    {
-      m_Edge = r.m_Edge;
-      m_Cost = r.m_Cost;
-      return *this;
-    }
+    operator=(const FrontAtom & r) = default;
     bool
     operator==(const FrontAtom & r) const
     {
@@ -187,7 +182,7 @@ public:
     return (this->operator++());
   }
 
-  MeshType *
+  [[nodiscard]] MeshType *
   GetMesh() const
   {
     return this->m_Mesh;
@@ -293,7 +288,7 @@ public:
     return (*this);
   }
 
-  const QEType *
+  [[nodiscard]] const QEType *
   Value() const
   {
     return (this->m_CurrentEdge);

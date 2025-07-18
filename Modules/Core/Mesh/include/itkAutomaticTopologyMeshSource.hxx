@@ -28,9 +28,8 @@ namespace itk
 {
 template <typename TOutputMesh>
 AutomaticTopologyMeshSource<TOutputMesh>::AutomaticTopologyMeshSource()
+  : m_OutputMesh(TOutputMesh::New())
 {
-  m_OutputMesh = TOutputMesh::New();
-
   this->ProcessObject::SetNumberOfRequiredOutputs(1);
   this->ProcessObject::SetNthOutput(0, m_OutputMesh.GetPointer());
 
@@ -44,7 +43,7 @@ AutomaticTopologyMeshSource<TOutputMesh>::AddPoint(const PointType & p0) -> Iden
 {
   const IdentifierType nextNewPointID = m_OutputMesh->GetNumberOfPoints();
   IdentifierType &     pointIDPlusOne = m_PointsHashTable[p0];
-  IdentifierType       pointID;
+  IdentifierType       pointID = 0;
 
   if (pointIDPlusOne != 0)
   {
@@ -105,7 +104,7 @@ AutomaticTopologyMeshSource<TOutputMesh>::AddVertex(const IdentifierArrayType & 
   // m_PointsHashTable[ foo ] is set to 0 if foo is not found, but I
   // want the initial identifier to be 0.
   IdentifierType * cellIDPlusOne = &m_CellsHashTable[pointIDs];
-  IdentifierType   cellID;
+  IdentifierType   cellID = 0;
 
   if (*cellIDPlusOne != 0)
   {
@@ -135,7 +134,7 @@ AutomaticTopologyMeshSource<TOutputMesh>::AddLine(const IdentifierArrayType & po
 {
   // Check to see if the cell is already referenced in the hash table.
   IdentifierType * cellIDPlusOne = &m_CellsHashTable[pointIDs];
-  IdentifierType   cellID;
+  IdentifierType   cellID = 0;
 
   if (*cellIDPlusOne != 0)
   {
@@ -182,7 +181,7 @@ AutomaticTopologyMeshSource<TOutputMesh>::AddTriangle(const IdentifierArrayType 
 {
   // Check to see if the cell is already referenced in the hash table.
   IdentifierType * cellIDPlusOne = &m_CellsHashTable[pointIDs];
-  IdentifierType   cellID;
+  IdentifierType   cellID = 0;
 
   if (*cellIDPlusOne != 0)
   {
@@ -243,7 +242,7 @@ AutomaticTopologyMeshSource<TOutputMesh>::AddQuadrilateral(const IdentifierArray
 {
   // Check to see if the cell is already referenced in the hash table.
   IdentifierType * cellIDPlusOne = &m_CellsHashTable[pointIDs];
-  IdentifierType   cellID;
+  IdentifierType   cellID = 0;
 
   if (*cellIDPlusOne != 0)
   {
@@ -303,7 +302,7 @@ AutomaticTopologyMeshSource<TOutputMesh>::AddTetrahedron(const IdentifierArrayTy
 {
   // Check to see if the cell is already referenced in the hash table.
   IdentifierType * cellIDPlusOne = &m_CellsHashTable[pointIDs];
-  IdentifierType   cellID;
+  IdentifierType   cellID = 0;
 
   if (*cellIDPlusOne != 0)
   {
@@ -379,7 +378,7 @@ AutomaticTopologyMeshSource<TOutputMesh>::AddHexahedron(const IdentifierArrayTyp
 {
   // Check to see if the cell is already referenced in the hash table.
   IdentifierType * cellIDPlusOne = &m_CellsHashTable[pointIDs];
-  IdentifierType   cellID;
+  IdentifierType   cellID = 0;
 
   if (*cellIDPlusOne != 0)
   {

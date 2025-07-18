@@ -20,9 +20,7 @@
 
 #include "itkNumericTraits.h"
 
-namespace itk
-{
-namespace Accessor
+namespace itk::Accessor
 {
 /**
  * \class AddPixelAccessor
@@ -64,7 +62,7 @@ public:
   }
 
   /** Read access to the pixel */
-  inline ExternalType
+  [[nodiscard]] inline ExternalType
   Get(const InternalType & input) const
   {
     return static_cast<ExternalType>(input + m_Value);
@@ -78,7 +76,7 @@ public:
   }
 
   /** Get the value to be added to pixels */
-  TPixel
+  [[nodiscard]] TPixel
   GetValue() const
   {
     return m_Value;
@@ -86,11 +84,7 @@ public:
 
   /** Assignment Operator */
   Self &
-  operator=(const Self & apa)
-  {
-    this->m_Value = apa.m_Value;
-    return *this;
-  }
+  operator=(const Self & apa) = default;
 
   /** Constructors */
   /** @ITKStartGrouping */
@@ -104,7 +98,6 @@ public:
 private:
   TPixel m_Value;
 };
-} // end namespace Accessor
-} // end namespace itk
+} // namespace itk::Accessor
 
 #endif

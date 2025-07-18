@@ -21,9 +21,7 @@
 #include "itkSpatialNeighborSubsampler.h"
 #include "itkMersenneTwisterRandomVariateGenerator.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /**
  * \class UniformRandomSpatialNeighborSubsampler
@@ -142,7 +140,7 @@ protected:
    * This does a complete copy of the subsampler state
    * to the new subsampler
    */
-  typename LightObject::Pointer
+  [[nodiscard]] typename LightObject::Pointer
   InternalClone() const override;
 
   UniformRandomSpatialNeighborSubsampler();
@@ -163,8 +161,7 @@ protected:
   bool                         m_UseClockForSeed{};
 }; // end of class UniformRandomSpatialNeighborSubsampler
 
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkUniformRandomSpatialNeighborSubsampler.hxx"

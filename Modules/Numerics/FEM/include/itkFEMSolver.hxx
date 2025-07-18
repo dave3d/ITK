@@ -31,19 +31,15 @@
 #include <algorithm>
 #include "itkMath.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 
 template <unsigned int VDimension>
 Solver<VDimension>::Solver()
+  : m_FEMObject(nullptr)
 {
   this->SetLinearSystemWrapper(&m_LinearSystemVNL);
 
-  this->m_NGFN = 0;
-  this->m_NMFC = 0;
-  this->m_FEMObject = nullptr;
   this->m_Origin.Fill(0.0);
   this->m_Spacing.Fill(1.0);
 
@@ -403,9 +399,7 @@ Solver<VDimension>::AssembleF(int dim)
       {
         // If the array of element pointers is not empty,
         // we apply the load to all elements in that array.
-        for (LoadElement::ElementPointersVectorType::const_iterator i = l1->GetElementArray().begin();
-             i != l1->GetElementArray().end();
-             i++)
+        for (auto i = l1->GetElementArray().begin(); i != l1->GetElementArray().end(); i++)
         {
           const Element * el0 = (*i);
           // Call the Fe() function of the element that we are applying the load
@@ -923,7 +917,6 @@ Solver<VDimension>::GetElementAtPoint(const VectorType & pt) const
   }
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif

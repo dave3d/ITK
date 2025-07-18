@@ -22,9 +22,7 @@
 #include "itkConstSliceIterator.h"
 #include <algorithm> // For min.
 
-namespace itk
-{
-namespace NeighborhoodAlgorithm
+namespace itk::NeighborhoodAlgorithm
 {
 template <typename TImage>
 auto
@@ -73,16 +71,9 @@ ImageBoundaryFacesCalculator<TImage>::Compute(const TImage & img, RegionType reg
     // otherwise there would be overlap between two boundary regions.
     // in the case, we reduce upper boundary size to remove overlap.
 
-    IndexValueType overlapHigh;
-
-    if (bSize[i] > 2 * radius[i])
-    {
-      overlapHigh = static_cast<IndexValueType>((bStart[i] + bSize[i]) - (rStart[i] + rSize[i] + radius[i]));
-    }
-    else
-    {
-      overlapHigh = static_cast<IndexValueType>((bStart[i] + radius[i]) - (rStart[i] + rSize[i]));
-    }
+    auto overlapHigh = (bSize[i] > 2 * radius[i])
+                         ? static_cast<IndexValueType>((bStart[i] + bSize[i]) - (rStart[i] + rSize[i] + radius[i]))
+                         : static_cast<IndexValueType>((bStart[i] + radius[i]) - (rStart[i] + rSize[i]));
 
     if (overlapLow < 0)                                 // out of bounds condition, define
                                                         // a region of
@@ -195,7 +186,6 @@ CalculateOutputWrapOffsetModifiers<TImage>::operator()(TImage * input, TImage * 
   }
   return ans;
 }
-} // end namespace NeighborhoodAlgorithm
-} // end namespace itk
+} // namespace itk::NeighborhoodAlgorithm
 
 #endif

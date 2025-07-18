@@ -177,7 +177,7 @@ itkMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
     const double x = d[0];
     const double y = d[1];
     const double z = d[2];
-    ti.Set((PixelType)F(x, y, z));
+    ti.Set(static_cast<PixelType>(F(x, y, z)));
     ++ti;
   }
 
@@ -212,11 +212,10 @@ itkMultiResolutionPyramidImageFilterTest(int argc, char * argv[])
   pyramid->SetUseShrinkImageFilter(useShrinkFilter);
   pyramid->SetInput(imgTarget);
 
-  unsigned int                              numLevels;
   itk::Vector<unsigned int, ImageDimension> factors;
 
   // set schedule by specifying the number of levels;
-  numLevels = 3;
+  unsigned int numLevels = 3;
   factors.Fill(1 << (numLevels - 1));
   pyramid->SetNumberOfLevels(numLevels);
 

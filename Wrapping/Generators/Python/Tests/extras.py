@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-# ==========================================================================*/
+# ==========================================================================
 
 # also test the import callback feature
 
@@ -392,6 +392,10 @@ itk.transformwrite(transforms[0], sys.argv[7], compression=True)
 # pipeline, auto_pipeline and templated class are tested in other files
 
 # BridgeNumPy
+
+arr = np.zeros([3, 4, 5], dtype=np.dtype("uintc"))
+image = itk.image_from_array(arr)
+assert itk.template(image)[1] == (itk.UI, 3)
 
 # Images
 

@@ -26,7 +26,6 @@ MeshIOBase::MeshIOBase()
   , m_NumberOfPointPixels(SizeValueType{})
   , m_NumberOfCellPixels(SizeValueType{})
   , m_CellBufferSize(SizeValueType{})
-
 {}
 
 const MeshIOBase::ArrayOfExtensionsType &
@@ -125,7 +124,7 @@ MeshIOBase::GetByteOrderAsString(IOByteOrderEnum t) const
 }
 
 std::string
-MeshIOBase::GetComponentTypeAsString(IOComponentEnum t) const
+MeshIOBase::GetComponentTypeAsString(IOComponentEnum t)
 {
   switch (t)
   {
@@ -160,11 +159,11 @@ MeshIOBase::GetComponentTypeAsString(IOComponentEnum t) const
     default:
       break;
   }
-  itkExceptionMacro("Unknown component type: " << static_cast<char>(t));
+  itkGenericExceptionMacro("Unknown component type: " << static_cast<char>(t));
 }
 
 std::string
-MeshIOBase::GetPixelTypeAsString(IOPixelEnum t) const
+MeshIOBase::GetPixelTypeAsString(IOPixelEnum t)
 {
   switch (t)
   {
@@ -203,7 +202,7 @@ MeshIOBase::GetPixelTypeAsString(IOPixelEnum t) const
     default:
       break;
   }
-  itkExceptionMacro("Unknown pixel type: " << static_cast<char>(t));
+  itkGenericExceptionMacro("Unknown pixel type: " << static_cast<char>(t));
 }
 
 void

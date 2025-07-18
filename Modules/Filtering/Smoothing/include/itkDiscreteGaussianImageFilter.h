@@ -245,7 +245,7 @@ public:
 
   /** Get the Sigma scalar. If the Sigma is anisotropic, we will just
    * return the Sigma along the first dimension. */
-  double
+  [[nodiscard]] double
   GetSigma() const
   {
     return std::sqrt(m_Variance[0]);
@@ -276,7 +276,7 @@ public:
   }
 
   /** Get the radius of the generated directional kernel */
-  unsigned int
+  [[nodiscard]] unsigned int
   GetKernelRadius(const unsigned int dimension) const;
 
   /** Get the radius of the separable kernel in each direction */
@@ -336,12 +336,13 @@ public:
 
 protected:
   DiscreteGaussianImageFilter()
+    : m_MaximumKernelWidth(32)
+    , m_FilterDimensionality(ImageDimension)
+    , m_UseImageSpacing(true)
   {
     m_Variance.Fill(0.0);
     m_MaximumError.Fill(0.01);
-    m_MaximumKernelWidth = 32;
-    m_UseImageSpacing = true;
-    m_FilterDimensionality = ImageDimension;
+
     m_InputBoundaryCondition = &m_InputDefaultBoundaryCondition;
     m_RealBoundaryCondition = &m_RealDefaultBoundaryCondition;
   }

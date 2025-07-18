@@ -213,14 +213,12 @@ main(int argc, char * argv[])
   //
   //  Software Guide : EndLatex
   // Software Guide : BeginCodeSnippet
-  using CirclesListType = HoughTransformFilterType::CirclesListType;
-  CirclesListType::const_iterator itCircles = circles.begin();
 
-  while (itCircles != circles.end())
+  for (auto & circle : circles)
   {
     std::cout << "Center: ";
-    std::cout << (*itCircles)->GetCenterInObjectSpace() << std::endl;
-    std::cout << "Radius: " << (*itCircles)->GetRadiusInObjectSpace()[0]
+    std::cout << circle->GetCenterInObjectSpace() << std::endl;
+    std::cout << "Radius: " << circle->GetRadiusInObjectSpace()[0]
               << std::endl;
     // Software Guide : EndCodeSnippet
 
@@ -235,14 +233,14 @@ main(int argc, char * argv[])
          angle += itk::Math::pi / 60.0)
     {
       const HoughTransformFilterType::CircleType::PointType centerPoint =
-        (*itCircles)->GetCenterInObjectSpace();
+        circle->GetCenterInObjectSpace();
       using IndexValueType = ImageType::IndexType::IndexValueType;
       localIndex[0] = itk::Math::Round<IndexValueType>(
         centerPoint[0] +
-        (*itCircles)->GetRadiusInObjectSpace()[0] * std::cos(angle));
+        circle->GetRadiusInObjectSpace()[0] * std::cos(angle));
       localIndex[1] = itk::Math::Round<IndexValueType>(
         centerPoint[1] +
-        (*itCircles)->GetRadiusInObjectSpace()[0] * std::sin(angle));
+        circle->GetRadiusInObjectSpace()[0] * std::sin(angle));
       const OutputImageType::RegionType outputRegion =
         localOutputImage->GetLargestPossibleRegion();
 
@@ -251,7 +249,6 @@ main(int argc, char * argv[])
         localOutputImage->SetPixel(localIndex, 255);
       }
     }
-    ++itCircles;
   }
   // Software Guide : EndCodeSnippet
 

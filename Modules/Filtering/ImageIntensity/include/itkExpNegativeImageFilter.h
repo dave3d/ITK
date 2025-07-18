@@ -34,7 +34,7 @@ template <typename TInput, typename TOutput>
 class ExpNegative
 {
 public:
-  ExpNegative() { m_Factor = 1.0; }
+  ExpNegative() = default;
   ~ExpNegative() = default;
 
   bool
@@ -58,14 +58,14 @@ public:
     m_Factor = factor;
   }
 
-  double
+  [[nodiscard]] double
   GetFactor() const
   {
     return m_Factor;
   }
 
 private:
-  double m_Factor;
+  double m_Factor{ 1.0 };
 };
 } // namespace Functor
 
@@ -118,7 +118,7 @@ public:
     this->GetFunctor().SetFactor(factor);
     this->Modified();
   }
-  double
+  [[nodiscard]] double
   GetFactor() const
   {
     return this->GetFunctor().GetFactor();

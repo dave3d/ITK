@@ -21,9 +21,7 @@
 #include "itkRegionConstrainedSubsampler.h"
 #include "itkImageHelper.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /**
  * \class SpatialNeighborSubsampler
@@ -115,7 +113,7 @@ protected:
    * This does a complete copy of the subsampler state
    * to the new subsampler
    */
-  typename LightObject::Pointer
+  [[nodiscard]] typename LightObject::Pointer
   InternalClone() const override;
 
   SpatialNeighborSubsampler();
@@ -128,8 +126,7 @@ protected:
   bool       m_RadiusInitialized{};
 }; // end of class SpatialNeighborSubsampler
 
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkSpatialNeighborSubsampler.hxx"

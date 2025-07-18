@@ -3,58 +3,57 @@
 # itk_add_test(NAME itkVectorMultiplyTest COMMAND ITKCommon2TestDriver itkVectorMultiplyTest)
 if(ITK_WRAP_PYTHON)
   itk_python_add_test(
-    NAME
-    itkMetaDataDictionaryPythonTest
+    NAME itkMetaDataDictionaryPythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkMetaDataDictionaryTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkMetaDataDictionaryTest.py
+  )
   itk_python_add_test(
-    NAME
-    itkDirectoryPythonTest
+    NAME itkDirectoryPythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkDirectoryTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkDirectoryTest.py
+  )
   itk_python_expression_add_test(
-    NAME
-    itkObjectPythonTest
-    EXPRESSION
-    "itkObject = itk.Object.New()")
+    NAME itkObjectPythonTest
+    EXPRESSION "itkObject = itk.Object.New()"
+  )
   itk_python_add_test(
-    NAME
-    itkIndexOffsetPythonTest
+    NAME itkIndexOffsetPythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkIndexOffsetTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkIndexOffsetTest.py
+  )
   itk_python_add_test(
-    NAME
-    itkImageDuplicatorPythonTest
+    NAME itkImageDuplicatorPythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkImageDuplicatorTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkImageDuplicatorTest.py
+  )
   itk_python_add_test(
-    NAME
-    itkImagePythonTest
+    NAME itkImagePythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkImageTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkImageTest.py
+  )
   itk_python_add_test(
-    NAME
-    itkMatrixPythonTest
+    NAME itkMatrixPythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkMatrixTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkMatrixTest.py
+  )
   itk_python_add_test(
-    NAME
-    itkVariableLengthVectorPythonTest
+    NAME itkVariableLengthVectorPythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkVariableLengthVectorTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkVariableLengthVectorTest.py
+  )
   itk_python_add_test(
-    NAME
-    itkPointSetSerializationPythonTest
+    NAME itkPointSetSerializationPythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkPointSetSerializationTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkPointSetSerializationTest.py
+  )
   itk_python_add_test(
-    NAME
-    itkPointSetPythonTest
+    NAME itkPointSetPythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkPointSetTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkPointSetTest.py
+  )
   itk_python_add_test(
-    NAME
-    itkSpatialOrientationAdapterPythonTest
+    NAME itkSpatialOrientationAdapterPythonTest
     COMMAND
-    ${CMAKE_CURRENT_SOURCE_DIR}/itkSpatialOrientationAdapterTest.py)
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkSpatialOrientationAdapterTest.py
+  )
 endif()

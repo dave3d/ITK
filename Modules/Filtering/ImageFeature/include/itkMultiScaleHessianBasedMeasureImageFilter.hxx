@@ -36,24 +36,16 @@ namespace itk
 template <typename TInputImage, typename THessianImage, typename TOutputImage>
 MultiScaleHessianBasedMeasureImageFilter<TInputImage, THessianImage, TOutputImage>::
   MultiScaleHessianBasedMeasureImageFilter()
+  : m_NonNegativeHessianBasedMeasure(true)
+  , m_SigmaMinimum(0.2)
+  , m_SigmaMaximum(2.0)
+  , m_NumberOfSigmaSteps(10)
+  , m_SigmaStepMethod(Self::SigmaStepMethodEnum::LogarithmicSigmaSteps)
+  , m_HessianToMeasureFilter(nullptr)
+  , m_HessianFilter(HessianFilterType::New())
+  , m_UpdateBuffer(UpdateBufferType::New())
+
 {
-  m_NonNegativeHessianBasedMeasure = true;
-
-  m_SigmaMinimum = 0.2;
-  m_SigmaMaximum = 2.0;
-
-  m_NumberOfSigmaSteps = 10;
-  m_SigmaStepMethod = Self::SigmaStepMethodEnum::LogarithmicSigmaSteps;
-
-  m_HessianFilter = HessianFilterType::New();
-  m_HessianToMeasureFilter = nullptr;
-
-  // Instantiate Update buffer
-  m_UpdateBuffer = UpdateBufferType::New();
-
-  m_GenerateScalesOutput = false;
-  m_GenerateHessianOutput = false;
-
   auto scalesImage = ScalesImageType::New();
   auto hessianImage = HessianImageType::New();
   this->ProcessObject::SetNumberOfRequiredOutputs(3);
@@ -279,13 +271,12 @@ template <typename TInputImage, typename THessianImage, typename TOutputImage>
 double
 MultiScaleHessianBasedMeasureImageFilter<TInputImage, THessianImage, TOutputImage>::ComputeSigmaValue(int scaleLevel)
 {
-  double sigmaValue;
-
   if (m_NumberOfSigmaSteps < 2)
   {
     return m_SigmaMinimum;
   }
 
+  double sigmaValue = NAN;
   switch (m_SigmaStepMethod)
   {
     case Self::SigmaStepMethodEnum::EquispacedSigmaSteps:

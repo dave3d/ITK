@@ -25,9 +25,7 @@
 #include <map>
 #include <vector>
 
-namespace itk
-{
-namespace Function
+namespace itk::Function
 {
 
 /* \class RankHistogram
@@ -54,11 +52,10 @@ public:
   using Compare = std::less<TInputPixel>;
 
   RankHistogram()
+
   {
-    m_Rank = 0.5;
     m_Below = m_Entries = 0;
     // can't set m_RankIt until something has been put in the histogram
-    m_Initialized = false;
     if (m_Compare(NumericTraits<TInputPixel>::max(), NumericTraits<TInputPixel>::NonpositiveMin()))
     {
       m_InitVal = NumericTraits<TInputPixel>::max();
@@ -157,8 +154,8 @@ public:
   {
     const SizeValueType target = (SizeValueType)(m_Rank * (m_Entries - 1)) + 1;
     SizeValueType       total = m_Below;
-    SizeValueType       ThisBin;
-    bool                eraseFlag = false;
+
+    bool eraseFlag = false;
 
     if (total < target)
     {
@@ -171,7 +168,7 @@ public:
         // the loop. Currently makes sure that the search iterator is
         // incremented before deleting
         ++searchIt;
-        ThisBin = searchIt->second;
+        SizeValueType ThisBin = searchIt->second;
         total += ThisBin;
         if (eraseFlag)
         {
@@ -202,7 +199,7 @@ public:
 
       while (searchIt != m_Map.begin())
       {
-        ThisBin = searchIt->second;
+        SizeValueType      ThisBin = searchIt->second;
         const unsigned int tbelow = total - ThisBin;
         if (tbelow < target) // we've overshot
         {
@@ -252,7 +249,7 @@ public:
   }
 
 protected:
-  float m_Rank;
+  float m_Rank{ 0.5 };
 
 private:
   using MapType = typename std::map<TInputPixel, SizeValueType, Compare>;
@@ -263,7 +260,7 @@ private:
   TInputPixel   m_RankValue;
   TInputPixel   m_InitVal;
   Compare       m_Compare;
-  bool          m_Initialized;
+  bool          m_Initialized{ false };
 
   // This iterator will point at the desired rank value
   typename MapType::iterator m_RankIt;
@@ -277,9 +274,9 @@ public:
   using Compare = std::less<TInputPixel>;
 
   VectorRankHistogram()
+    : m_Size((OffsetValueType)NumericTraits<TInputPixel>::max() -
+             (OffsetValueType)NumericTraits<TInputPixel>::NonpositiveMin() + 1)
   {
-    m_Size = (OffsetValueType)NumericTraits<TInputPixel>::max() -
-             (OffsetValueType)NumericTraits<TInputPixel>::NonpositiveMin() + 1;
     m_Vec.resize(m_Size, 0);
     if (m_Compare(NumericTraits<TInputPixel>::max(), NumericTraits<TInputPixel>::NonpositiveMin()))
     {
@@ -410,6 +407,5 @@ class ITK_TEMPLATE_EXPORT RankHistogram<bool> : public VectorRankHistogram<bool>
 
 /// \endcond
 
-} // end namespace Function
-} // end namespace itk
+} // namespace itk::Function
 #endif

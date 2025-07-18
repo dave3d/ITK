@@ -46,7 +46,7 @@ class ITKIOXML_EXPORT FancyString
 {
 public:
   FancyString();
-  FancyString(const std::string & str);
+  FancyString(std::string str);
   FancyString(const char * s);
 
   FancyString &
@@ -119,7 +119,7 @@ public:
   /**
    * Function to convert this value to a "std::string".
    */
-  const std::string &
+  [[nodiscard]] const std::string &
   ToString() const;
 
   /**

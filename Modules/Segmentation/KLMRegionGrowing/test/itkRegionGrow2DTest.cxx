@@ -24,14 +24,20 @@
 #include "itkMath.h"
 #include "itkTestingMacros.h"
 
-#define NUMBANDS1 1
-#define NUMBANDS2 2
-#define NUMBANDS3 3
-#define NUMDIM1D 1
-#define NUMDIM2D 2
-#define NUMDIM3D 3
-#define NUMDIM4D 4
-#define NUMDIM5D 5
+enum : int8_t
+{
+  NUMBANDS1 = 1,
+  NUMBANDS2 = 2,
+  NUMBANDS3 = 3,
+};
+enum : int8_t
+{
+  NUMDIM1D = 1,
+  NUMDIM2D = 2,
+  NUMDIM3D = 3,
+  NUMDIM4D = 4,
+  NUMDIM5D = 5,
+};
 
 static unsigned int
 test_RegionGrowKLMExceptionHandling();
@@ -154,7 +160,7 @@ test_RegionGrowKLMExceptionHandling()
 
   std::cout << "Test error handling" << std::endl;
 
-  bool passed;
+  bool passed = false;
 
 #undef LOCAL_TEST_EXCEPTION_MACRO
 #define LOCAL_TEST_EXCEPTION_MACRO(MSG, FILTER)         \
@@ -345,20 +351,17 @@ test_regiongrowKLM1D()
   const LabelledImageType::Pointer labelledImage = KLMFilter->GetLabelledImage();
 
   using OutputImageData = OutputImageType::PixelType::VectorType;
-  ImageData       pixelIn;
-  OutputImageData pixelOut;
 
   using LabelImageIterator = itk::ImageRegionIterator<LabelledImageType>;
   LabelImageIterator labelIt(labelledImage, labelledImage->GetBufferedRegion());
-  LabelType          pixelLabel;
   LabelType          m = 1;
 
   inIt.GoToBegin();
   while (!inIt.IsAtEnd())
   {
-    pixelOut = outIt.Get();
-    pixelIn = inIt.Get();
-    pixelLabel = labelIt.Get();
+    OutputImageData pixelOut = outIt.Get();
+    ImageData       pixelIn = inIt.Get();
+    LabelType       pixelLabel = labelIt.Get();
 
     if (itk::Math::NotAlmostEquals(pixelOut[0], pixelIn[0]) || itk::Math::NotAlmostEquals(pixelOut[1], pixelIn[1]) ||
         itk::Math::NotAlmostEquals(pixelOut[2], pixelIn[2]) || pixelLabel != m)
@@ -452,8 +455,8 @@ test_regiongrowKLM1D()
   k = 0;
   while (!outIt2.IsAtEnd())
   {
-    pixelOut = outIt2.Get();
-    pixelLabel = labelIt2.Get();
+    OutputImageData pixelOut = outIt2.Get();
+    LabelType       pixelLabel = labelIt2.Get();
 
     if (k < numPixelsHalf)
     {
@@ -591,8 +594,8 @@ test_regiongrowKLM1D()
   k = 0;
   while (!outIt3.IsAtEnd())
   {
-    pixelOut = outIt3.Get();
-    pixelLabel = labelIt3.Get();
+    OutputImageData pixelOut = outIt3.Get();
+    LabelType       pixelLabel = labelIt3.Get();
 
     if (k < numPixelsHalf / 2)
     {
@@ -755,12 +758,12 @@ test_regiongrowKLM1D()
     pixelOut5in[2] = 0;
     for (int idx = 0; idx < gridWidth; ++idx)
     {
-      pixelIn = inIt.Get();
+      ImageData pixelIn = inIt.Get();
       pixelOut5in[0] += pixelIn[0];
       pixelOut5in[1] += pixelIn[1];
       pixelOut5in[2] += pixelIn[2];
 
-      pixelLabel = labelIt5.Get();
+      LabelType pixelLabel = labelIt5.Get();
 
       if (pixelLabel != k)
       {
@@ -991,7 +994,7 @@ test_regiongrowKLM2D()
 
   LabelImageIterator labelIt(labelledImage, labelledImage->GetBufferedRegion());
 
-  LabelType pixelLabel;
+  LabelType pixelLabel = 0;
   LabelType m = 1;
   while (!labelIt.IsAtEnd())
   {
@@ -1498,7 +1501,7 @@ test_regiongrowKLM3D()
 
   LabelImageIterator labelIt(labelledImage, labelledImage->GetBufferedRegion());
 
-  LabelType pixelLabel;
+  LabelType pixelLabel = 0;
   LabelType m = 1;
   while (!labelIt.IsAtEnd())
   {
@@ -1898,7 +1901,7 @@ test_regiongrowKLM4D()
 
   LabelImageIterator labelIt(labelledImage, labelledImage->GetBufferedRegion());
 
-  LabelType pixelLabel;
+  LabelType pixelLabel = 0;
   LabelType m = 1;
   while (!labelIt.IsAtEnd())
   {

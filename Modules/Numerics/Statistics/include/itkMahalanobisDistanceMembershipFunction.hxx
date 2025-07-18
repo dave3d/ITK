@@ -23,22 +23,18 @@
 #include "vnl/vnl_matrix.h"
 #include "vnl/algo/vnl_matrix_inverse.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TVector>
 MahalanobisDistanceMembershipFunction<TVector>::MahalanobisDistanceMembershipFunction()
+  : m_InverseCovariance(m_Covariance)
+  , m_CovarianceNonsingular(true)
 {
   NumericTraits<MeanVectorType>::SetLength(m_Mean, this->GetMeasurementVectorSize());
   m_Mean.Fill(0.0f);
 
   m_Covariance.SetSize(this->GetMeasurementVectorSize(), this->GetMeasurementVectorSize());
   m_Covariance.SetIdentity();
-
-  m_InverseCovariance = m_Covariance;
-
-  m_CovarianceNonsingular = true;
 }
 
 template <typename TVector>
@@ -190,7 +186,6 @@ MahalanobisDistanceMembershipFunction<TVector>::InternalClone() const
   return loPtr;
 }
 
-} // end namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

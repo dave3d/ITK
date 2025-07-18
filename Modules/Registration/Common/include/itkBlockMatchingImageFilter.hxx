@@ -198,11 +198,10 @@ void
 BlockMatchingImageFilter<TFixedImage, TMovingImage, TFeatures, TDisplacements, TSimilarities>::
   AfterThreadedGenerateData()
 {
-  const FeaturePointsConstPointer                     featurePoints = this->GetFeaturePoints();
-  const typename FeaturePointsType::PointsContainer * points;
+  const FeaturePointsConstPointer featurePoints = this->GetFeaturePoints();
   if (featurePoints)
   {
-    points = featurePoints->GetPoints();
+    const typename FeaturePointsType::PointsContainer * points = featurePoints->GetPoints();
 
     const DisplacementsPointer displacements = this->GetDisplacements();
 
@@ -253,8 +252,8 @@ ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 BlockMatchingImageFilter<TFixedImage, TMovingImage, TFeatures, TDisplacements, TSimilarities>::ThreaderCallback(
   void * arg)
 {
-  auto *             str = (ThreadStruct *)(((MultiThreaderBase::WorkUnitInfo *)(arg))->UserData);
-  const ThreadIdType workUnitID = ((MultiThreaderBase::WorkUnitInfo *)(arg))->WorkUnitID;
+  auto *             str = (ThreadStruct *)((static_cast<MultiThreaderBase::WorkUnitInfo *>(arg))->UserData);
+  const ThreadIdType workUnitID = (static_cast<MultiThreaderBase::WorkUnitInfo *>(arg))->WorkUnitID;
 
   str->Filter->ThreadedGenerateData(workUnitID);
 

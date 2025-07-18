@@ -24,9 +24,7 @@
 #include "itkSmartPointer.h"
 #include "itkVectorContainer.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /** \class VectorContainerToListSampleAdaptor
  *  \brief This class provides ListSample interface to ITK VectorContainer
@@ -113,34 +111,28 @@ public:
     ConstIterator(const VectorContainerToListSampleAdaptor * adaptor) { *this = adaptor->Begin(); }
 
     ConstIterator(const ConstIterator & iter)
-    {
-      this->m_Iter = iter.m_Iter;
-      this->m_InstanceIdentifier = iter.m_InstanceIdentifier;
-    }
+      : m_Iter(iter.m_Iter)
+      , m_InstanceIdentifier(iter.m_InstanceIdentifier)
+    {}
 
     ConstIterator() = delete;
 
     ConstIterator &
-    operator=(const ConstIterator & iter)
-    {
-      this->m_Iter = iter.m_Iter;
-      this->m_InstanceIdentifier = iter.m_InstanceIdentifier;
-      return *this;
-    }
+    operator=(const ConstIterator & iter) = default;
 
-    AbsoluteFrequencyType
+    [[nodiscard]] AbsoluteFrequencyType
     GetFrequency() const
     {
       return 1;
     }
 
-    const MeasurementVectorType &
+    [[nodiscard]] const MeasurementVectorType &
     GetMeasurementVector() const
     {
       return (const MeasurementVectorType &)m_Iter.Value();
     }
 
-    InstanceIdentifier
+    [[nodiscard]] InstanceIdentifier
     GetInstanceIdentifier() const
     {
       return this->m_InstanceIdentifier;
@@ -165,10 +157,9 @@ public:
   protected:
     // This method should only be available to the ListSample class
     ConstIterator(VectorContainerConstIterator iter, InstanceIdentifier iid)
-    {
-      this->m_Iter = iter;
-      this->m_InstanceIdentifier = iid;
-    }
+      : m_Iter(iter)
+      , m_InstanceIdentifier(iid)
+    {}
 
   private:
     VectorContainerConstIterator m_Iter;
@@ -261,8 +252,7 @@ protected:
 private:
   VectorContainerConstPointer m_VectorContainer{};
 }; // end of class VectorContainerToListSampleAdaptor
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkVectorContainerToListSampleAdaptor.hxx"

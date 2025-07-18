@@ -20,14 +20,12 @@
 
 #include "itkImageRegionConstIterator.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TImage, typename TMaskImage>
 ImageToListSampleFilter<TImage, TMaskImage>::ImageToListSampleFilter()
+  : m_MaskValue(itk::NumericTraits<MaskPixelType>::max())
 {
-  this->m_MaskValue = itk::NumericTraits<MaskPixelType>::max();
   this->SetNumberOfRequiredInputs(1);
   this->SetNumberOfRequiredOutputs(1);
 
@@ -92,15 +90,11 @@ ImageToListSampleFilter<TImage, TMaskImage>::GetMeasurementVectorSize() const
     itkExceptionMacro("Input image has not been set yet");
   }
 
-  unsigned int measurementVectorSize;
+  unsigned int measurementVectorSize = input->GetNumberOfComponentsPerPixel();
 
   if (!MeasurementVectorTraits::IsResizable<MeasurementVectorType>({}))
   {
     measurementVectorSize = NumericTraits<MeasurementVectorType>::GetLength({});
-  }
-  else
-  {
-    measurementVectorSize = input->GetNumberOfComponentsPerPixel();
   }
 
   return measurementVectorSize;
@@ -190,7 +184,6 @@ ImageToListSampleFilter<TImage, TMaskImage>::GetOutput() const -> const ListSamp
 
   return output;
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

@@ -10,8 +10,10 @@ from . import _ITKPyBasePython
 import collections
 
 from sys import version_info as _version_info
-if _version_info < (3, 7, 0):
-    raise RuntimeError("Python 3.7 or later required")
+# Set values below to the same value as
+# PYTHON_VERSION_MIN in ITKSetPython3Vars.cmake
+if _version_info < (3, 9, 0):
+    raise RuntimeError("Python 3.9 or later required")
 
 from . import _ITKCommonPython
 %}
@@ -558,8 +560,13 @@ str = str
                 import numpy as np
                 from itk.support import types
 
-                # if both a numpy dtype and a ctype exist, use the latter.
+                # Convert numpy type to dtype object for consistency
+                # i.e. <np.float32> -> np.dtype('float32')
                 if type(pixel_type) is type:
+                    pixel_type = np.dtype(pixel_type)
+
+                # if both a numpy dtype and an ITK ctype exist, use the latter.
+                if issubclass(type(pixel_type), np.dtype):
                     c_pixel_type = types.itkCType.GetCTypeForDType(pixel_type)
                     if c_pixel_type is not None:
                         pixel_type = c_pixel_type

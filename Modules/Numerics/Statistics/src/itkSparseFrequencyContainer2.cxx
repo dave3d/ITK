@@ -17,11 +17,11 @@
  *=========================================================================*/
 #include "itkSparseFrequencyContainer2.h"
 
-namespace itk
+namespace itk::Statistics
 {
-namespace Statistics
-{
-SparseFrequencyContainer2::SparseFrequencyContainer2() { m_TotalFrequency = TotalAbsoluteFrequencyType{}; }
+SparseFrequencyContainer2::SparseFrequencyContainer2()
+  : m_TotalFrequency(TotalAbsoluteFrequencyType{})
+{}
 
 void
 SparseFrequencyContainer2::Initialize(SizeValueType)
@@ -84,5 +84,4 @@ SparseFrequencyContainer2::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics

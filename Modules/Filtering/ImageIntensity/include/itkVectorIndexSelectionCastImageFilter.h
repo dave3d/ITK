@@ -28,10 +28,10 @@ template <typename TInput, typename TOutput>
 class VectorIndexSelectionCast
 {
 public:
-  VectorIndexSelectionCast() { m_Index = 0; }
+  VectorIndexSelectionCast() = default;
   ~VectorIndexSelectionCast() = default;
 
-  unsigned int
+  [[nodiscard]] unsigned int
   GetIndex() const
   {
     return m_Index;
@@ -57,7 +57,7 @@ public:
   }
 
 private:
-  unsigned int m_Index;
+  unsigned int m_Index{ 0 };
 };
 } // namespace Functor
 
@@ -121,7 +121,7 @@ public:
     }
   }
 
-  unsigned int
+  [[nodiscard]] unsigned int
   GetIndex() const
   {
     return this->GetFunctor().GetIndex();

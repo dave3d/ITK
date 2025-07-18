@@ -45,16 +45,14 @@ public:
   ThreadedIteratorRangePartitionerDomain() = default;
 
   ThreadedIteratorRangePartitionerDomain(const IteratorType & begin, const IteratorType & end)
-  {
-    this->m_Begin = begin;
-    this->m_End = end;
-  }
+    : m_Begin(begin)
+    , m_End(end)
+  {}
 
   ThreadedIteratorRangePartitionerDomain(const Self & rhs)
-  {
-    this->m_Begin = rhs.m_Begin;
-    this->m_End = rhs.m_End;
-  }
+    : m_Begin(rhs.m_Begin)
+    , m_End(rhs.m_End)
+  {}
 
   void
   operator=(const Self & rhs)
@@ -67,12 +65,12 @@ public:
     this->m_End = rhs.m_End;
   }
 
-  const IteratorType &
+  [[nodiscard]] const IteratorType &
   Begin() const
   {
     return this->m_Begin;
   }
-  const IteratorType &
+  [[nodiscard]] const IteratorType &
   End() const
   {
     return this->m_End;

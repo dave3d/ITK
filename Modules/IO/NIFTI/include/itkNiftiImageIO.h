@@ -25,6 +25,7 @@
 #include <memory>
 #include "itkImageIOBase.h"
 
+
 namespace itk
 {
 
@@ -251,6 +252,11 @@ protected:
   }
 
 private:
+  // This proxy class has a nifti_image as a smart pointer to encapsulate access to the header.
+  class NiftiImageProxy;
+
+  std::unique_ptr<NiftiImageProxy> m_Holder;
+
   // Try to use the Q and S form codes from MetaDataDictionary if they are specified
   // there, otherwise default to the backwards compatible values from earlier
   // versions of ITK. The qform guess would probably been better to have
@@ -275,16 +281,6 @@ private:
   void
   SetImageIOMetadataFromNIfTI();
 
-  // This proxy class provides a nifti_image pointer interface to the internal implementation
-  // of itk::NiftiImageIO, while hiding the niftilib interface from the external ITK interface.
-  class NiftiImageProxy;
-
-  // Note that it is essential that m_NiftiImageHolder is defined before m_NiftiImage, to ensure that
-  // m_NiftiImage can directly get a proxy from m_NiftiImageHolder during NiftiImageIO construction.
-  const std::unique_ptr<NiftiImageProxy> m_NiftiImageHolder;
-
-  NiftiImageProxy & m_NiftiImage;
-
   double m_RescaleSlope{ 1.0 };
   double m_RescaleIntercept{ 0.0 };
 
@@ -296,7 +292,7 @@ private:
 
   NiftiImageIOEnums::Analyze75Flavor m_LegacyAnalyze75Mode{};
 
-  bool m_SFORM_Permissive;
+  bool m_SFORM_Permissive{ false };
   bool m_SFORM_Corrected{ false };
 };
 

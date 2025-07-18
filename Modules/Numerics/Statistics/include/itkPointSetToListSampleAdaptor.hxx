@@ -18,15 +18,12 @@
 #ifndef itkPointSetToListSampleAdaptor_hxx
 #define itkPointSetToListSampleAdaptor_hxx
 
-
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TPointSet>
 PointSetToListSampleAdaptor<TPointSet>::PointSetToListSampleAdaptor()
+  : m_PointSet(nullptr)
 {
-  this->m_PointSet = nullptr;
   this->SetMeasurementVectorSize(TPointSet::PointDimension);
 }
 
@@ -118,7 +115,6 @@ PointSetToListSampleAdaptor<TPointSet>::GetTotalFrequency() const -> TotalAbsolu
 
   return this->Size();
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

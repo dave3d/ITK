@@ -82,7 +82,7 @@ public:
   {
     m_Variance = v;
   }
-  double
+  [[nodiscard]] double
   GetVariance() const
   {
     return m_Variance;
@@ -122,13 +122,12 @@ public:
 
 protected:
   CannySegmentationLevelSetFunction()
-  {
-    m_Variance = 0.0;
-    m_Threshold = ScalarValueType{};
-    m_Caster = CastImageFilter<FeatureImageType, ImageType>::New();
-    m_Canny = CannyEdgeDetectionImageFilter<ImageType, ImageType>::New();
-    m_Distance = DanielssonDistanceMapImageFilter<ImageType, ImageType>::New();
-  }
+    : m_Variance(0.0)
+    , m_Threshold(ScalarValueType{})
+    , m_Canny(CannyEdgeDetectionImageFilter<ImageType, ImageType>::New())
+    , m_Distance(DanielssonDistanceMapImageFilter<ImageType, ImageType>::New())
+    , m_Caster(CastImageFilter<FeatureImageType, ImageType>::New())
+  {}
 
   ~CannySegmentationLevelSetFunction() override = default;
 

@@ -84,7 +84,7 @@ itkImageMomentsTest(int argc, char * argv[])
   tpm[2] = 2.0; // Principal moments
 
   MatrixType tpa;
-  tpa.GetVnlMatrix().set((double *)pad);
+  tpa.GetVnlMatrix().set(reinterpret_cast<double *>(pad));
 
   /* Allocate a simple test image */
   auto image = ImageType::New();
@@ -250,26 +250,14 @@ itkImageMomentsTest(int argc, char * argv[])
 
   /* Return error if differences are too large */
   const int stat = tmerr > maxerr || cgerr > maxerr || pmerr > maxerr || paerr > maxerr || trerr > maxerr;
-
   std::cout << std::endl;
-  bool pass;
   if (stat)
   {
     std::cout << "Errors are larger than defined maximum value." << std::endl;
     std::cout << "Test FAILED !" << std::endl;
-    pass = false;
-  }
-  else
-  {
-    std::cout << "Errors are acceptable" << std::endl;
-    std::cout << "Test PASSED !" << std::endl;
-    pass = true;
-  }
-
-  if (!pass)
-  {
     return EXIT_FAILURE;
   }
-
+  std::cout << "Errors are acceptable" << std::endl;
+  std::cout << "Test PASSED !" << std::endl;
   return EXIT_SUCCESS;
 }

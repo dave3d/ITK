@@ -297,14 +297,9 @@ VideoSource<TOutputVideoStream>::SplitRequestedSpatialRegion(
   // determine the actual number of pieces that will be generated
   const typename TOutputVideoStream::SizeType::SizeValueType range = requestedRegionSize[splitAxis];
 
-  int valuesPerThread;
-  int maxThreadIdUsed;
-  if (range == 0)
-  {
-    valuesPerThread = 0;
-    maxThreadIdUsed = 0;
-  }
-  else
+  int valuesPerThread = 0;
+  int maxThreadIdUsed = 0;
+  if (range != 0)
   {
     valuesPerThread = Math::Ceil<int>(range / static_cast<double>(num));
     maxThreadIdUsed = Math::Ceil<int>(range / static_cast<double>(valuesPerThread)) - 1;
@@ -339,10 +334,10 @@ template <typename TOutputVideoStream>
 ITK_THREAD_RETURN_FUNCTION_CALL_CONVENTION
 VideoSource<TOutputVideoStream>::ThreaderCallback(void * arg)
 {
-  const int workUnitID = ((MultiThreaderBase::WorkUnitInfo *)(arg))->WorkUnitID;
-  const int threadCount = ((MultiThreaderBase::WorkUnitInfo *)(arg))->NumberOfWorkUnits;
+  const int workUnitID = (static_cast<MultiThreaderBase::WorkUnitInfo *>(arg))->WorkUnitID;
+  const int threadCount = (static_cast<MultiThreaderBase::WorkUnitInfo *>(arg))->NumberOfWorkUnits;
 
-  auto * str = (ThreadStruct *)(((MultiThreaderBase::WorkUnitInfo *)(arg))->UserData);
+  auto * str = (ThreadStruct *)((static_cast<MultiThreaderBase::WorkUnitInfo *>(arg))->UserData);
 
   // execute the actual method with appropriate output region
   // first find out how many pieces extent can be split into.

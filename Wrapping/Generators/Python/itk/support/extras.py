@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-# ==========================================================================*/
+# ==========================================================================
 
 import enum
 import re
@@ -273,26 +273,23 @@ def _get_itk_pixelid(numpy_array_type):
 
     # This is a Mapping from numpy array types to itk pixel types.
     _np_itk = {
-        np.uint8: itk.UC,
-        np.uint16: itk.US,
-        np.uint32: itk.UI,
-        np.uint64: _long_type(),
-        np.int8: itk.SC,
-        np.int16: itk.SS,
-        np.int32: itk.SI,
-        np.int64: itk.SL,
-        np.float32: itk.F,
-        np.float64: itk.D,
-        np.complex64: itk.complex[itk.F],
-        np.complex128: itk.complex[itk.D],
+        np.dtype(np.uint8): itk.UC,
+        np.dtype(np.uint16): itk.US,
+        np.dtype(np.uint32): itk.UI,
+        np.dtype(np.uint64): _long_type(),
+        np.dtype(np.int8): itk.SC,
+        np.dtype(np.int16): itk.SS,
+        np.dtype(np.int32): itk.SI,
+        np.dtype(np.int64): itk.SL,
+        np.dtype(np.float32): itk.F,
+        np.dtype(np.float64): itk.D,
+        np.dtype(np.complex64): itk.complex[itk.F],
+        np.dtype(np.complex128): itk.complex[itk.D],
     }
     try:
-        return _np_itk[numpy_array_type.dtype.type]
+        return _np_itk[numpy_array_type.dtype]
     except KeyError as e:
-        for key in _np_itk:
-            if np.issubdtype(numpy_array_type.dtype.type, key):
-                return _np_itk[key]
-            raise e
+        raise e
 
 
 def _GetArrayFromImage(
@@ -1030,7 +1027,7 @@ def dict_from_polyline(polyline: "itkt.PolylineParametricPath") -> dict:
 
 
 def dict_from_transform(
-    transform: Union["itkt.TransformBase", list["itkt.TransformBase"]]
+    transform: Union["itkt.TransformBase", list["itkt.TransformBase"]],
 ) -> Union[list[dict], dict]:
     """Serialize a Python itk.Transform object to a pickable Python dictionary.
 
@@ -1109,7 +1106,7 @@ def dict_from_transform(
 
 
 def transform_from_dict(
-    transform_dict: Union[dict, list[dict]]
+    transform_dict: Union[dict, list[dict]],
 ) -> "itkt.TransformBase":
     """Deserialize a dictionary representing an itk.Transform object.
 

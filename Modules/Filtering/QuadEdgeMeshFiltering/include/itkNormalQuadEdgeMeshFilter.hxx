@@ -24,9 +24,8 @@ namespace itk
 {
 template <typename TInputMesh, typename TOutputMesh>
 NormalQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::NormalQuadEdgeMeshFilter()
-{
-  this->m_Weight = WeightEnum::THURMER;
-}
+  : m_Weight(WeightEnum::THURMER)
+{}
 
 template <typename TInputMesh, typename TOutputMesh>
 auto
@@ -54,12 +53,11 @@ void
 NormalQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeAllFaceNormals()
 {
   const OutputMeshPointer output = this->GetOutput();
-  OutputPolygonType *     poly;
 
   for (OutputCellsContainerConstIterator cell_it = output->GetCells()->Begin(); cell_it != output->GetCells()->End();
        ++cell_it)
   {
-    poly = dynamic_cast<OutputPolygonType *>(cell_it.Value());
+    auto * poly = dynamic_cast<OutputPolygonType *>(cell_it.Value());
 
     if (poly != nullptr)
     {
@@ -77,13 +75,12 @@ NormalQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::ComputeAllVertexNormals()
 {
   const OutputMeshPointer            output = this->GetOutput();
   const OutputPointsContainerPointer points = output->GetPoints();
-  OutputPointIdentifier              id;
 
   OutputMeshType * outputMesh = this->GetOutput();
 
   for (OutputPointsContainerIterator it = points->Begin(); it != points->End(); ++it)
   {
-    id = it->Index();
+    OutputPointIdentifier id = it->Index();
     output->SetPointData(id, ComputeVertexNormal(id, outputMesh));
   }
 }

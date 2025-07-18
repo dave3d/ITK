@@ -22,9 +22,7 @@
 #include "itkFEMException.h"
 #include "ITKFEMExport.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 /**
  * \class ItpackSparseMatrix
@@ -179,7 +177,7 @@ public:
   /**
    * Get the order of the matrix
    */
-  integer
+  [[nodiscard]] integer
   GetOrder() const
   {
     return m_N;
@@ -188,7 +186,7 @@ public:
   /**
    * Get the maximum number of non-zero values allowed in the matrix
    */
-  integer
+  [[nodiscard]] integer
   GetMaxNonZeroValues() const
   {
     return m_NZ;
@@ -347,7 +345,6 @@ public:
   /** \see LightObject::GetNameOfClass() */
   itkOverrideGetNameOfClassMacro(FEMExceptionItpackSparseMatrixSbsij);
 };
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif // itkFEMItpackSparseMatrix_h

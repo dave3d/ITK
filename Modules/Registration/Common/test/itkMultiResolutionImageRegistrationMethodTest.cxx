@@ -38,15 +38,13 @@ itkMultiResolutionImageRegistrationMethodTest(int, char *[])
 
   itk::OutputWindow::SetInstance(itk::TextOutput::New().GetPointer());
 
-  bool pass;
-
   constexpr unsigned int dimension = 3;
 
   // Fixed Image Type
   using FixedImageType = itk::Image<float, dimension>;
 
   // Moving Image Type
-  //  using MovingImageType = itk::Image<char,dimension>;
+  //  using MovingImageType = itk::Image<signed char,dimension>;
   using MovingImageType = itk::Image<float, dimension>;
 
   // Transform Type
@@ -147,7 +145,7 @@ itkMultiResolutionImageRegistrationMethodTest(int, char *[])
   /****************************************************
    * Test out initialization errors
    ****************************************************/
-
+  bool pass = false;
 #define TEST_INITIALIZATION_ERROR(ComponentName, badComponent, goodComponent) \
   registration->Set##ComponentName(badComponent);                             \
   try                                                                         \

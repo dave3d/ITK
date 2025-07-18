@@ -57,15 +57,13 @@ square(unsigned int x, unsigned int y)
 {
   const float X = itk::Math::abs(x - float{ WIDTH } / 2.0);
   const float Y = itk::Math::abs(y - float{ HEIGHT } / 2.0);
-  float       dis;
+  float       dis = -std::sqrt((X - RADIUS) * (X - RADIUS) + (Y - RADIUS) * (Y - RADIUS));
+
   if (!((X > RADIUS) && (Y > RADIUS)))
   {
     dis = RADIUS - std::max(X, Y);
   }
-  else
-  {
-    dis = -std::sqrt((X - RADIUS) * (X - RADIUS) + (Y - RADIUS) * (Y - RADIUS));
-  }
+
   return dis;
 }
 
@@ -184,17 +182,17 @@ public:
 protected:
   ~MorphFilter() override = default;
   MorphFilter()
+
   {
     auto p = MorphFunction::New();
     p->SetPropagationWeight(-1.0);
     p->SetAdvectionWeight(0.0);
     p->SetCurvatureWeight(1.0);
     this->SetDifferenceFunction(p);
-    m_Iterations = 0;
   }
 
 private:
-  unsigned int m_Iterations;
+  unsigned int m_Iterations{ 0 };
 
   bool
   Halt() override

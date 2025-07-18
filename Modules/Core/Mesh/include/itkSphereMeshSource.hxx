@@ -27,6 +27,10 @@ namespace itk
  */
 template <typename TOutputMesh>
 SphereMeshSource<TOutputMesh>::SphereMeshSource()
+  : m_ResolutionX(4)
+  , m_ResolutionY(4)
+  , m_Squareness1(1.0)
+  , m_Squareness2(1.0)
 {
   /**
    * Create the output
@@ -34,12 +38,8 @@ SphereMeshSource<TOutputMesh>::SphereMeshSource()
   auto output = TOutputMesh::New();
   this->ProcessObject::SetNumberOfRequiredOutputs(1);
   this->ProcessObject::SetNthOutput(0, output.GetPointer());
-  m_Squareness1 = 1.0;
-  m_Squareness2 = 1.0;
   m_Center.Fill(0);
   m_Scale.Fill(1);
-  m_ResolutionX = 4;
-  m_ResolutionY = 4;
 }
 
 /*
@@ -85,53 +85,22 @@ SphereMeshSource<TOutputMesh>::GenerateData()
       double v = vbeg;
       for (IdentifierType j = 0; j < m_ResolutionY; v += vstep, j++)
       {
-        int signu;
-        if (std::cos(u) > 0)
-        {
-          signu = 1;
-        }
-        else
-        {
-          signu = -1;
-        }
-        int signv;
-        if (std::cos(v) > 0)
-        {
-          signv = 1;
-        }
-        else
-        {
-          signv = -1;
-        }
+        int signu = (std::cos(u) > 0) ? 1 : -1;
+        int signv = (std::cos(v) > 0) ? 1 : -1;
 
         p1[0] = m_Scale[0] * signu *
                   (std::pow(static_cast<float>(itk::Math::abs(std::cos(u))), static_cast<float>(m_Squareness1)))*signv *
                   (std::pow(static_cast<float>(itk::Math::abs(std::cos(v))), static_cast<float>(m_Squareness2))) +
                 m_Center[0];
 
-        if (std::sin(v) > 0)
-        {
-          signv = 1;
-        }
-        else
-        {
-          signv = -1;
-        }
+        signv = (std::sin(v) > 0) ? 1 : -1;
 
         p1[1] = m_Scale[1] * signu *
                   (std::pow(static_cast<float>(itk::Math::abs(std::cos(u))), static_cast<float>(m_Squareness1)))*signv *
                   (std::pow(static_cast<float>(itk::Math::abs(std::sin(v))), static_cast<float>(m_Squareness2))) +
                 m_Center[1];
 
-        if (std::sin(u) > 0)
-        {
-          signu = 1;
-        }
-        else
-        {
-          signu = -1;
-        }
-
+        signu = (std::sin(u) > 0) ? 1 : -1;
         p1[2] = m_Scale[2] * signu *
                   (std::pow(static_cast<float>(itk::Math::abs(std::sin(u))), static_cast<float>(m_Squareness1))) +
                 m_Center[2];

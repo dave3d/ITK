@@ -51,8 +51,6 @@ itk_fetch_module(
   https://doi.org/10.54294/j8lsa66
   https://doi.org/10.54294/aq68pt"
   MODULE_COMPLIANCE_LEVEL 3
-  #UPSTREAM_GIT_REPOSITORY
-  GIT_REPOSITORY
-  https://github.com/InsightSoftwareConsortium/ITKLabelErodeDilate.git
+  GIT_REPOSITORY https://github.com/InsightSoftwareConsortium/ITKLabelErodeDilate.git
   GIT_TAG 8adf7351a5056f091ca0b061283ebcb2ba9788a4
   )

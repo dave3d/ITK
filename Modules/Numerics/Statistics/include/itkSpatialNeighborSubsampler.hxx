@@ -19,15 +19,13 @@
 #define itkSpatialNeighborSubsampler_hxx
 #include "itkImageRegionConstIteratorWithIndex.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 
 template <typename TSample, typename TRegion>
 SpatialNeighborSubsampler<TSample, TRegion>::SpatialNeighborSubsampler()
+
 {
-  this->m_RadiusInitialized = false;
   this->m_Radius.Fill(1);
 }
 
@@ -198,7 +196,6 @@ SpatialNeighborSubsampler<TSample, TRegion>::PrintSelf(std::ostream & os, Indent
   os << std::endl;
 }
 
-} // end namespace Statistics
-} // end namespace itk
+} // namespace itk::Statistics
 
 #endif

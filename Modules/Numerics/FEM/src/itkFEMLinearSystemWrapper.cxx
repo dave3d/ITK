@@ -18,9 +18,7 @@
 
 #include "itkFEMLinearSystemWrapper.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 
 LinearSystemWrapper::~LinearSystemWrapper() = default;
@@ -169,9 +167,9 @@ LinearSystemWrapper::OptimizeMatrixStorage(unsigned int matrixIndex, unsigned in
   {
     ColumnArray currentRow;
     this->GetColumnsOfNonZeroMatrixElementsInRow(i, currentRow, tempMatrixIndex);
-    for (unsigned int j = 0; j < currentRow.size(); ++j)
+    for (unsigned int rowElement : currentRow)
     {
-      this->SetMatrixValue(i, currentRow[j], this->GetMatrixValue(i, currentRow[j], tempMatrixIndex), matrixIndex);
+      this->SetMatrixValue(i, rowElement, this->GetMatrixValue(i, rowElement, tempMatrixIndex), matrixIndex);
     }
   }
 
@@ -306,7 +304,7 @@ LinearSystemWrapper::FollowConnectionsCuthillMckeeOrdering(unsigned int  rowNumb
   ColumnArray nextRows;
   this->GetColumnsOfNonZeroMatrixElementsInRow(rowNumber, nextRows, matrixIndex);
   /* remove diagonal element */
-  for (ColumnArray::iterator nextRowsIt = nextRows.begin(); nextRowsIt != nextRows.end(); ++nextRowsIt)
+  for (auto nextRowsIt = nextRows.begin(); nextRowsIt != nextRows.end(); ++nextRowsIt)
   {
     if (*nextRowsIt == rowNumber)
     {
@@ -336,18 +334,18 @@ LinearSystemWrapper::FollowConnectionsCuthillMckeeOrdering(unsigned int  rowNumb
   while ((!nextRows.empty()) && (nextRowNumber < this->m_Order))
   {
     bufferArray.clear();
-    for (int i = 0; i < static_cast<int>(nextRows.size()); ++i)
+    for (unsigned int nextRow : nextRows)
     {
-      reverseMapping[nextRows[i]] = nextRowNumber++;
+      reverseMapping[nextRow] = nextRowNumber++;
     }
     /* renumber rows in nextRows */
-    for (int i = 0; i < static_cast<int>(nextRows.size()); ++i)
+    for (unsigned int nextRow : nextRows)
     {
       /* connections of current row */
       ColumnArray rowBuffer;
-      this->GetColumnsOfNonZeroMatrixElementsInRow(nextRows[i], rowBuffer, matrixIndex);
+      this->GetColumnsOfNonZeroMatrixElementsInRow(nextRow, rowBuffer, matrixIndex);
       /* remove previously renumbered rows */
-      for (ColumnArray::iterator rowBufferIt = rowBuffer.begin(); rowBufferIt != rowBuffer.end(); ++rowBufferIt)
+      for (auto rowBufferIt = rowBuffer.begin(); rowBufferIt != rowBuffer.end(); ++rowBufferIt)
       {
         if (reverseMapping[*rowBufferIt] < this->m_Order)
         {
@@ -373,12 +371,12 @@ LinearSystemWrapper::FollowConnectionsCuthillMckeeOrdering(unsigned int  rowNumb
       }
 
       /* add rows in rowBuffer to bufferArray (don't add repeats) */
-      for (int k = 0; k < static_cast<int>(rowBuffer.size()); ++k)
+      for (unsigned int k : rowBuffer)
       {
         unsigned int repeatFlag = 0;
-        for (int j = 0; j < static_cast<int>(bufferArray.size()); ++j)
+        for (unsigned int j : bufferArray)
         {
-          if (bufferArray[j] == rowBuffer[k])
+          if (j == k)
           {
             repeatFlag = 1;
           }
@@ -386,7 +384,7 @@ LinearSystemWrapper::FollowConnectionsCuthillMckeeOrdering(unsigned int  rowNumb
 
         if (!repeatFlag)
         {
-          bufferArray.push_back(rowBuffer[k]);
+          bufferArray.push_back(k);
         }
       }
     }
@@ -436,5 +434,4 @@ FEMExceptionLinearSystemBounds::FEMExceptionLinearSystemBounds(std::string  file
 
 FEMExceptionLinearSystemBounds::~FEMExceptionLinearSystemBounds() noexcept = default;
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem

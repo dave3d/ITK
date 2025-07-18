@@ -24,9 +24,7 @@
 
 #include <vector>
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /** \class ListSample
  *  \brief This class is the native implementation of the a Sample with an STL container
@@ -141,34 +139,28 @@ public:
     ConstIterator(const ListSample * sample) { *this = sample->Begin(); }
 
     ConstIterator(const ConstIterator & iter)
-    {
-      m_Iter = iter.m_Iter;
-      m_InstanceIdentifier = iter.m_InstanceIdentifier;
-    }
+      : m_Iter(iter.m_Iter)
+      , m_InstanceIdentifier(iter.m_InstanceIdentifier)
+    {}
 
     ConstIterator() = delete;
 
     ConstIterator &
-    operator=(const ConstIterator & iter)
-    {
-      m_Iter = iter.m_Iter;
-      m_InstanceIdentifier = iter.m_InstanceIdentifier;
-      return *this;
-    }
+    operator=(const ConstIterator & iter) = default;
 
-    AbsoluteFrequencyType
+    [[nodiscard]] AbsoluteFrequencyType
     GetFrequency() const
     {
       return 1;
     }
 
-    const MeasurementVectorType &
+    [[nodiscard]] const MeasurementVectorType &
     GetMeasurementVector() const
     {
       return static_cast<const MeasurementVectorType &>(*m_Iter);
     }
 
-    InstanceIdentifier
+    [[nodiscard]] InstanceIdentifier
     GetInstanceIdentifier() const
     {
       return m_InstanceIdentifier;
@@ -193,10 +185,9 @@ public:
   protected:
     // This method should only be available to the ListSample class
     ConstIterator(typename InternalDataContainerType::const_iterator iter, InstanceIdentifier iid)
-    {
-      m_Iter = iter;
-      m_InstanceIdentifier = iid;
-    }
+      : m_Iter(iter)
+      , m_InstanceIdentifier(iid)
+    {}
 
   private:
     using InternalIterator = typename InternalDataContainerType::const_iterator;
@@ -286,8 +277,7 @@ protected:
 private:
   InternalDataContainerType m_InternalContainer{};
 };
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkListSample.hxx"

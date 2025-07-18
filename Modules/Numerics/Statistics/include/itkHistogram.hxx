@@ -22,9 +22,7 @@
 #include "itkMath.h"
 #include "itkPrintHelper.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TMeasurement, typename TFrequencyContainer>
 Histogram<TMeasurement, TFrequencyContainer>::Histogram()
@@ -218,12 +216,13 @@ Histogram<TMeasurement, TFrequencyContainer>::Initialize(const SizeType &       
 {
   this->Initialize(size);
 
-  float interval;
+
   for (unsigned int i = 0; i < this->GetMeasurementVectorSize(); ++i)
   {
     if (size[i] > 0)
     {
-      interval = (static_cast<float>(upperBound[i]) - static_cast<float>(lowerBound[i])) / static_cast<float>(size[i]);
+      float interval =
+        (static_cast<float>(upperBound[i]) - static_cast<float>(lowerBound[i])) / static_cast<float>(size[i]);
 
       // Set the min vector and max vector
       for (unsigned int j = 0; j < static_cast<unsigned int>(size[i] - 1); ++j)
@@ -263,7 +262,7 @@ Histogram<TMeasurement, TFrequencyContainer>::GetIndex(const MeasurementVectorTy
       // its ok if we extend the bins to infinity.. not ok if we don't
       if (!m_ClipBinsAtEnds)
       {
-        index[dim] = (IndexValueType)0;
+        index[dim] = static_cast<IndexValueType>(0);
         continue;
       }
 
@@ -593,8 +592,8 @@ Histogram<TMeasurement, TFrequencyContainer>::Quantile(unsigned int dimension, d
   auto   totalFrequency = static_cast<double>(this->GetTotalFrequency());
 
 
-  double f_n;
-  double p_n_prev;
+  double f_n = NAN;
+  double p_n_prev = NAN;
   if (p < 0.5)
   {
     InstanceIdentifier n = 0;
@@ -717,7 +716,6 @@ Histogram<TMeasurement, TFrequencyContainer>::Graft(const DataObject * thatObjec
   }
 }
 
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

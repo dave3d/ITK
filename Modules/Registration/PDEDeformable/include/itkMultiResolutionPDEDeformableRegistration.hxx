@@ -40,6 +40,11 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
                                          TFloatImageType,
                                          TRegistrationType,
                                          TDefaultRegistrationType>::MultiResolutionPDEDeformableRegistration()
+  : m_FixedImagePyramid(FixedImagePyramidType::New())
+  , m_MovingImagePyramid(MovingImagePyramidType::New())
+  , m_FieldExpander(FieldExpanderType::New())
+  , m_InitialDisplacementField(nullptr)
+  , m_NumberOfLevels(3)
 {
   this->SetNumberOfRequiredInputs(2);
   // Primary input is optional in this filter
@@ -48,18 +53,11 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
   auto registrator = DefaultRegistrationType::New();
   m_RegistrationFilter = registrator.GetPointer();
 
-  m_MovingImagePyramid = MovingImagePyramidType::New();
-  m_FixedImagePyramid = FixedImagePyramidType::New();
-  m_FieldExpander = FieldExpanderType::New();
-  m_InitialDisplacementField = nullptr;
-
-  m_NumberOfLevels = 3;
   m_NumberOfIterations.SetSize(m_NumberOfLevels);
   m_FixedImagePyramid->SetNumberOfLevels(m_NumberOfLevels);
   m_MovingImagePyramid->SetNumberOfLevels(m_NumberOfLevels);
 
-  unsigned int ilevel;
-  for (ilevel = 0; ilevel < m_NumberOfLevels; ++ilevel)
+  for (unsigned int ilevel = 0; ilevel < m_NumberOfLevels; ++ilevel)
   {
     m_NumberOfIterations[ilevel] = 10;
   }
@@ -276,8 +274,8 @@ MultiResolutionPDEDeformableRegistration<TFixedImage,
   os << indent << "CurrentLevel: " << m_CurrentLevel << std::endl;
 
   os << indent << "NumberOfIterations: [";
-  unsigned int ilevel;
-  for (ilevel = 0; ilevel < m_NumberOfLevels - 1; ++ilevel)
+  unsigned int ilevel = 0;
+  for (; ilevel < m_NumberOfLevels - 1; ++ilevel)
   {
     os << m_NumberOfIterations[ilevel] << ", ";
   }

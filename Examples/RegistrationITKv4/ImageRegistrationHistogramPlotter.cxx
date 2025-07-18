@@ -237,7 +237,7 @@ public:
     this->m_Metric = metric;
   }
 
-  MetricPointer
+  [[nodiscard]] MetricPointer
   GetMetric() const
   {
     return this->m_Metric;
@@ -389,7 +389,7 @@ public:
   itkSimpleNewMacro(Self);
 
 protected:
-  CommandIterationUpdate() { m_WriteHistogramsAfterEveryIteration = false; }
+  CommandIterationUpdate() = default;
 
 public:
   using OptimizerType = itk::RegularStepGradientDescentOptimizer;
@@ -453,7 +453,7 @@ public:
   HistogramWriter m_JointHistogramWriter;
 
 private:
-  bool        m_WriteHistogramsAfterEveryIteration;
+  bool        m_WriteHistogramsAfterEveryIteration{ false };
   std::string m_InitialHistogramFile;
 };
 

@@ -1,17 +1,19 @@
-set(DOCUMENTATION
-    "This module contains modules to identify and modify connected
+set(
+  DOCUMENTATION
+  "This module contains modules to identify and modify connected
 components. These algorithms are commonly applied to binary or label map
 images. See also \\\\ref ITKClassifiers, \\\\ref ITKLabelMap, and
-\\\\ref ITKBinaryMathematicalMorphology.")
+\\\\ref ITKBinaryMathematicalMorphology."
+)
 
 itk_module(
   ITKConnectedComponents
   DEPENDS
-  ITKImageIntensity
-  ITKThresholding
-  ITKImageGrid
-  ITKImageLabel
+    ITKImageIntensity
+    ITKThresholding
+    ITKImageGrid
+    ITKImageLabel
   TEST_DEPENDS
-  ITKTestKernel
-  DESCRIPTION
-  "${DOCUMENTATION}")
+    ITKTestKernel
+  DESCRIPTION "${DOCUMENTATION}"
+)

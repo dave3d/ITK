@@ -43,7 +43,9 @@ namespace itk
 class PNGFileWrapper
 {
 public:
-  PNGFileWrapper(const char * const fname, const char * const openMode) { m_FilePointer = fopen(fname, openMode); }
+  PNGFileWrapper(const char * const fname, const char * const openMode)
+    : m_FilePointer(fopen(fname, openMode))
+  {}
 
   virtual ~PNGFileWrapper()
   {
@@ -170,13 +172,13 @@ PNGImageIO::Read(void * buffer)
 
   png_read_info(png_ptr, info_ptr);
 
-  png_uint_32 width;
-  png_uint_32 height;
-  int         bitDepth;
-  int         colorType;
-  int         interlaceType;
-  int         compression_type;
-  int         filter_method;
+  png_uint_32 width = 0;
+  png_uint_32 height = 0;
+  int         bitDepth = 0;
+  int         colorType = 0;
+  int         interlaceType = 0;
+  int         compression_type = 0;
+  int         filter_method = 0;
   png_get_IHDR(
     png_ptr, info_ptr, &width, &height, &bitDepth, &colorType, &interlaceType, &compression_type, &filter_method);
 
@@ -224,7 +226,7 @@ PNGImageIO::Read(void * buffer)
 #else
   if (png_get_valid(png_ptr, info_ptr, PNG_INFO_sBIT))
   {
-    png_color_8p bits;
+    png_color_8p bits = nullptr;
     png_get_sBIT(png_ptr, info_ptr, &bits);
     png_set_shift(png_ptr, bits);
   }
@@ -365,13 +367,13 @@ PNGImageIO::ReadImageInformation()
 
   png_read_info(png_ptr, info_ptr);
 
-  png_uint_32 width;
-  png_uint_32 height;
-  int         bitDepth;
-  int         colorType;
-  int         interlaceType;
-  int         compression_type;
-  int         filter_method;
+  png_uint_32 width = 0;
+  png_uint_32 height = 0;
+  int         bitDepth = 0;
+  int         colorType = 0;
+  int         interlaceType = 0;
+  int         compression_type = 0;
+  int         filter_method = 0;
   png_get_IHDR(
     png_ptr, info_ptr, &width, &height, &bitDepth, &colorType, &interlaceType, &compression_type, &filter_method);
 
@@ -389,8 +391,8 @@ PNGImageIO::ReadImageInformation()
 
       m_IsReadAsScalarPlusPalette = true;
 
-      png_colorp palette;
-      int        num_entry;
+      png_colorp palette = nullptr;
+      int        num_entry = 0;
       png_get_PLTE(png_ptr, info_ptr, &palette, &num_entry);
 
       if (num_entry < 0)
@@ -525,7 +527,7 @@ PNGImageIO::WriteSlice(const std::string & fileName, const void * const buffer)
     throw excp;
   }
 
-  volatile int bitDepth;
+  volatile int bitDepth = 0;
   switch (this->GetComponentType())
   {
     case IOComponentEnum::UCHAR:
@@ -572,7 +574,7 @@ PNGImageIO::WriteSlice(const std::string & fileName, const void * const buffer)
                                                             << "Reason: " << itksys::SystemTools::GetLastSystemError());
   }
 
-  int                colorType;
+  int                colorType = 0;
   const unsigned int numComp = this->GetNumberOfComponents();
   switch (numComp)
   {
@@ -682,7 +684,7 @@ PNGImageIO::WriteSlice(const std::string & fileName, const void * const buffer)
 
   {
     const int                      rowInc = width * numComp * bitDepth / 8;
-    const volatile unsigned char * outPtr = ((const unsigned char *)buffer);
+    const volatile unsigned char * outPtr = (static_cast<const unsigned char *>(buffer));
     for (unsigned int ui = 0; ui < height; ++ui)
     {
       row_pointers[ui] = const_cast<png_byte *>(outPtr);

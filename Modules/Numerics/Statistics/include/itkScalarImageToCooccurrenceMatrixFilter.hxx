@@ -22,13 +22,15 @@
 #include "itkConstNeighborhoodIterator.h"
 #include "itkMath.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TImageType, typename THistogramFrequencyContainer, typename TMaskImageType>
 ScalarImageToCooccurrenceMatrixFilter<TImageType, THistogramFrequencyContainer, TMaskImageType>::
   ScalarImageToCooccurrenceMatrixFilter()
+  : m_Min(NumericTraits<PixelType>::NonpositiveMin())
+  , m_Max(NumericTraits<PixelType>::max())
+  , m_NumberOfBinsPerAxis(DefaultBinsPerAxis)
+  , m_InsidePixelValue(NumericTraits<PixelType>::OneValue())
 {
   this->SetNumberOfRequiredInputs(1);
   this->SetNumberOfRequiredOutputs(1);
@@ -37,26 +39,14 @@ ScalarImageToCooccurrenceMatrixFilter<TImageType, THistogramFrequencyContainer, 
 
   // constant for a cooccurrence matrix.
   constexpr unsigned int measurementVectorSize = 2;
-
-  auto * output = const_cast<HistogramType *>(this->GetOutput());
+  auto *                 output = const_cast<HistogramType *>(this->GetOutput());
 
   output->SetMeasurementVectorSize(measurementVectorSize);
-
   // initialize parameters
   this->m_LowerBound.SetSize(measurementVectorSize);
   this->m_UpperBound.SetSize(measurementVectorSize);
-
   this->m_LowerBound.Fill(NumericTraits<PixelType>::NonpositiveMin());
   this->m_UpperBound.Fill(NumericTraits<PixelType>::max() + 1);
-
-  this->m_Min = NumericTraits<PixelType>::NonpositiveMin();
-  this->m_Max = NumericTraits<PixelType>::max();
-
-  // mask inside pixel value
-  this->m_InsidePixelValue = NumericTraits<PixelType>::OneValue();
-
-  this->m_NumberOfBinsPerAxis = DefaultBinsPerAxis;
-  this->m_Normalize = false;
 }
 
 template <typename TImageType, typename THistogramFrequencyContainer, typename TMaskImageType>
@@ -212,7 +202,7 @@ ScalarImageToCooccurrenceMatrixFilter<TImageType, THistogramFrequencyContainer, 
     typename HistogramType::IndexType    index;
     for (offsets = m_Offsets->Begin(); offsets != m_Offsets->End(); ++offsets)
     {
-      bool            pixelInBounds;
+      bool            pixelInBounds = false;
       const PixelType pixelIntensity = neighborIt.GetPixel(offsets.Value(), pixelInBounds);
 
       if (!pixelInBounds)
@@ -288,7 +278,7 @@ ScalarImageToCooccurrenceMatrixFilter<TImageType, THistogramFrequencyContainer, 
         continue; // Go to the next loop if we're not in the mask
       }
 
-      bool            pixelInBounds;
+      bool            pixelInBounds = false;
       const PixelType pixelIntensity = neighborIt.GetPixel(offsets.Value(), pixelInBounds);
 
       if (!pixelInBounds)
@@ -363,7 +353,6 @@ ScalarImageToCooccurrenceMatrixFilter<TImageType, THistogramFrequencyContainer, 
   os << indent << "Normalize: " << this->GetNormalize() << std::endl;
   os << indent << "InsidePixelValue: " << this->GetInsidePixelValue() << std::endl;
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

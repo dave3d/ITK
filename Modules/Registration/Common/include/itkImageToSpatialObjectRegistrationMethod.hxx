@@ -24,18 +24,16 @@ namespace itk
 
 template <typename TFixedImage, typename TMovingSpatialObject>
 ImageToSpatialObjectRegistrationMethod<TFixedImage, TMovingSpatialObject>::ImageToSpatialObjectRegistrationMethod()
+  : m_InitialTransformParameters(ParametersType(1))
+  , m_LastTransformParameters(ParametersType(1))
+  , m_Metric(nullptr)
+  , m_Optimizer(nullptr)
+  , m_MovingSpatialObject(nullptr)
+  , m_FixedImage(nullptr)
+  , m_Transform(nullptr)
+  , m_Interpolator(nullptr)
 {
   this->SetNumberOfRequiredOutputs(1); // for the Transform
-
-  m_FixedImage = nullptr;          // has to be provided by the user
-  m_MovingSpatialObject = nullptr; // has to be provided by the user
-  m_Transform = nullptr;           // has to be provided by the user
-  m_Interpolator = nullptr;        // has to be provided by the user
-  m_Metric = nullptr;              // has to be provided by the user
-  m_Optimizer = nullptr;           // has to be provided by the user
-
-  m_InitialTransformParameters = ParametersType(1);
-  m_LastTransformParameters = ParametersType(1);
 
   m_InitialTransformParameters.Fill(0.0f);
   m_LastTransformParameters.Fill(0.0f);
@@ -173,44 +171,43 @@ ModifiedTimeType
 ImageToSpatialObjectRegistrationMethod<TFixedImage, TMovingSpatialObject>::GetMTime() const
 {
   ModifiedTimeType mtime = Superclass::GetMTime();
-  ModifiedTimeType m;
 
   // Some of the following should be removed once ivars are put in the
   // input and output lists
 
   if (m_Transform)
   {
-    m = m_Transform->GetMTime();
+    ModifiedTimeType m = m_Transform->GetMTime();
     mtime = (m > mtime ? m : mtime);
   }
 
   if (m_Interpolator)
   {
-    m = m_Interpolator->GetMTime();
+    ModifiedTimeType m = m_Interpolator->GetMTime();
     mtime = (m > mtime ? m : mtime);
   }
 
   if (m_Metric)
   {
-    m = m_Metric->GetMTime();
+    ModifiedTimeType m = m_Metric->GetMTime();
     mtime = (m > mtime ? m : mtime);
   }
 
   if (m_Optimizer)
   {
-    m = m_Optimizer->GetMTime();
+    ModifiedTimeType m = m_Optimizer->GetMTime();
     mtime = (m > mtime ? m : mtime);
   }
 
   if (m_FixedImage)
   {
-    m = m_FixedImage->GetMTime();
+    ModifiedTimeType m = m_FixedImage->GetMTime();
     mtime = (m > mtime ? m : mtime);
   }
 
   if (m_MovingSpatialObject)
   {
-    m = m_MovingSpatialObject->GetMTime();
+    ModifiedTimeType m = m_MovingSpatialObject->GetMTime();
     mtime = (m > mtime ? m : mtime);
   }
 

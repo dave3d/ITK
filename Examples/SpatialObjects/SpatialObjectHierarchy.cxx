@@ -104,13 +104,11 @@ main(int, char *[])
   std::cout << "object1 has " << childrenList->size() << " child"
             << std::endl;
 
-  SpatialObjectType::ChildrenListType::const_iterator it =
-    childrenList->begin();
-  while (it != childrenList->end())
+
+  for (auto & currentChild : *childrenList)
   {
     std::cout << "Name of the child of the object 1: ";
-    std::cout << (*it)->GetProperty().GetName() << std::endl;
-    ++it;
+    std::cout << currentChild->GetProperty().GetName() << std::endl;
   }
   // Software Guide : EndCodeSnippet
 

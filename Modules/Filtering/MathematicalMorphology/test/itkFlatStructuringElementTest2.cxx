@@ -53,8 +53,8 @@ GetImage(const itk::FlatStructuringElement<VDimension> & flatElement)
   image->Allocate();
 
   ImageRegionIterator<ImageType> img_it(image, region);
-  ConstIterator                  kernel_it;
-  for (img_it.GoToBegin(), kernel_it = flatElement.Begin(); !img_it.IsAtEnd(); ++img_it, ++kernel_it)
+  ConstIterator                  kernel_it = flatElement.Begin();
+  for (img_it.GoToBegin(); !img_it.IsAtEnd(); ++img_it, ++kernel_it)
   {
     if (*kernel_it)
     {
@@ -66,7 +66,7 @@ GetImage(const itk::FlatStructuringElement<VDimension> & flatElement)
     }
   }
   return image;
-};
+}
 
 /** Test. Compare the result of GetImage() with the original input image. */
 int

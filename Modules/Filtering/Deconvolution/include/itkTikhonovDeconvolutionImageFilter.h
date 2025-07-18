@@ -126,10 +126,7 @@ class ITK_TEMPLATE_EXPORT TikhonovDeconvolutionFunctor
 public:
   TikhonovDeconvolutionFunctor() = default;
   ~TikhonovDeconvolutionFunctor() = default;
-  TikhonovDeconvolutionFunctor(const TikhonovDeconvolutionFunctor & f)
-    : m_RegularizationConstant(f.m_RegularizationConstant)
-    , m_KernelZeroMagnitudeThreshold(f.m_KernelZeroMagnitudeThreshold)
-  {}
+  TikhonovDeconvolutionFunctor(const TikhonovDeconvolutionFunctor & f) = default;
 
   bool
   operator==(const TikhonovDeconvolutionFunctor &) const
@@ -161,7 +158,7 @@ public:
   {
     m_RegularizationConstant = constant;
   }
-  double
+  [[nodiscard]] double
   GetRegularizationConstant() const
   {
     return m_RegularizationConstant;
@@ -175,7 +172,7 @@ public:
   {
     m_KernelZeroMagnitudeThreshold = mu;
   }
-  double
+  [[nodiscard]] double
   GetKernelZeroMagnitudeThreshold() const
   {
     return m_KernelZeroMagnitudeThreshold;

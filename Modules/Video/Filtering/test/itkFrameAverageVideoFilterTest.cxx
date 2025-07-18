@@ -38,9 +38,8 @@ using SizeValueType = itk::SizeValueType;
 /**
  * Helper function
  */
-namespace itk
-{
-namespace FrameAverageVideoFilterTest
+
+namespace itk::FrameAverageVideoFilterTest
 {
 
 /**
@@ -73,8 +72,7 @@ CreateInputFrame(InputPixelType val)
   return out;
 }
 
-} // end namespace FrameAverageVideoFilterTest
-} // end namespace itk
+} // namespace itk::FrameAverageVideoFilterTest
 
 
 /**
@@ -155,7 +153,7 @@ itkFrameAverageVideoFilterTest(int argc, char * argv[])
     filter->Update();
 
     // Check the results
-    const OutputPixelType expectedVal = (OutputPixelType)(i + (i + 1)) / 2.0;
+    const OutputPixelType expectedVal = static_cast<OutputPixelType>(i + (i + 1)) / 2.0;
     const OutputPixelType actualVal = filter->GetOutput()->GetFrame(i)->GetPixel(checkPx);
     constexpr double      eps = 0.00001;
     if (expectedVal < actualVal - eps || expectedVal > actualVal + eps)
@@ -198,7 +196,7 @@ itkFrameAverageVideoFilterTest(int argc, char * argv[])
   filter->Update();
   for (unsigned int i = outputStart; i < outputStart + outputDuration; ++i)
   {
-    const OutputPixelType expectedVal = (OutputPixelType)(i + (i + 1) + (i + 2)) / 3.0;
+    const OutputPixelType expectedVal = static_cast<OutputPixelType>(i + (i + 1) + (i + 2)) / 3.0;
     const OutputPixelType actualVal = filter->GetOutput()->GetFrame(i)->GetPixel(checkPx);
     constexpr double      eps = 0.00001;
     if (expectedVal < actualVal - eps || expectedVal > actualVal + eps)

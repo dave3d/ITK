@@ -31,18 +31,19 @@ namespace itk
 {
 template <typename TInputImage, typename TOutputImage>
 BilateralImageFilter<TInputImage, TOutputImage>::BilateralImageFilter()
+  : m_RangeSigma(50.0)
+  , m_DomainMu(2.5)
+  , m_RangeMu(4.0)
+  , m_FilterDimensionality(ImageDimension)
+  , m_AutomaticKernelSize(true)
+  , m_NumberOfRangeGaussianSamples(100)
+
 {
   this->m_Radius.Fill(1);
-  this->m_AutomaticKernelSize = true;
   this->m_DomainSigma.Fill(4.0);
-  this->m_RangeSigma = 50.0;
-  this->m_FilterDimensionality = ImageDimension;
-  this->m_NumberOfRangeGaussianSamples = 100;
-  this->m_DynamicRange = 0.0;
-  this->m_DynamicRangeUsed = 0.0;
-  this->m_DomainMu = 2.5; // keep small to keep kernels small
-  this->m_RangeMu = 4.0;  // can be bigger then DomainMu since we only
-                          // index into a single table
+  // keep small to keep kernels small
+  // can be bigger then DomainMu since we only
+  // index into a single table
   this->DynamicMultiThreadingOn();
   this->ThreaderUpdateProgressOff();
 }
@@ -72,11 +73,10 @@ BilateralImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 
   // Pad the image by 2.5*sigma in all directions
   typename TInputImage::SizeType radius;
-  unsigned int                   i;
 
   if (m_AutomaticKernelSize)
   {
-    for (i = 0; i < ImageDimension; ++i)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       radius[i] = (typename TInputImage::SizeType::SizeValueType)std::ceil(m_DomainMu * m_DomainSigma[i] /
                                                                            this->GetInput()->GetSpacing()[i]);
@@ -84,7 +84,7 @@ BilateralImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
   }
   else
   {
-    for (i = 0; i < ImageDimension; ++i)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       radius[i] = m_Radius[i];
     }
@@ -126,7 +126,6 @@ BilateralImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
   //
   // Gaussian image size will be (2*std::ceil(2.5*sigma)+1) x
   // (2*std::ceil(2.5*sigma)+1)
-  unsigned int i;
 
   typename InputImageType::SizeType radius;
   typename InputImageType::SizeType domainKernelSize;
@@ -138,7 +137,7 @@ BilateralImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 
   if (m_AutomaticKernelSize)
   {
-    for (i = 0; i < ImageDimension; ++i)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       radius[i] =
         (typename TInputImage::SizeType::SizeValueType)std::ceil(m_DomainMu * m_DomainSigma[i] / inputSpacing[i]);
@@ -147,7 +146,7 @@ BilateralImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
   }
   else
   {
-    for (i = 0; i < ImageDimension; ++i)
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
       radius[i] = m_Radius[i];
       domainKernelSize[i] = 2 * radius[i] + 1;
@@ -165,7 +164,7 @@ BilateralImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
   gaussianImage->SetScale(1.0);
   gaussianImage->SetNormalized(true);
 
-  for (i = 0; i < ImageDimension; ++i)
+  for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     mean[i] = inputSpacing[i] * radius[i] + inputOrigin[i]; // center pixel pos
     sigma[i] = m_DomainSigma[i];
@@ -211,20 +210,22 @@ BilateralImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
   const double rangeGaussianDenom = m_RangeSigma * std::sqrt(2.0 * itk::Math::pi);
 
   // Maximum delta for the dynamic range
-  double tableDelta;
-  double v;
+
 
   m_DynamicRange = (static_cast<double>(statistics->GetMaximum()) - static_cast<double>(statistics->GetMinimum()));
 
   m_DynamicRangeUsed = m_RangeMu * m_RangeSigma;
 
-  tableDelta = m_DynamicRangeUsed / static_cast<double>(m_NumberOfRangeGaussianSamples);
+  double tableDelta = m_DynamicRangeUsed / static_cast<double>(m_NumberOfRangeGaussianSamples);
 
   // Finally, build the table
   m_RangeGaussianTable.resize(m_NumberOfRangeGaussianSamples);
-  for (i = 0, v = 0.0; i < m_NumberOfRangeGaussianSamples; ++i, v += tableDelta)
   {
-    m_RangeGaussianTable[i] = std::exp(-0.5 * v * v / rangeVariance) / rangeGaussianDenom;
+    double v = 0.0;
+    for (unsigned int i = 0; i < m_NumberOfRangeGaussianSamples; ++i, v += tableDelta)
+    {
+      m_RangeGaussianTable[i] = std::exp(-0.5 * v * v / rangeVariance) / rangeGaussianDenom;
+    }
   }
 }
 

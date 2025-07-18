@@ -21,9 +21,7 @@
 #include <vector>
 #include "itkNumericTraits.h"
 
-namespace itk
-{
-namespace Functor
+namespace itk::Functor
 {
 /**
  * \class LabelToRGBFunctor
@@ -53,6 +51,7 @@ public:
   using Self = LabelToRGBFunctor;
 
   LabelToRGBFunctor()
+    : m_BackgroundValue(TLabel{})
   {
     using ValueType = typename TRGBPixel::ValueType;
 
@@ -86,7 +85,6 @@ public:
     // Inside LabelToRGBImageFilter, the values are always initialized
     NumericTraits<TRGBPixel>::SetLength(m_BackgroundColor, 3);
     m_BackgroundColor.Fill(ValueType{});
-    m_BackgroundValue = TLabel{};
   }
 
   inline TRGBPixel
@@ -127,7 +125,7 @@ public:
   }
 
   // Get number of colors in the LUT
-  unsigned int
+  [[nodiscard]] unsigned int
   GetNumberOfColors() const
   {
     return static_cast<unsigned int>(m_Colors.size());
@@ -162,7 +160,6 @@ public:
 
   TLabel m_BackgroundValue;
 };
-} // end namespace Functor
-} // end namespace itk
+} // namespace itk::Functor
 
 #endif

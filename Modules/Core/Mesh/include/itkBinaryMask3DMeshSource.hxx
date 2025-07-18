@@ -105,13 +105,10 @@ template <typename TInputImage, typename TOutputMesh>
 void
 BinaryMask3DMeshSource<TInputImage, TOutputMesh>::XFlip(unsigned char * x)
 {
-  unsigned char nodeindex;
-
   int i = 0;
-
   while (i < 3)
   {
-    nodeindex = x[i];
+    const auto nodeindex = x[i];
     switch (static_cast<int>(nodeindex))
     {
       case 1:
@@ -157,13 +154,10 @@ template <typename TInputImage, typename TOutputMesh>
 void
 BinaryMask3DMeshSource<TInputImage, TOutputMesh>::YFlip(unsigned char * x)
 {
-  unsigned char nodeindex;
-
   int i = 0;
-
   while (i < 3)
   {
-    nodeindex = x[i];
+    const auto nodeindex = x[i];
     switch (static_cast<int>(nodeindex))
     {
       case 1:
@@ -209,13 +203,10 @@ template <typename TInputImage, typename TOutputMesh>
 void
 BinaryMask3DMeshSource<TInputImage, TOutputMesh>::ZFlip(unsigned char * x)
 {
-  unsigned char nodeindex;
-
   int i = 0;
-
   while (i < 3)
   {
-    nodeindex = x[i];
+    const auto nodeindex = x[i];
     switch (static_cast<int>(nodeindex))
     {
       case 1:
@@ -261,13 +252,10 @@ template <typename TInputImage, typename TOutputMesh>
 void
 BinaryMask3DMeshSource<TInputImage, TOutputMesh>::XRotation(unsigned char * x)
 {
-  unsigned char nodeindex;
-
   int i = 0;
-
   while (i < 3)
   {
-    nodeindex = x[i];
+    const auto nodeindex = x[i];
     switch (static_cast<int>(nodeindex))
     {
       case 1:
@@ -317,13 +305,10 @@ template <typename TInputImage, typename TOutputMesh>
 void
 BinaryMask3DMeshSource<TInputImage, TOutputMesh>::YRotation(unsigned char * x)
 {
-  unsigned char nodeindex;
-
   int i = 0;
-
   while (i < 3)
   {
-    nodeindex = x[i];
+    const auto nodeindex = x[i];
     switch (static_cast<int>(nodeindex))
     {
       case 1:
@@ -373,13 +358,10 @@ template <typename TInputImage, typename TOutputMesh>
 void
 BinaryMask3DMeshSource<TInputImage, TOutputMesh>::ZRotation(unsigned char * x)
 {
-  unsigned char nodeindex;
-
   int i = 0;
-
   while (i < 3)
   {
-    nodeindex = x[i];
+    const auto nodeindex = x[i];
     switch (static_cast<int>(nodeindex))
     {
       case 1:
@@ -1057,7 +1039,6 @@ BinaryMask3DMeshSource<TInputImage, TOutputMesh>::CreateMesh()
       ++i;
     }
   }
-  unsigned char vertexindex;
 
   if (m_CurrentRow)
   {
@@ -1067,10 +1048,10 @@ BinaryMask3DMeshSource<TInputImage, TOutputMesh>::CreateMesh()
     }
     free(m_CurrentRow);
   }
-  m_CurrentRow = (IdentifierType **)malloc(200 * sizeof(IdentifierType *));
+  m_CurrentRow = static_cast<IdentifierType **>(malloc(200 * sizeof(IdentifierType *)));
   for (int i = 0; i < 200; ++i)
   {
-    m_CurrentRow[i] = (IdentifierType *)malloc(2 * sizeof(IdentifierType));
+    m_CurrentRow[i] = static_cast<IdentifierType *>(malloc(2 * sizeof(IdentifierType)));
   }
 
   if (m_CurrentFrame)
@@ -1082,18 +1063,18 @@ BinaryMask3DMeshSource<TInputImage, TOutputMesh>::CreateMesh()
     free(m_CurrentFrame);
   }
 
-  m_CurrentFrame = (IdentifierType **)malloc(2000 * sizeof(IdentifierType *));
+  m_CurrentFrame = static_cast<IdentifierType **>(malloc(2000 * sizeof(IdentifierType *)));
 
   for (int i = 0; i < 2000; ++i)
   {
-    m_CurrentFrame[i] = (IdentifierType *)malloc(2 * sizeof(IdentifierType));
+    m_CurrentFrame[i] = static_cast<IdentifierType *>(malloc(2 * sizeof(IdentifierType)));
   }
 
   {
     int i = 0;
     while (!it4.IsAtEnd())
     {
-      vertexindex = 0;
+      unsigned char vertexindex = 0;
 
       if (Math::ExactlyEquals(it1.Value(), m_ObjectValue))
       {
@@ -1185,20 +1166,17 @@ template <typename TInputImage, typename TOutputMesh>
 void
 BinaryMask3DMeshSource<TInputImage, TOutputMesh>::AddCells(unsigned char celltype, unsigned char celltran, int index)
 {
-  IdentifierType ** currentrowtmp;
-  IdentifierType ** currentframetmp;
-
-  currentrowtmp = (IdentifierType **)malloc(4 * sizeof(IdentifierType *));
+  auto ** currentrowtmp = static_cast<IdentifierType **>(malloc(4 * sizeof(IdentifierType *)));
   for (int i = 0; i < 4; ++i)
   {
-    currentrowtmp[i] = (IdentifierType *)malloc(2 * sizeof(IdentifierType));
+    currentrowtmp[i] = static_cast<IdentifierType *>(malloc(2 * sizeof(IdentifierType)));
     currentrowtmp[i][0] = 0;
     currentrowtmp[i][1] = 0;
   }
-  currentframetmp = (IdentifierType **)malloc(4 * sizeof(IdentifierType *));
+  auto ** currentframetmp = static_cast<IdentifierType **>(malloc(4 * sizeof(IdentifierType *)));
   for (int i = 0; i < 4; ++i)
   {
-    currentframetmp[i] = (IdentifierType *)malloc(2 * sizeof(IdentifierType));
+    currentframetmp[i] = static_cast<IdentifierType *>(malloc(2 * sizeof(IdentifierType)));
     currentframetmp[i][0] = 0;
     currentframetmp[i][1] = 0;
   }
@@ -1258,7 +1236,7 @@ BinaryMask3DMeshSource<TInputImage, TOutputMesh>::AddCells(unsigned char celltyp
       {
         if (i > m_LastRowNum - 1)
         {
-          m_LastRow[i] = (IdentifierType *)malloc(2 * sizeof(IdentifierType));
+          m_LastRow[i] = static_cast<IdentifierType *>(malloc(2 * sizeof(IdentifierType)));
         }
         m_LastRow[i][0] = m_CurrentRow[i][0];
         m_LastRow[i][1] = m_CurrentRow[i][1];
@@ -1307,7 +1285,7 @@ BinaryMask3DMeshSource<TInputImage, TOutputMesh>::AddCells(unsigned char celltyp
       {
         if (i > m_LastFrameNum - 1)
         {
-          m_LastFrame[i] = (IdentifierType *)malloc(2 * sizeof(IdentifierType));
+          m_LastFrame[i] = static_cast<IdentifierType *>(malloc(2 * sizeof(IdentifierType)));
         }
         m_LastFrame[i][0] = m_CurrentFrame[i][0];
         m_LastFrame[i][1] = m_CurrentFrame[i][1];
@@ -1373,9 +1351,9 @@ BinaryMask3DMeshSource<TInputImage, TOutputMesh>::AddCells(unsigned char celltyp
 
   typename TriCell::CellAutoPointer        insertCell;
   typename OutputMeshType::PointIdentifier tripoints[3];
-  auto *                                   tp = (unsigned char *)malloc(3 * sizeof(unsigned char));
+  auto *                                   tp = static_cast<unsigned char *>(malloc(3 * sizeof(unsigned char)));
 
-  auto * tpl = (IdentifierType *)malloc(3 * sizeof(IdentifierType));
+  auto * tpl = static_cast<IdentifierType *>(malloc(3 * sizeof(IdentifierType)));
 
   switch (static_cast<int>(celltype))
   {
@@ -2310,7 +2288,7 @@ BinaryMask3DMeshSource<TInputImage, TOutputMesh>::AddCells(unsigned char celltyp
           m_CurrentRow = (IdentifierType **)realloc(m_CurrentRow, sizeof(IdentifierType *) * m_CurrentRowNum);
           for (int j = m_CurrentRowIndex; j < m_CurrentRowNum; ++j)
           {
-            m_CurrentRow[j] = (IdentifierType *)malloc(sizeof(IdentifierType) * 2);
+            m_CurrentRow[j] = static_cast<IdentifierType *>(malloc(sizeof(IdentifierType) * 2));
           }
         }
       }
@@ -2325,7 +2303,7 @@ BinaryMask3DMeshSource<TInputImage, TOutputMesh>::AddCells(unsigned char celltyp
           m_CurrentFrame = (IdentifierType **)realloc(m_CurrentFrame, sizeof(IdentifierType *) * m_CurrentFrameNum);
           for (int j = m_CurrentFrameIndex; j < m_CurrentFrameNum; ++j)
           {
-            m_CurrentFrame[j] = (IdentifierType *)malloc(sizeof(IdentifierType) * 2);
+            m_CurrentFrame[j] = static_cast<IdentifierType *>(malloc(sizeof(IdentifierType) * 2));
           }
         }
       }
@@ -2583,12 +2561,10 @@ template <typename TInputImage, typename TOutputMesh>
 IdentifierType
 BinaryMask3DMeshSource<TInputImage, TOutputMesh>::SearchThroughLastRow(int index, int start, int end)
 {
-  int  mid;
   auto lindex = static_cast<IdentifierType>(index);
-
   if ((end - start) > 1)
   {
-    mid = static_cast<int>(std::floor(static_cast<float>((start + end) / 2)));
+    const auto mid = static_cast<int>(std::floor(static_cast<float>((start + end) / 2)));
     if (lindex == m_LastRow[mid][0])
     {
       m_PointFound = 1;
@@ -2624,13 +2600,12 @@ template <typename TInputImage, typename TOutputMesh>
 IdentifierType
 BinaryMask3DMeshSource<TInputImage, TOutputMesh>::SearchThroughLastFrame(int index, int start, int end)
 {
-  int            mid;
   auto           lindex = static_cast<IdentifierType>(index);
   IdentifierType result = 0;
 
   if ((end - start) > 1)
   {
-    mid = static_cast<int>(std::floor(static_cast<float>((start + end) / 2)));
+    const auto mid = static_cast<int>(std::floor(static_cast<float>((start + end) / 2)));
     if (lindex == m_LastFrame[mid][0])
     {
       m_PointFound = 1;

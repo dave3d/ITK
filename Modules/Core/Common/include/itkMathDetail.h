@@ -74,9 +74,8 @@
 
 namespace itk
 {
-namespace Math
-{
-namespace Detail
+
+namespace Math::Detail
 {
 // The functions defined in this namespace are not meant to be used directly
 // and thus do not adhere to the standard backward-compatibility
@@ -503,20 +502,20 @@ union FloatIEEE
   FloatIEEE(IntType i)
     : asInt(i)
   {}
-  bool
+  [[nodiscard]] bool
   Sign() const
   {
     return (asUInt >> (sizeof(asUInt) * 8 - 1)) != 0;
   }
-  IntType
+  [[nodiscard]] IntType
   AsULP() const
   {
     return this->Sign() ? IntType(~(~UIntType(0) >> 1) - asUInt) : asInt;
   }
 };
 
-} // end namespace Detail
-} // end namespace Math
+} // namespace Math::Detail
+// end namespace Math
 
 // move to itkConceptChecking?
 namespace Concept

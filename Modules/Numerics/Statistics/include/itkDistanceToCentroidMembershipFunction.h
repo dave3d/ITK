@@ -21,9 +21,7 @@
 #include "itkMembershipFunctionBase.h"
 #include "itkDistanceMetric.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /** \class DistanceToCentroidMembershipFunction
  * \brief DistanceToCentroidMembershipFunction models class membership
@@ -106,14 +104,13 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
   /** Return a copy of the current membership function */
-  typename LightObject::Pointer
+  [[nodiscard]] typename LightObject::Pointer
   InternalClone() const override;
 
 private:
   DistanceMetricPointer m_DistanceMetric{};
 };
-} // end of namespace Statistics
-} // end namespace itk
+} // namespace itk::Statistics
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkDistanceToCentroidMembershipFunction.hxx"

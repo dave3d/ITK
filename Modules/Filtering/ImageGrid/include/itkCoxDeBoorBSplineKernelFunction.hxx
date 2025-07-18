@@ -24,8 +24,8 @@ namespace itk
 {
 template <unsigned int VSplineOrder, typename TRealValueType>
 CoxDeBoorBSplineKernelFunction<VSplineOrder, TRealValueType>::CoxDeBoorBSplineKernelFunction()
+  : m_SplineOrder(VSplineOrder)
 {
-  this->m_SplineOrder = VSplineOrder;
   this->GenerateBSplineShapeFunctions(this->m_SplineOrder + 1);
 }
 
@@ -152,14 +152,10 @@ CoxDeBoorBSplineKernelFunction<VSplineOrder, TRealValueType>::Evaluate(const TRe
 {
   const TRealValueType absValue = itk::Math::abs(u);
 
-  unsigned int which;
+  auto which = static_cast<unsigned int>(absValue);
   if (this->m_SplineOrder % 2 == 0)
   {
     which = static_cast<unsigned int>(absValue + TRealValueType{ 0.5 });
-  }
-  else
-  {
-    which = static_cast<unsigned int>(absValue);
   }
 
   if (which < this->m_BSplineShapeFunctions.rows())
@@ -184,14 +180,10 @@ CoxDeBoorBSplineKernelFunction<VSplineOrder, TRealValueType>::EvaluateNthDerivat
 {
   const TRealValueType absValue = itk::Math::abs(u);
 
-  unsigned int which;
+  auto which = static_cast<unsigned int>(absValue);
   if (this->m_SplineOrder % 2 == 0)
   {
     which = static_cast<unsigned int>(absValue + TRealValueType{ 0.5 });
-  }
-  else
-  {
-    which = static_cast<unsigned int>(absValue);
   }
 
   if (which < this->m_BSplineShapeFunctions.rows())

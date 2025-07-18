@@ -108,22 +108,22 @@ public:
   virtual void
   SetDescription(const char * s);
 
-  virtual const char *
+  [[nodiscard]] virtual const char *
   GetLocation() const;
 
-  virtual const char *
+  [[nodiscard]] virtual const char *
   GetDescription() const;
 
   /** What file did the exception occur in? */
-  virtual const char *
+  [[nodiscard]] virtual const char *
   GetFile() const;
 
   /** What line did the exception occur in? */
-  virtual unsigned int
+  [[nodiscard]] virtual unsigned int
   GetLine() const;
 
   /** Provide std::exception::what() implementation. */
-  const char *
+  [[nodiscard]] const char *
   what() const noexcept override;
 
 private:
@@ -240,7 +240,7 @@ itkDynamicCastInDebugMode(TSource x)
   {
     return nullptr;
   }
-  TTarget rval = dynamic_cast<TTarget>(x);
+  auto rval = dynamic_cast<TTarget>(x);
   if (rval == nullptr)
   {
     itkGenericExceptionMacro("Failed dynamic cast to " << typeid(TTarget).name()

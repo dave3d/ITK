@@ -26,33 +26,23 @@
 #include "itkFEMLoadLandmark.h"
 #include "itkMath.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 
 template <unsigned int VDimension>
 RobustSolver<VDimension>::RobustSolver()
-{
-  this->m_ForceIndex = 0;
-  this->m_LandmarkForceIndex = 1;
-  this->m_ExternalForceIndex = 2;
-  this->m_SolutionIndex = 0;
-  this->m_MeshStiffnessMatrixIndex = 1;
-  this->m_LandmarkStiffnessMatrixIndex = 2;
-  this->m_StiffnessMatrixIndex = 0;
-
-  this->m_OutlierRejectionSteps = 5;
-  this->m_ApproximationSteps = 5;
-
-  this->m_ToleranceToLargestDisplacement = 1.0;
-  this->m_ConjugateGradientPrecision = 1e-3;
-  this->m_FractionErrorRejected = .25;
-
-  this->m_TradeOffImageMeshEnergy = 1.0;
-
-  this->m_UseInterpolationGrid = true;
-}
+  : m_OutlierRejectionSteps(5)
+  , m_ApproximationSteps(5)
+  , m_LandmarkForceIndex(1)
+  , m_ExternalForceIndex(2)
+  , m_MeshStiffnessMatrixIndex(1)
+  , m_LandmarkStiffnessMatrixIndex(2)
+  , m_TradeOffImageMeshEnergy(1.0)
+  , m_ToleranceToLargestDisplacement(1.0)
+  , m_ConjugateGradientPrecision(1e-3)
+  , m_FractionErrorRejected(.25)
+  , m_UseInterpolationGrid(true)
+{}
 
 template <unsigned int VDimension>
 RobustSolver<VDimension>::~RobustSolver() = default;
@@ -487,7 +477,7 @@ RobustSolver<VDimension>::UnselectLandmarks(unsigned int nUnselected)
 
   LoadVectorType & loadVector = container->CastToSTLContainer();
 
-  LoadVectorType::iterator it = loadVector.begin();
+  auto it = loadVector.begin();
   std::advance(it, nUnselected - 1);
   auto nth = it;
 
@@ -521,7 +511,7 @@ RobustSolver<VDimension>::DeleteFromLandmarkBeginning(unsigned int nDeleted)
 
   LoadVectorType & loadVector = container->CastToSTLContainer();
 
-  LoadVectorType::iterator it = loadVector.begin();
+  auto it = loadVector.begin();
   std::advance(it, nDeleted);
   auto nth = it;
   loadVector.erase(loadVector.begin(), nth);
@@ -1060,7 +1050,6 @@ RobustSolver<VDimension>::InitializeInterpolationGrid()
   } // next element
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif

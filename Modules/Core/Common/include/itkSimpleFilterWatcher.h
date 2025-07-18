@@ -141,7 +141,7 @@ public:
   {
     m_Steps = val;
   }
-  int
+  [[nodiscard]] int
   GetSteps() const
   {
     return m_Steps;
@@ -155,7 +155,7 @@ public:
   {
     m_Iterations = val;
   }
-  int
+  [[nodiscard]] int
   GetIterations() const
   {
     return m_Iterations;
@@ -170,7 +170,7 @@ public:
   {
     m_Quiet = val;
   }
-  bool
+  [[nodiscard]] bool
   GetQuiet() const
   {
     return m_Quiet;
@@ -299,8 +299,8 @@ private:
   TimeProbe                   m_TimeProbe{};
   int                         m_Steps{ 0 };
   int                         m_Iterations{ 0 };
-  bool                        m_Quiet{ false };
   bool                        m_TestAbort{ false };
+  bool                        m_Quiet{ false };
   std::string                 m_Comment{};
   itk::ProcessObject::Pointer m_Process{};
   std::mutex                  m_ProgressOutput{};

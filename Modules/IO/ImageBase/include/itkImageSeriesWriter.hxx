@@ -35,9 +35,7 @@ template <typename TInputImage, typename TOutputImage>
 ImageSeriesWriter<TInputImage, TOutputImage>::ImageSeriesWriter()
   : m_ImageIO(nullptr)
   , m_SeriesFormat("%d")
-{
-  m_UseCompression = false;
-}
+{}
 
 //---------------------------------------------------------
 template <typename TInputImage, typename TOutputImage>
@@ -142,7 +140,7 @@ ImageSeriesWriter<TInputImage, TOutputImage>::GenerateNumericFileNames()
   {
     ITK_GCC_PRAGMA_PUSH
     ITK_GCC_SUPPRESS_Wformat_nonliteral
-    snprintf(fileName, IOCommon::ITK_MAXPATHLEN + 1, m_SeriesFormat.c_str(), fileNumber);
+    snprintf(fileName, sizeof(fileName), m_SeriesFormat.c_str(), fileNumber);
     ITK_GCC_PRAGMA_POP
     m_FileNames.emplace_back(fileName);
     fileNumber += this->m_IncrementIndex;

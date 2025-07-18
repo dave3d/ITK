@@ -26,7 +26,16 @@ namespace itk
 {
 template <typename TLevelSet, typename TSpeedImage>
 FastMarchingImageFilter<TLevelSet, TSpeedImage>::FastMarchingImageFilter()
-  : m_TrialHeap()
+  : m_AlivePoints(nullptr)
+  , m_TrialPoints(nullptr)
+  , m_OutsidePoints(nullptr)
+  , m_LabelImage(LabelImageType::New())
+  , m_SpeedConstant(1.0)
+  , m_InverseSpeed(-1.0)
+  , m_ProcessedPoints(nullptr)
+  , m_LargeValue(static_cast<PixelType>(NumericTraits<PixelType>::max() / 2.0))
+  , m_TrialHeap()
+  , m_NormalizationFactor(1.0)
 {
   this->ProcessObject::SetNumberOfRequiredInputs(0);
 
@@ -36,22 +45,7 @@ FastMarchingImageFilter<TLevelSet, TSpeedImage>::FastMarchingImageFilter()
   m_OutputOrigin.Fill(0.0);
   m_OutputSpacing.Fill(1.0);
   m_OutputDirection.SetIdentity();
-  m_OverrideOutputInformation = false;
-
-  m_AlivePoints = nullptr;
-  m_OutsidePoints = nullptr;
-  m_TrialPoints = nullptr;
-  m_ProcessedPoints = nullptr;
-
-  m_SpeedConstant = 1.0;
-  m_InverseSpeed = -1.0;
-  m_LabelImage = LabelImageType::New();
-
-  m_LargeValue = static_cast<PixelType>(NumericTraits<PixelType>::max() / 2.0);
   m_StoppingValue = static_cast<double>(m_LargeValue);
-  m_CollectPoints = false;
-
-  m_NormalizationFactor = 1.0;
 }
 
 template <typename TLevelSet, typename TSpeedImage>
@@ -264,9 +258,7 @@ FastMarchingImageFilter<TLevelSet, TSpeedImage>::GenerateData()
   }
 
   // process points on the heap
-  AxisNodeType node;
-  double       currentValue;
-  double       oldProgress = 0;
+  double oldProgress = 0;
 
   this->UpdateProgress(0.0); // Send first progress event
 
@@ -274,11 +266,11 @@ FastMarchingImageFilter<TLevelSet, TSpeedImage>::GenerateData()
   while (!m_TrialHeap.empty())
   {
     // get the node with the smallest value
-    node = m_TrialHeap.top();
+    AxisNodeType node = m_TrialHeap.top();
     m_TrialHeap.pop();
 
     // does this node contain the current value ?
-    currentValue = static_cast<double>(output->GetPixel(node.GetIndex()));
+    auto currentValue = static_cast<double>(output->GetPixel(node.GetIndex()));
 
     if (Math::ExactlyEquals(node.GetValue(), currentValue))
     {
@@ -435,7 +427,7 @@ FastMarchingImageFilter<TLevelSet, TSpeedImage>::UpdateValue(const IndexType &  
 
   OutputSpacingType spacing = /* this->GetOutput() */ output->GetSpacing();
 
-  double discrim;
+  double discrim = NAN;
 
   for (unsigned int j = 0; j < SetDimension; ++j)
   {

@@ -91,7 +91,7 @@ public:
   virtual void
   SetSpacing(const float * spacing);
 
-  virtual const double *
+  [[nodiscard]] virtual const double *
   GetSpacing() const;
 
   /** The origin of the output image. The origin is the geometric
@@ -104,7 +104,7 @@ public:
   virtual void
   SetOrigin(const float * origin);
 
-  virtual const double *
+  [[nodiscard]] virtual const double *
   GetOrigin() const;
 
   /** Set the size of the swath image.
@@ -130,8 +130,8 @@ public:
 
 protected:
   ExtractOrthogonalSwath2DImageFilter()
+    : m_DefaultPixelValue(ImagePixelType{})
   {
-    m_DefaultPixelValue = ImagePixelType{};
     m_Size[0] = 512;
     m_Size[1] = 16 * 2 + 1; // must be odd
     m_Origin[0] = m_Origin[1] = 0.0;

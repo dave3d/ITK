@@ -31,9 +31,7 @@
 #include <ctime>
 #include <limits>
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /** \class MersenneTwisterRandomVariateGenerator
  * \brief MersenneTwisterRandom random variate generator
@@ -175,7 +173,7 @@ public:
   /** Length of state vector */
   static constexpr IntegerType StateVectorLength = 624;
 
-#ifndef ITK_FUTURE_LEGACY_REMOVE
+#if !defined(ITK_FUTURE_LEGACY_REMOVE) && !defined(ITK_WRAPPING_PARSER)
   /** Sets the seed and initializes the internal state of this generator.
    * \deprecated ITK 6 discourages using this member function. Please use `SetSeed` instead!
    */
@@ -425,7 +423,6 @@ MersenneTwisterRandomVariateGenerator::GetUniformVariate(const double a, const d
 //      - Fixed out-of-range number generation on 64-bit machines
 //      - Improved portability by substituting literal constants for long enum's
 //      - Changed license from GNU LGPL to BSD
-} // end namespace Statistics
-} // end namespace itk
+} // namespace itk::Statistics
 
 #endif

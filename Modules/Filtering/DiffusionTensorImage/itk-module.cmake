@@ -1,15 +1,17 @@
-set(DOCUMENTATION
-    "This module contains classes intended to generate or process
+set(
+  DOCUMENTATION
+  "This module contains classes intended to generate or process
 diffusion tensor images. In particular you will find here the filter that
-computes a tensor image from a set of gradient images.")
+computes a tensor image from a set of gradient images."
+)
 
 itk_module(
   ITKDiffusionTensorImage
   ENABLE_SHARED
   COMPILE_DEPENDS
-  ITKSpatialObjects
+    ITKSpatialObjects
   TEST_DEPENDS
-  ITKTestKernel
-  ITKImageFeature
-  DESCRIPTION
-  "${DOCUMENTATION}")
+    ITKTestKernel
+    ITKImageFeature
+  DESCRIPTION "${DOCUMENTATION}"
+)

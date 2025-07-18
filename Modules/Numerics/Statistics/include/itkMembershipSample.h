@@ -21,9 +21,7 @@
 #include <unordered_map>
 #include "itkSubsample.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /**
  * \class MembershipSample
@@ -162,20 +160,13 @@ public:
     ConstIterator(const Self * sample) { *this = sample->Begin(); }
 
     ConstIterator(const ConstIterator & iter)
-    {
-      m_Sample = iter.m_Sample;
-      m_MembershipSample = iter.m_MembershipSample;
-      m_InstanceIdentifier = iter.m_InstanceIdentifier;
-    }
+      : m_Sample(iter.m_Sample)
+      , m_MembershipSample(iter.m_MembershipSample)
+      , m_InstanceIdentifier(iter.m_InstanceIdentifier)
+    {}
 
     ConstIterator &
-    operator=(const ConstIterator & iter)
-    {
-      m_Sample = iter.m_Sample;
-      m_MembershipSample = iter.m_MembershipSample;
-      m_InstanceIdentifier = iter.m_InstanceIdentifier;
-      return *this;
-    }
+    operator=(const ConstIterator & iter) = default;
 
     bool
     operator==(const ConstIterator & it) const
@@ -192,25 +183,25 @@ public:
       return *this;
     }
 
-    AbsoluteFrequencyType
+    [[nodiscard]] AbsoluteFrequencyType
     GetFrequency() const
     {
       return m_Sample->GetFrequency(m_InstanceIdentifier);
     }
 
-    const MeasurementVectorType &
+    [[nodiscard]] const MeasurementVectorType &
     GetMeasurementVector() const
     {
       return m_Sample->GetMeasurementVector(m_InstanceIdentifier);
     }
 
-    InstanceIdentifier
+    [[nodiscard]] InstanceIdentifier
     GetInstanceIdentifier() const
     {
       return m_InstanceIdentifier;
     }
 
-    unsigned int
+    [[nodiscard]] unsigned int
     GetClassLabel() const
     {
       return m_MembershipSample->GetClassLabel(m_InstanceIdentifier);
@@ -324,8 +315,7 @@ private:
   SampleConstPointer              m_Sample{};
   unsigned int                    m_NumberOfClasses{};
 }; // end of class
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkMembershipSample.hxx"

@@ -18,10 +18,7 @@
 #ifndef itkFEMImageMetricLoad_hxx
 #define itkFEMImageMetricLoad_hxx
 
-
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 // Overload the CreateAnother() method.
 template <typename TMoving, typename TFixed>
@@ -125,12 +122,11 @@ ImageMetricLoad<TMoving, TFixed>::InitializeMetric()
 
 template <typename TMoving, typename TFixed>
 ImageMetricLoad<TMoving, TFixed>::ImageMetricLoad()
+  : m_Metric(nullptr)
+  , m_Sign(1.0)
+  , m_SolutionIndex(1)
+  , m_Transform(nullptr)
 {
-  m_Metric = nullptr;
-  m_Transform = nullptr;
-  m_SolutionIndex = 1;
-  m_SolutionIndex2 = 0;
-  m_Sign = 1.0;
   for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     m_MetricRadius[i] = 1;
@@ -838,7 +834,6 @@ ImageMetricLoad<TMoving, TFixed>::PrintSelf(std::ostream & os, Indent indent) co
   os << indent << "Energy: " << this->m_Energy << std::endl;
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif

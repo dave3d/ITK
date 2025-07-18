@@ -21,17 +21,13 @@
 
 #include "itkObject.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TSample>
 Subsample<TSample>::Subsample()
-{
-  m_Sample = nullptr;
-  m_TotalFrequency = AbsoluteFrequencyType{};
-  m_ActiveDimension = 0;
-}
+  : m_Sample(nullptr)
+  , m_TotalFrequency(AbsoluteFrequencyType{})
+{}
 
 template <typename TSample>
 void
@@ -221,7 +217,6 @@ Subsample<TSample>::Graft(const DataObject * thatObject)
     this->m_TotalFrequency = that->m_TotalFrequency;
   }
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

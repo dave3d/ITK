@@ -25,10 +25,7 @@ namespace itk
 {
 
 template <typename TImage, typename TAttributeAccessor>
-AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::AttributeUniqueLabelMapFilter()
-{
-  m_ReverseOrdering = false;
-}
+AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::AttributeUniqueLabelMapFilter() = default;
 
 
 template <typename TImage, typename TAttributeAccessor>
@@ -131,7 +128,7 @@ AttributeUniqueLabelMapFilter<TImage, TAttributeAccessor>::GenerateData()
         // which line to keep. This is necessary to avoid the case where a
         // part of a label is over
         // a second label, and below in another part of the image.
-        bool                                                  keepCurrent;
+        bool                                                  keepCurrent = false;
         const typename TAttributeAccessor::AttributeValueType prevAttr = accessor(prev.labelObject);
         const typename LabelObjectType::LabelType             prevLabel = prev.labelObject->GetLabel();
         // this may be changed to a single boolean expression, but may become

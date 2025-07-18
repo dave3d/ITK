@@ -41,9 +41,8 @@
  * The test fails if the overlap is below a certain threshold.
  *
  */
-namespace itk
-{
-namespace SPSLSF
+
+namespace itk::SPSLSF
 {
 
 template <typename TImage>
@@ -74,6 +73,7 @@ public:
 
 protected:
   SimpleTestFilter()
+
   {
     auto function = ShapePriorFunctionType::New();
     function->SetPropagationWeight(0.0);
@@ -85,13 +85,11 @@ protected:
     function->Initialize(radius);
 
     this->SetDifferenceFunction(function);
-
-    m_NumberOfIterations = 0;
     m_ShapePriorFunction = function;
   }
 
 private:
-  unsigned int                             m_NumberOfIterations;
+  unsigned int                             m_NumberOfIterations{ 0 };
   typename ShapePriorFunctionType::Pointer m_ShapePriorFunction;
 
   bool
@@ -106,8 +104,8 @@ private:
   }
 };
 
-} // namespace SPSLSF
-} // namespace itk
+} // namespace itk::SPSLSF
+
 
 int
 itkShapePriorSegmentationLevelSetFunctionTest(int, char *[])

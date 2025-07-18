@@ -21,20 +21,19 @@
 #include "itkFEMElement2DC0LinearQuadrilateral.h"
 #include "itkFEMElement3DC0LinearHexahedron.h"
 #include <cmath>
-namespace itk
-{
-namespace fem
+
+namespace itk::fem
 {
 
 template <typename TInputImage>
 ImageToRectilinearFEMObjectFilter<TInputImage>::ImageToRectilinearFEMObjectFilter()
+  : m_Material(nullptr)
+  , m_Element(nullptr)
 {
   this->m_NumberOfElements.set_size(NDimensions);
   this->m_NumberOfElements.fill(0);
   this->m_PixelsPerElement.set_size(NDimensions);
   this->m_PixelsPerElement.fill(1);
-  this->m_Material = nullptr;
-  this->m_Element = nullptr;
   this->ProcessObject::SetNthOutput(0, this->MakeOutput(0));
 }
 
@@ -303,6 +302,5 @@ ImageToRectilinearFEMObjectFilter<TInputImage>::PrintSelf(std::ostream & os, Ind
   itkPrintSelfObjectMacro(Element);
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 #endif // itkImageToRectilinearFEMObjectFilter_hxx

@@ -29,11 +29,8 @@ namespace itk
 
 template <typename TInputMesh, typename TOutputMesh>
 ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::ConformalFlatteningMeshFilter()
+  : m_MapScale(-1.0)
 {
-  this->m_PolarCellIdentifier = 0;
-  this->m_MapToSphere = false;
-
-  this->m_MapScale = -1.0;
   // If during the stage when this parameter is used and it is still
   // -1.0, then it indicates that the user doesn't assign a scale
   // factor. Then automatically calculate it s.t. after doing the
@@ -196,22 +193,6 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
   CellIterator cellIterator = inputMesh->GetCells()->Begin();
   CellIterator cellEnd = inputMesh->GetCells()->End();
 
-  PointIdentifier ptIdA;
-  PointIdentifier ptIdB;
-  PointIdentifier ptIdC;
-
-  double cosABC;
-  double cosBCA;
-  double cosCAB;
-
-  double sinABC;
-  double sinBCA;
-  double sinCAB;
-
-  double cotgABC;
-  double cotgBCA;
-  double cotgCAB;
-
   while (cellIterator != cellEnd)
   {
     CellType *   aCell = cellIterator.Value();
@@ -241,13 +222,13 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
 
     pointIditer = aCell->PointIdsBegin();
 
-    ptIdA = *pointIditer;
+    PointIdentifier ptIdA = *pointIditer;
     ++pointIditer;
 
-    ptIdB = *pointIditer;
+    PointIdentifier ptIdB = *pointIditer;
     ++pointIditer;
 
-    ptIdC = *pointIditer;
+    PointIdentifier ptIdC = *pointIditer;
 
     inputMesh->GetPoint(ptIdA, &ptA);
     inputMesh->GetPoint(ptIdB, &ptB);
@@ -292,9 +273,9 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
     double prodBCCA = BC[0] * CA[0] + BC[1] * CA[1] + BC[2] * CA[2];
     prodCAAB = CA[0] * AB[0] + CA[1] * AB[1] + CA[2] * AB[2];
 
-    cosABC = -prodABBC / (normAB * normBC);
-    cosBCA = -prodBCCA / (normBC * normCA);
-    cosCAB = -prodCAAB / (normCA * normAB);
+    const double cosABC = -prodABBC / (normAB * normBC);
+    const double cosBCA = -prodBCCA / (normBC * normCA);
+    const double cosCAB = -prodCAAB / (normCA * normAB);
 
     if (cosABC <= -1.0 || cosABC >= 1.0)
     {
@@ -311,9 +292,9 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
       itkExceptionMacro("cosCAB= " << cosCAB);
     }
 
-    sinABC = std::sqrt(1.0 - cosABC * cosABC);
-    sinBCA = std::sqrt(1.0 - cosBCA * cosBCA);
-    sinCAB = std::sqrt(1.0 - cosCAB * cosCAB);
+    const double sinABC = std::sqrt(1.0 - cosABC * cosABC);
+    const double sinBCA = std::sqrt(1.0 - cosBCA * cosBCA);
+    const double sinCAB = std::sqrt(1.0 - cosCAB * cosCAB);
 
     if (sinABC < 1e-10)
     {
@@ -330,9 +311,9 @@ ConformalFlatteningMeshFilter<TInputMesh, TOutputMesh>::GenerateData()
       itkExceptionMacro("sinCAB= " << sinCAB);
     }
 
-    cotgABC = cosABC / sinABC;
-    cotgBCA = cosBCA / sinBCA;
-    cotgCAB = cosCAB / sinCAB;
+    const double cotgABC = cosABC / sinABC;
+    const double cotgBCA = cosBCA / sinBCA;
+    const double cotgCAB = cosCAB / sinCAB;
 
     D(ptIdA, ptIdA) += cotgABC + cotgBCA;
     D(ptIdA, ptIdB) -= cotgBCA;

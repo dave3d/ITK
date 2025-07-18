@@ -30,9 +30,7 @@
 #include "vnl/vnl_vector.h"
 #include <limits>
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 
 template <typename TInputPointSet,
@@ -45,13 +43,13 @@ FEMScatteredDataPointSetToImageFilter<TInputPointSet,
                                       TOutputImage,
                                       TInputConfidencePointSet,
                                       TInputTensorPointSet>::FEMScatteredDataPointSetToImageFilter()
+  : m_FEMObject(FEMObjectType::New())
+  , m_FEMSolver(FEMSolverType::New())
 {
-  this->m_FEMObject = FEMObjectType::New();
+
   this->m_Material = MaterialType::New();
   this->m_Material->SetYoungsModulus(694.0);
   this->m_Material->SetPoissonsRatio(0.45);
-  this->m_FEMSolver = FEMSolverType::New();
-
   itk::FEMFactoryBase::GetFactory()->RegisterDefaultTypes();
 }
 
@@ -783,7 +781,6 @@ FEMScatteredDataPointSetToImageFilter<TInputPointSet,
   os << indent << "  Direction: " << this->m_Direction << std::endl;
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif

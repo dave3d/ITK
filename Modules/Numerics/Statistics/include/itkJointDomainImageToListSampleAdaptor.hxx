@@ -18,17 +18,14 @@
 #ifndef itkJointDomainImageToListSampleAdaptor_hxx
 #define itkJointDomainImageToListSampleAdaptor_hxx
 
-
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TImage>
 JointDomainImageToListSampleAdaptor<TImage>::JointDomainImageToListSampleAdaptor()
+  : m_Image(nullptr)
+  , m_UsePixelContainer(true)
 {
   m_NormalizationFactors.Fill(1.0f);
-  m_Image = nullptr;
-  m_UsePixelContainer = true;
 }
 
 /** returns the number of measurement vectors in this container*/
@@ -148,7 +145,6 @@ JointDomainImageToListSampleAdaptor<TImage>::GetMeasurementVector(InstanceIdenti
 
   return m_TempVector;
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

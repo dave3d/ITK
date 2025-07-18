@@ -137,7 +137,9 @@ public:
     explicit ConstReverseIterator(ConstIterator i)
       : m_Iterator(i)
     {}
-    ConstReverseIterator(const ReverseIterator & rit) { m_Iterator = rit.m_Iterator; }
+    ConstReverseIterator(const ReverseIterator & rit)
+      : m_Iterator(rit.m_Iterator)
+    {}
     ConstReverseIterator
     operator++()
     {
@@ -303,7 +305,7 @@ public:
   {
     m_InternalArray[index] = value;
   }
-  const_reference
+  [[nodiscard]] const_reference
   GetElement(unsigned int index) const
   {
     return m_InternalArray[index];
@@ -316,7 +318,7 @@ public:
     return m_InternalArray;
   }
 
-  const ValueType *
+  [[nodiscard]] const ValueType *
   GetDataPointer() const
   {
     return m_InternalArray;
@@ -328,7 +330,7 @@ public:
     return m_InternalArray;
   }
 
-  const ValueType *
+  [[nodiscard]] const ValueType *
   data() const
   {
     return m_InternalArray;
@@ -339,7 +341,7 @@ public:
   Begin();
 
   /** Get a ConstIterator for the beginning of the FixedArray. */
-  ConstIterator
+  [[nodiscard]] ConstIterator
   Begin() const;
 
   /** Get an Iterator for the end of the FixedArray. */
@@ -347,7 +349,7 @@ public:
   End();
 
   /** Get a ConstIterator for the end of the FixedArray. */
-  ConstIterator
+  [[nodiscard]] ConstIterator
   End() const;
 
   /** Get a begin ReverseIterator. */
@@ -362,7 +364,7 @@ public:
   /** Get an end ConstReverseIterator. */
   itkLegacyMacro(ConstReverseIterator rEnd() const;)
 
-  constexpr const_iterator
+  [[nodiscard]] constexpr const_iterator
   cbegin() const noexcept
   {
     return m_InternalArray;
@@ -374,13 +376,13 @@ public:
     return m_InternalArray;
   }
 
-  constexpr const_iterator
+  [[nodiscard]] constexpr const_iterator
   begin() const noexcept
   {
     return this->cbegin();
   }
 
-  constexpr const_iterator
+  [[nodiscard]] constexpr const_iterator
   cend() const noexcept
   {
     return m_InternalArray + VLength;
@@ -392,7 +394,7 @@ public:
     return m_InternalArray + VLength;
   }
 
-  constexpr const_iterator
+  [[nodiscard]] constexpr const_iterator
   end() const noexcept
   {
     return this->cend();
@@ -404,13 +406,13 @@ public:
     return reverse_iterator{ this->end() };
   }
 
-  const_reverse_iterator
+  [[nodiscard]] const_reverse_iterator
   crbegin() const
   {
     return const_reverse_iterator{ this->cend() };
   }
 
-  const_reverse_iterator
+  [[nodiscard]] const_reverse_iterator
   rbegin() const
   {
     return this->crbegin();
@@ -422,23 +424,23 @@ public:
     return reverse_iterator{ this->begin() };
   }
 
-  const_reverse_iterator
+  [[nodiscard]] const_reverse_iterator
   crend() const
   {
     return const_reverse_iterator{ this->cbegin() };
   }
 
-  const_reverse_iterator
+  [[nodiscard]] const_reverse_iterator
   rend() const
   {
     return this->crend();
   }
 
   /** Size of the container. */
-  SizeType
+  [[nodiscard]] SizeType
   Size() const;
 
-  constexpr SizeType
+  [[nodiscard]] constexpr SizeType
   size() const
   {
     return VLength;

@@ -161,6 +161,8 @@ ImageIOBase::SetDirection(unsigned int i, const vnl_vector<double> & direction)
   m_Direction[i] = v;
 }
 
+
+#ifndef ITK_LEGACY_REMOVE
 const std::type_info &
 ImageIOBase::GetComponentTypeInfo() const
 {
@@ -195,6 +197,8 @@ ImageIOBase::GetComponentTypeInfo() const
       itkExceptionMacro("Unknown component type: " << m_ComponentType);
   }
 }
+#endif
+
 
 void
 ImageIOBase::ComputeStrides()
@@ -299,12 +303,7 @@ ImageIOBase::ReadBufferAsBinary(std::istream & is, void * buffer, ImageIOBase::S
 
   const std::streamsize numberOfBytesRead = is.gcount();
 
-#ifdef __APPLE_CC__
-  // fail() is broken in the Mac. It returns true when reaches eof().
-  if (numberOfBytesRead != numberOfBytesToBeRead)
-#else
   if ((numberOfBytesRead != numberOfBytesToBeRead) || is.fail())
-#endif
   {
     return false; // read failed
   }
@@ -357,36 +356,12 @@ ImageIOBase::InternalSetCompressor(const std::string & _compressor)
 unsigned int
 ImageIOBase::GetComponentSize() const
 {
-  switch (m_ComponentType)
+  if (const unsigned int sizeOfComponent = GetComponentTypeTraits(m_ComponentType).sizeOfComponent; sizeOfComponent > 0)
   {
-    case IOComponentEnum::UCHAR:
-      return sizeof(unsigned char);
-    case IOComponentEnum::CHAR:
-      return sizeof(char);
-    case IOComponentEnum::USHORT:
-      return sizeof(unsigned short);
-    case IOComponentEnum::SHORT:
-      return sizeof(short);
-    case IOComponentEnum::UINT:
-      return sizeof(unsigned int);
-    case IOComponentEnum::INT:
-      return sizeof(int);
-    case IOComponentEnum::ULONG:
-      return sizeof(unsigned long);
-    case IOComponentEnum::LONG:
-      return sizeof(long);
-    case IOComponentEnum::ULONGLONG:
-      return sizeof(unsigned long long);
-    case IOComponentEnum::LONGLONG:
-      return sizeof(long long);
-    case IOComponentEnum::FLOAT:
-      return sizeof(float);
-    case IOComponentEnum::DOUBLE:
-      return sizeof(double);
-    case IOComponentEnum::UNKNOWNCOMPONENTTYPE:
-    default:
-      itkExceptionMacro("Unknown component type: " << m_ComponentType);
+    return sizeOfComponent;
   }
+
+  itkExceptionMacro("Unknown component type: " << m_ComponentType);
 }
 
 std::string
@@ -849,7 +824,7 @@ ImageIOBase::ReadBufferAsASCII(std::istream & is, void * buffer, IOComponentEnum
     break;
     case IOComponentEnum::CHAR:
     {
-      auto * buf = static_cast<char *>(buffer);
+      auto * buf = static_cast<signed char *>(buffer);
       ReadBuffer(is, buf, numComp);
     }
     break;
@@ -1159,8 +1134,8 @@ ImageIOBase::PrintSelf(std::ostream & os, Indent indent) const
   os << indent << "IORegion: " << std::endl;
   m_IORegion.Print(os, indent.GetNextIndent());
   os << indent << "NumberOfComponents/Pixel: " << m_NumberOfComponents << std::endl;
-  os << indent << "PixeType: " << this->GetPixelTypeAsString(m_PixelType) << std::endl;
-  os << indent << "ComponentType: " << this->GetComponentTypeAsString(m_ComponentType) << std::endl;
+  os << indent << "PixeType: " << Self::GetPixelTypeAsString(m_PixelType) << std::endl;
+  os << indent << "ComponentType: " << Self::GetComponentTypeAsString(m_ComponentType) << std::endl;
   os << indent << "Dimensions: " << m_Dimensions << std::endl;
   os << indent << "Origin: " << m_Origin << std::endl;
   os << indent << "Spacing: " << m_Spacing << std::endl;

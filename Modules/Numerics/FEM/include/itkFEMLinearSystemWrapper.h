@@ -28,9 +28,7 @@
 #include <typeinfo>
 #include <string>
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 /**
  * \class LinearSystemWrapper
@@ -99,7 +97,7 @@ public:
   /**
    * Get the order of the system
    */
-  unsigned int
+  [[nodiscard]] unsigned int
   GetSystemOrder() const
   {
     return m_Order;
@@ -128,7 +126,7 @@ public:
   /**
    * Get Index of matrices used by system
    */
-  unsigned int
+  [[nodiscard]] unsigned int
   GetNumberOfMatrices() const
   {
     return m_NumberOfMatrices;
@@ -147,7 +145,7 @@ public:
   /**
    * Get Index of vectors used by system
    */
-  unsigned int
+  [[nodiscard]] unsigned int
   GetNumberOfVectors() const
   {
     return m_NumberOfVectors;
@@ -166,7 +164,7 @@ public:
   /**
    * Get Index of solutions used by system
    */
-  unsigned int
+  [[nodiscard]] unsigned int
   GetNumberOfSolutions() const
   {
     return m_NumberOfSolutions;
@@ -247,7 +245,7 @@ public:
    * \param j column of the element
    * \param matrixIndex index of matrix to get value from
    */
-  virtual Float
+  [[nodiscard]] virtual Float
   GetMatrixValue(unsigned int i, unsigned int j, unsigned int matrixIndex = 0) const = 0;
 
   /**
@@ -290,7 +288,7 @@ public:
    * \param i row of the element
    * \param vectorIndex index of vector to get value from
    */
-  virtual Float
+  [[nodiscard]] virtual Float
   GetVectorValue(unsigned int i, unsigned int vectorIndex = 0) const = 0;
 
   /**
@@ -585,7 +583,6 @@ public:
   /** \see LightObject::GetNameOfClass() */
   itkOverrideGetNameOfClassMacro(FEMExceptionLinearSystemBounds);
 };
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif // itkFEMLinearSystemWrapper_h

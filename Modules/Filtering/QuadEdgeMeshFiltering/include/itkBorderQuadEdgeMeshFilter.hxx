@@ -24,11 +24,10 @@ namespace itk
 // ----------------------------------------------------------------------------
 template <typename TInputMesh, typename TOutputMesh>
 BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::BorderQuadEdgeMeshFilter()
-{
-  this->m_TransformType = BorderTransformEnum::SQUARE_BORDER_TRANSFORM;
-  this->m_BorderPick = BorderPickEnum::LONGEST;
-  this->m_Radius = 0.0;
-}
+  : m_TransformType(BorderTransformEnum::SQUARE_BORDER_TRANSFORM)
+  , m_BorderPick(BorderPickEnum::LONGEST)
+  , m_Radius(0.0)
+{}
 
 // ----------------------------------------------------------------------------
 template <typename TInputMesh, typename TOutputMesh>
@@ -286,15 +285,12 @@ BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GetMeshBarycentre() -> InputP
 
   const InputPointsContainer * points = input->GetPoints();
 
-  InputPointType pt;
-  unsigned int   i;
-
   InputPointsContainerConstIterator PointIterator = points->Begin();
   while (PointIterator != points->End())
   {
-    pt = PointIterator.Value();
+    InputPointType pt = PointIterator.Value();
 
-    for (i = 0; i < PointDimension; ++i)
+    for (unsigned int i = 0; i < PointDimension; ++i)
     {
       oCenter[i] += pt[i];
     }
@@ -302,7 +298,7 @@ BorderQuadEdgeMeshFilter<TInputMesh, TOutputMesh>::GetMeshBarycentre() -> InputP
   }
 
   const InputCoordinateType invNbOfPoints = 1.0 / static_cast<InputCoordinateType>(input->GetNumberOfPoints());
-  for (i = 0; i < PointDimension; ++i)
+  for (unsigned int i = 0; i < PointDimension; ++i)
   {
     oCenter[i] *= invNbOfPoints;
   }

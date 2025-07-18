@@ -22,9 +22,7 @@
 #include "itkFEMElementBase.h"
 #include "itkFEMMaterialLinearElasticity.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 /**
  * \class Element1DStress
@@ -96,7 +94,7 @@ public:
    * So the number of DOFs per node is equal to the number of
    * spatial dimensions.
    */
-  unsigned int
+  [[nodiscard]] unsigned int
   GetNumberOfDegreesOfFreedomPerNode() const override
   {
     return 2;
@@ -105,7 +103,7 @@ public:
   /**
    * Get/Set the material properties for the element
    */
-  Material::ConstPointer
+  [[nodiscard]] Material::ConstPointer
   GetMaterial() const override
   {
     return m_mat;
@@ -127,8 +125,7 @@ protected:
   const MaterialLinearElasticity * m_mat{ nullptr };
 
 }; // class Element1DStress
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkFEMElement1DStress.hxx"

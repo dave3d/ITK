@@ -29,6 +29,7 @@ namespace itk
 {
 template <typename TNeighborhoodType>
 SparseFieldCityBlockNeighborList<TNeighborhoodType>::SparseFieldCityBlockNeighborList()
+  : m_Size(2 * Dimension)
 {
   using ImageType = typename NeighborhoodType::ImageType;
   auto dummy_image = ImageType::New();
@@ -39,7 +40,6 @@ SparseFieldCityBlockNeighborList<TNeighborhoodType>::SparseFieldCityBlockNeighbo
   const NeighborhoodType it(m_Radius, dummy_image, dummy_image->GetRequestedRegion());
   const unsigned int     nCenter = it.Size() / 2;
 
-  m_Size = 2 * Dimension;
   m_ArrayIndex.reserve(m_Size);
   m_NeighborhoodOffset.reserve(m_Size);
 
@@ -116,12 +116,11 @@ typename SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::StatusType
 
 template <typename TInputImage, typename TOutputImage>
 SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::SparseFieldLevelSetImageFilter()
-  : m_IsoSurfaceValue(m_ValueZero)
+  : m_LayerNodeStore(LayerNodeStorageType::New())
+  , m_IsoSurfaceValue(m_ValueZero)
   , m_InputImage(nullptr)
   , m_OutputImage(nullptr)
-
 {
-  m_LayerNodeStore = LayerNodeStorageType::New();
   m_LayerNodeStore->SetGrowthStrategyToExponential();
   this->SetRMSChange(static_cast<double>(m_ValueZero));
 }
@@ -204,14 +203,12 @@ void
 SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::ProcessOutsideList(LayerType * OutsideList,
                                                                               StatusType  ChangeToStatus)
 {
-  LayerNodeType * node;
-
   // Push each index in the input list into its appropriate status layer
   // (ChangeToStatus) and update the status image value at that index.
   while (!OutsideList->Empty())
   {
     m_StatusImage->SetPixel(OutsideList->Front()->m_Value, ChangeToStatus);
-    node = OutsideList->Front();
+    LayerNodeType * node = OutsideList->Front();
     OutsideList->PopFront();
     m_Layers[ChangeToStatus]->PushFront(node);
   }
@@ -259,7 +256,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::ProcessStatusList(Lay
 
       if (neighbor_status == SearchForStatus)
       { // mark this pixel so we don't add it twice.
-        bool bounds_status;
+        bool bounds_status = false;
         statusIt.SetPixel(m_NeighborList.GetArrayIndex(i), m_StatusChanging, bounds_status);
         if (bounds_status)
         {
@@ -689,7 +686,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::ConstructActiveLayer(
           // Assign to first inside layer --> 1
           // Assign to first inside layer --  2
           const StatusType layer_number = (value < m_ValueZero) ? 1 : 2;
-          bool             bounds_status;
+          bool             bounds_status = false;
           statusIt.SetPixel(m_NeighborList.GetArrayIndex(i), layer_number, bounds_status);
           if (bounds_status) // In bounds.
           {
@@ -722,7 +719,7 @@ SparseFieldLevelSetImageFilter<TInputImage, TOutputImage>::ConstructLayer(Status
     {
       if (statusIt.GetPixel(m_NeighborList.GetArrayIndex(i)) == m_StatusNull)
       {
-        bool boundary_status;
+        bool boundary_status = false;
         statusIt.SetPixel(m_NeighborList.GetArrayIndex(i), to, boundary_status);
         if (boundary_status) // in bounds
         {

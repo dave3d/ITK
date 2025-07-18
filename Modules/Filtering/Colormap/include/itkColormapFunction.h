@@ -23,9 +23,7 @@
 #include "itkNumericTraits.h"
 #include "itkRGBPixel.h"
 
-namespace itk
-{
-namespace Function
+namespace itk::Function
 {
 /**
  * \class ColormapFunction
@@ -77,12 +75,11 @@ public:
 
 protected:
   ColormapFunction()
-  {
-    this->m_MinimumInputValue = NumericTraits<TScalar>::min();
-    this->m_MaximumInputValue = NumericTraits<TScalar>::max();
-    this->m_MinimumRGBComponentValue = NumericTraits<RGBComponentType>::min();
-    this->m_MaximumRGBComponentValue = NumericTraits<RGBComponentType>::max();
-  }
+    : m_MinimumInputValue(NumericTraits<TScalar>::min())
+    , m_MaximumInputValue(NumericTraits<TScalar>::max())
+    , m_MinimumRGBComponentValue(NumericTraits<RGBComponentType>::min())
+    , m_MaximumRGBComponentValue(NumericTraits<RGBComponentType>::max())
+  {}
 
   ~ColormapFunction() override = default;
 
@@ -137,7 +134,6 @@ private:
   RGBComponentType m_MinimumRGBComponentValue{};
   RGBComponentType m_MaximumRGBComponentValue{};
 };
-} // end namespace Function
-} // end namespace itk
+} // namespace itk::Function
 
 #endif

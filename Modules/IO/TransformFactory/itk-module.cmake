@@ -1,14 +1,17 @@
-set(DOCUMENTATION "This module contains a factory to create transforms
-from a string identifier.")
+set(
+  DOCUMENTATION
+  "This module contains a factory to create transforms
+from a string identifier."
+)
 
 itk_module(
   ITKTransformFactory
   DEPENDS
-  ITKCommon
-  ITKTransform
+    ITKCommon
+    ITKTransform
   COMPILE_DEPENDS
-  ITKDisplacementField
+    ITKDisplacementField
   TEST_DEPENDS
-  ITKTestKernel
-  DESCRIPTION
-  "${DOCUMENTATION}")
+    ITKTestKernel
+  DESCRIPTION "${DOCUMENTATION}"
+)

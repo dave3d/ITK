@@ -28,11 +28,7 @@ namespace itk
 {
 // Default constructor
 GE4ImageIO::GE4ImageIO() = default;
-
-GE4ImageIO::~GE4ImageIO()
-{
-  // Purposefully left blank
-}
+GE4ImageIO::~GE4ImageIO() = default;
 
 bool
 GE4ImageIO::CanReadFile(const char * FileNameToRead)
@@ -89,9 +85,7 @@ GE4ImageIO::ReadHeader(const char * FileNameToRead)
   // Set modality to UNKNOWN
   strcpy(hdr->modality, "UNK");
 
-  char  tmpStr[IOCommon::ITK_MAXPATHLEN + 1];
-  int   intTmp;
-  short tmpShort;
+  char tmpStr[IOCommon::ITK_MAXPATHLEN + 1];
 
   //
   // save off the name of the current file...
@@ -130,7 +124,8 @@ GE4ImageIO::ReadHeader(const char * FileNameToRead)
   /* Get the FOV from the SERIES Header */
   f.seekg(SIGNA_SEHDR_START * 2 + SIGNA_SEHDR_FOV * 2, std::ios::beg);
   IOCHECK();
-  f.read((char *)&intTmp, sizeof(intTmp));
+  int intTmp = 0;
+  f.read(reinterpret_cast<char *>(&intTmp), sizeof(intTmp));
   IOCHECK();
   const float tmpFloat = MvtSunf(intTmp);
 
@@ -197,31 +192,33 @@ GE4ImageIO::ReadHeader(const char * FileNameToRead)
   // you read in an integer, but you DON'T byte swap it, and then pass
   // it into the MvtSunf function to get the floating point value.
   // to circumvent byte swapping in GetIntAt, use GetStringAt
-  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_SLICELOC * 2, (char *)&intTmp, sizeof(int));
+  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_SLICELOC * 2, reinterpret_cast<char *>(&intTmp), sizeof(int));
 
   hdr->sliceLocation = MvtSunf(intTmp);
 
-  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_SLICE_THICK * 2, (char *)&intTmp, sizeof(intTmp));
+  this->GetStringAt(
+    f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_SLICE_THICK * 2, reinterpret_cast<char *>(&intTmp), sizeof(intTmp));
 
   hdr->sliceThickness = MvtSunf(intTmp);
 
   /* Get the Slice Spacing from the IMAGE Header */
-  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_SLICE_SPACING * 2, (char *)&intTmp, sizeof(int));
+  this->GetStringAt(
+    f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_SLICE_SPACING * 2, reinterpret_cast<char *>(&intTmp), sizeof(int));
 
   hdr->sliceGap = MvtSunf(intTmp);
 
   /* Get TR from the IMAGE Header */
-  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_TR * 2, (char *)&intTmp, sizeof(int));
+  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_TR * 2, reinterpret_cast<char *>(&intTmp), sizeof(int));
 
   hdr->TR = MvtSunf(intTmp);
 
   /* Get TE from the IMAGE Header */
-  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_TE * 2, (char *)&intTmp, sizeof(int));
+  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_TE * 2, reinterpret_cast<char *>(&intTmp), sizeof(int));
 
   hdr->TE = MvtSunf(intTmp);
 
   /* Get TI from the IMAGE Header */
-  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_TI * 2, (char *)&intTmp, sizeof(int));
+  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_TI * 2, reinterpret_cast<char *>(&intTmp), sizeof(int));
 
   hdr->TI = MvtSunf(intTmp);
 
@@ -242,17 +239,19 @@ GE4ImageIO::ReadHeader(const char * FileNameToRead)
   this->GetShortAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_Y_DIM * 2, &(hdr->imageYsize));
 
   /* Get Pixel Size from the IMAGE Header */
-  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_PIXELSIZE * 2, (char *)&intTmp, sizeof(int));
+  this->GetStringAt(
+    f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_PIXELSIZE * 2, reinterpret_cast<char *>(&intTmp), sizeof(int));
 
   hdr->imageXres = MvtSunf(intTmp);
   hdr->imageYres = hdr->imageXres;
 
   /* Get NEX from the IMAGE Header */
-  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_NEX * 2, (char *)&intTmp, sizeof(int));
+  this->GetStringAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_NEX * 2, reinterpret_cast<char *>(&intTmp), sizeof(int));
 
   hdr->NEX = static_cast<short>(MvtSunf(intTmp));
 
   /* Get Flip Angle from the IMAGE Header */
+  short tmpShort = 0;
   this->GetShortAt(f, SIGNA_IHDR_START * 2 + SIGNA_IMHDR_FLIP * 2, &tmpShort);
 
   if (tmpShort > 0)

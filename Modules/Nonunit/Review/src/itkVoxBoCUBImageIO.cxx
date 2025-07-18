@@ -104,8 +104,8 @@ class CompressedCUBFileAdaptor : public GenericCUBFileAdaptor
 {
 public:
   CompressedCUBFileAdaptor(const char * file, const char * mode)
+    : m_GzFile(gzopen(file, mode))
   {
-    m_GzFile = gzopen(file, mode);
     if (m_GzFile == nullptr)
     {
       ExceptionObject exception;
@@ -196,8 +196,8 @@ class DirectCUBFileAdaptor : public GenericCUBFileAdaptor
 {
 public:
   DirectCUBFileAdaptor(const char * file, const char * mode)
+    : m_File(fopen(file, mode))
   {
-    m_File = fopen(file, mode);
     if (!m_File)
     {
       ExceptionObject exception;
@@ -324,11 +324,10 @@ const char * VoxBoCUBImageIO::m_VB_DATATYPE_DOUBLE = "Double";
 
 /** Constructor */
 VoxBoCUBImageIO::VoxBoCUBImageIO()
+
 {
   InitializeOrientationMap();
   m_ByteOrder = IOByteOrderEnum::BigEndian;
-  m_Reader = nullptr;
-  m_Writer = nullptr;
 }
 
 /** Destructor */
@@ -343,7 +342,7 @@ VoxBoCUBImageIO::CreateReader(const char * filename)
 {
   try
   {
-    bool compressed;
+    bool compressed = false;
     if (CheckExtension(filename, compressed))
     {
       if (compressed)
@@ -371,7 +370,7 @@ VoxBoCUBImageIO::CreateWriter(const char * filename)
 {
   try
   {
-    bool compressed;
+    bool compressed = false;
     if (CheckExtension(filename, compressed))
     {
       if (compressed)
@@ -442,7 +441,7 @@ VoxBoCUBImageIO::CanReadFile(const char * filename)
 bool
 VoxBoCUBImageIO::CanWriteFile(const char * name)
 {
-  bool compressed;
+  bool compressed = false;
 
   return CheckExtension(name, compressed);
 }
@@ -525,7 +524,7 @@ VoxBoCUBImageIO::ReadImageInformation()
 
       else if (key == m_VB_ORIGIN)
       {
-        double ox, oy, oz;
+        double ox = NAN, oy = NAN, oz = NAN;
         iss >> ox;
         iss >> oy;
         iss >> oz;
@@ -583,7 +582,7 @@ VoxBoCUBImageIO::ReadImageInformation()
         iss >> code;
 
         // Set the orientation code in the data dictionary
-        OrientationMap::const_iterator it = m_OrientationMap.find(code);
+        auto it = m_OrientationMap.find(code);
         if (it != m_OrientationMap.end())
         {
           // NOTE:  The itk::ImageIOBase direction is a std::vector<std::vector > >, and threeDDirection is a 3x3 matrix
@@ -703,7 +702,7 @@ VoxBoCUBImageIO::WriteImageInformation()
   threeDDirection[2][2] = this->m_Direction[2][2];
   OrientationFlags oflag = soAdaptor.FromDirectionCosines(threeDDirection);
   {
-    InverseOrientationMap::const_iterator it = m_InverseOrientationMap.find(oflag);
+    auto it = m_InverseOrientationMap.find(oflag);
     if (it != m_InverseOrientationMap.end())
     {
       header << m_VB_ORIENTATION << ":\t" << it->second << std::endl;
@@ -718,7 +717,7 @@ VoxBoCUBImageIO::WriteImageInformation()
     ExposeMetaData<std::string>(dic, key, word);
     if (!strcmp(key.c_str(), "resample_date"))
     {
-      time_t rawtime;
+      time_t rawtime = 0;
       time(&rawtime);
       word = ctime(&rawtime);
       header << key << ":\t" << word;
@@ -836,9 +835,9 @@ VoxBoCUBImageIO::InitializeOrientationMap()
   m_OrientationMap["AIL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_AIL;
   m_OrientationMap["ASL"] = SpatialOrientationEnums::ValidCoordinateOrientations::ITK_COORDINATE_ORIENTATION_ASL;
 
-  for (auto it = m_OrientationMap.begin(); it != m_OrientationMap.end(); ++it)
+  for (auto & orientationElement : m_OrientationMap)
   {
-    m_InverseOrientationMap[it->second] = it->first;
+    m_InverseOrientationMap[orientationElement.second] = orientationElement.first;
   }
 }
 

@@ -67,7 +67,7 @@ public:
   using VectorType = vnl_vector<double>;
   using MatrixType = vnl_matrix<double>;
 
-  itkAmoebaOptimizerv4TestMetric1() { m_HasLocalSupport = false; }
+  itkAmoebaOptimizerv4TestMetric1() = default;
 
   MeasureType
   GetValue() const override
@@ -144,7 +144,7 @@ public:
 
 private:
   ParametersType m_Parameters;
-  bool           m_HasLocalSupport;
+  bool           m_HasLocalSupport{ false };
 };
 
 
@@ -179,21 +179,14 @@ public:
   using VectorType = vnl_vector<double>;
   using MatrixType = vnl_matrix<double>;
 
-  itkAmoebaOptimizerv4TestMetric2() { m_HasLocalSupport = false; }
+  itkAmoebaOptimizerv4TestMetric2() = default;
 
   double
   GetValue() const override
   {
     const double x = this->m_Parameters[0];
-    double       val;
-    if (x < 0)
-    {
-      val = x * x + 4 * x;
-    }
-    else
-    {
-      val = 2 * x * x - 8 * x;
-    }
+    const double val = (x < 0) ? x * x + 4 * x : 2 * x * x - 8 * x;
+
     return val;
   }
 
@@ -258,7 +251,7 @@ public:
 
 private:
   ParametersType m_Parameters;
-  bool           m_HasLocalSupport;
+  bool           m_HasLocalSupport{ false };
 };
 
 class CommandIterationUpdateAmoeba : public itk::Command
@@ -294,10 +287,10 @@ public:
   }
 
 protected:
-  CommandIterationUpdateAmoeba() { m_IterationNumber = 0; }
+  CommandIterationUpdateAmoeba() {}
 
 private:
-  unsigned long m_IterationNumber;
+  unsigned long m_IterationNumber{ 0 };
 };
 
 /**

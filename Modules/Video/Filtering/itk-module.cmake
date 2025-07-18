@@ -1,12 +1,15 @@
-set(DOCUMENTATION "This module contains a group of basic video filtering classes.")
+set(
+  DOCUMENTATION
+  "This module contains a group of basic video filtering classes."
+)
 
 itk_module(
   ITKVideoFiltering
   DEPENDS
-  ITKVideoCore
+    ITKVideoCore
   TEST_DEPENDS
-  ITKTestKernel
-  ITKVideoIO
-  ITKSmoothing
-  DESCRIPTION
-  "${DOCUMENTATION}")
+    ITKTestKernel
+    ITKVideoIO
+    ITKSmoothing
+  DESCRIPTION "${DOCUMENTATION}"
+)

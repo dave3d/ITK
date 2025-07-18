@@ -131,15 +131,12 @@ public:
   /** Default Constructor. Need to provide a default constructor since we
    * provide a copy constructor. */
   ImageConstIterator()
-    : m_Region()
+    : m_Image(nullptr)
+    , m_Region()
+    , m_Buffer(nullptr)
     , m_PixelAccessor()
     , m_PixelAccessorFunctor()
   {
-    m_Image = nullptr;
-    m_Buffer = nullptr;
-    m_Offset = 0;
-    m_BeginOffset = 0;
-    m_EndOffset = 0;
     m_PixelAccessorFunctor.SetBegin(m_Buffer);
   }
 
@@ -149,30 +146,33 @@ public:
   /** Copy Constructor. The copy constructor is provided to make sure the
    * handle to the image is properly reference counted. */
   ImageConstIterator(const Self & it)
+    : m_Image(it.m_Image)
+    , m_Region(it.m_Region)
+    , m_Offset(it.m_Offset)
+    , m_BeginOffset(it.m_BeginOffset)
+    , m_EndOffset(it.m_EndOffset)
+    , m_Buffer(it.m_Buffer)
+    , m_PixelAccessor(it.m_PixelAccessor)
+    , m_PixelAccessorFunctor(it.m_PixelAccessorFunctor)
   {
-    m_Image = it.m_Image; // copy the smart pointer
+    // copy the smart pointer
 
-    m_Region = it.m_Region;
 
-    m_Buffer = it.m_Buffer;
-    m_Offset = it.m_Offset;
-    m_BeginOffset = it.m_BeginOffset;
-    m_EndOffset = it.m_EndOffset;
-    m_PixelAccessor = it.m_PixelAccessor;
-    m_PixelAccessorFunctor = it.m_PixelAccessorFunctor;
     m_PixelAccessorFunctor.SetBegin(m_Buffer);
   }
 
   /** Constructor establishes an iterator to walk a particular image and a particular region of that image. Initializes
    * the iterator at the begin of the region. */
   ImageConstIterator(const ImageType * ptr, const RegionType & region)
+    : m_Image(ptr)
+    , m_Buffer(m_Image->GetBufferPointer())
+    , m_PixelAccessor(ptr->GetPixelAccessor())
   {
-    m_Image = ptr;
-    m_Buffer = m_Image->GetBufferPointer();
+
 
     SetRegion(region);
 
-    m_PixelAccessor = ptr->GetPixelAccessor();
+
     m_PixelAccessorFunctor.SetPixelAccessor(m_PixelAccessor);
     m_PixelAccessorFunctor.SetBegin(m_Buffer);
   }
@@ -299,7 +299,7 @@ public:
    * This causes the index to be calculated from pointer arithmetic and is
    * therefore an expensive operation.
    * \sa SetIndex */
-  const IndexType
+  [[nodiscard]] const IndexType
   GetIndex() const
   {
     return m_Image->ComputeIndex(static_cast<OffsetValueType>(m_Offset));
@@ -315,21 +315,21 @@ public:
 
   /** Get the region that this iterator walks. ImageConstIterators know the
    * beginning and the end of the region of the image to iterate over. */
-  const RegionType &
+  [[nodiscard]] const RegionType &
   GetRegion() const
   {
     return m_Region;
   }
 
   /** Get the image that this iterator walks. */
-  const ImageType *
+  [[nodiscard]] const ImageType *
   GetImage() const
   {
     return m_Image.GetPointer();
   }
 
   /** Get the pixel value */
-  PixelType
+  [[nodiscard]] PixelType
   Get() const
   {
     return m_PixelAccessorFunctor.Get(*(m_Buffer + m_Offset));
@@ -338,7 +338,7 @@ public:
   /** Return a const reference to the pixel
    * This method will provide the fastest access to pixel
    * data, but it will NOT support ImageAdaptors. */
-  const PixelType &
+  [[nodiscard]] const PixelType &
   Value() const
   {
     return *(m_Buffer + m_Offset);
@@ -362,7 +362,7 @@ public:
 
   /** Is the iterator at the beginning of the region? "Begin" is defined
    * as the first pixel in the region. */
-  bool
+  [[nodiscard]] bool
   IsAtBegin() const
   {
     return (m_Offset == m_BeginOffset);
@@ -370,7 +370,7 @@ public:
 
   /** Is the iterator at the end of the region? "End" is defined as one
    * pixel past the last pixel of the region. */
-  bool
+  [[nodiscard]] bool
   IsAtEnd() const
   {
     return (m_Offset == m_EndOffset);

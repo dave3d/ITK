@@ -30,12 +30,12 @@
 #include "itksys/SystemTools.hxx"
 #include "itkMakeUniqueForOverwrite.h"
 
-#define BIORAD_HEADER_LENGTH 76
-// #define BIORAD_NOTE_LENGTH 96
-// #define BIORAD_NOTE_LENGTH 80
-// #define BIORAD_RGB_LUT_LENGTH 768
-#define BIORAD_FILE_ID_OFFSET 54
-#define BIORAD_MAGIC_NUMBER 12345
+constexpr int32_t BIORAD_HEADER_LENGTH = 76;
+// constexpr int32_t BIORAD_NOTE_LENGTH = 96;
+// constexpr int32_t BIORAD_NOTE_LENGTH = 80;
+// constexpr int32_t BIORAD_RGB_LUT_LENGTH = 768;
+constexpr int32_t BIORAD_FILE_ID_OFFSET = 54;
+constexpr int32_t BIORAD_MAGIC_NUMBER = 12345;
 
 namespace itk
 {
@@ -160,9 +160,10 @@ BioRadImageIO::CanReadFile(const char * filename)
   }
 
   // Check to see if its a BioRad file
-  unsigned short file_id;
   file.seekg(BIORAD_FILE_ID_OFFSET, std::ios::beg);
-  file.read((char *)(&file_id), 2);
+
+  unsigned short file_id = 0;
+  file.read(reinterpret_cast<char *>(&file_id), 2);
   ByteSwapper<unsigned short>::SwapFromSystemToLittleEndian(&file_id);
 
   itkDebugMacro("Magic number: " << file_id);
@@ -211,7 +212,7 @@ BioRadImageIO::InternalReadImageInformation(std::ifstream & file)
   }
   file.seekg(0, std::ios::beg);
   bioradheader * p = &h;
-  file.read((char *)p, BIORAD_HEADER_LENGTH);
+  file.read(reinterpret_cast<char *>(p), BIORAD_HEADER_LENGTH);
 
   // byteswap header fields
   ByteSwapper<unsigned short>::SwapFromSystemToLittleEndian(&h.nx);
@@ -276,7 +277,7 @@ BioRadImageIO::InternalReadImageInformation(std::ifstream & file)
     }
   }
   int          punt(0);
-  unsigned int notes;
+  unsigned int notes = 0;
   memcpy(&notes, h.notes, sizeof(notes));
   ByteSwapper<unsigned int>::SwapFromSystemToLittleEndian(&notes);
   if (notes != 0)
@@ -296,7 +297,7 @@ BioRadImageIO::InternalReadImageInformation(std::ifstream & file)
     }
     while (!file.eof())
     {
-      file.read((char *)&note, sizeof(note));
+      file.read(reinterpret_cast<char *>(&note), sizeof(note));
       ByteSwapper<short>::SwapFromSystemToLittleEndian(&note.level);
       Aligned4ByteUnion localNext;
       memcpy(localNext.localChar4Array, note.next, 4);
@@ -315,14 +316,14 @@ BioRadImageIO::InternalReadImageInformation(std::ifstream & file)
         std::istringstream ss(note_text);
         std::string        label;
         ss >> label;
-        short type;
+        short type = 0;
         ss >> type;
         if ((type & 0x00ff) != 1)
         {
           continue;
         }
-        double origin;
-        double spacing;
+        double origin = NAN;
+        double spacing = NAN;
         if (label == "AXIS_2")
         {
           ss >> origin; // skip origin
@@ -474,7 +475,7 @@ BioRadImageIO::Write(const void * buffer)
   // Here we copy at most 31 bytes and terminate it explicitly
   strncpy(header.filename, filename.c_str(), sizeof(header.filename) - 1);
   header.filename[sizeof(header.filename) - 1] = '\0';
-  file.write((char *)p, BIORAD_HEADER_LENGTH);
+  file.write(reinterpret_cast<char *>(p), BIORAD_HEADER_LENGTH);
 
   // preparation for writing buffer:
   const auto numberOfBytes = static_cast<SizeValueType>(this->GetImageSizeInBytes());

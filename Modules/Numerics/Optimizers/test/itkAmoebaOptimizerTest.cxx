@@ -70,6 +70,7 @@ public:
   amoebaTestF1()
     : m_A(SpaceDimension, SpaceDimension)
     , m_B(SpaceDimension)
+
   {
     m_A[0][0] = 3;
     m_A[0][1] = 2;
@@ -78,7 +79,6 @@ public:
 
     m_B[0] = 2;
     m_B[1] = -8;
-    m_Negate = false;
   }
 
   double
@@ -142,7 +142,7 @@ public:
 private:
   MatrixType m_A;
   VectorType m_B;
-  bool       m_Negate;
+  bool       m_Negate{ false };
 };
 
 
@@ -171,15 +171,8 @@ public:
   double
   GetValue(const ParametersType & parameters) const override
   {
-    double val;
-    if (parameters[0] < 0)
-    {
-      val = parameters[0] * parameters[0] + 4 * parameters[0];
-    }
-    else
-    {
-      val = 2 * parameters[0] * parameters[0] - 8 * parameters[0];
-    }
+    const double val = (parameters[0] < 0) ? parameters[0] * parameters[0] + 4 * parameters[0]
+                                           : 2 * parameters[0] * parameters[0] - 8 * parameters[0];
     return val;
   }
 
@@ -229,10 +222,10 @@ public:
   }
 
 protected:
-  CommandIterationUpdateAmoeba() { m_IterationNumber = 0; }
+  CommandIterationUpdateAmoeba() {}
 
 private:
-  unsigned long m_IterationNumber;
+  unsigned long m_IterationNumber{ 0 };
 };
 
 /**

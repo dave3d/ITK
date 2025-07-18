@@ -21,9 +21,7 @@
 
 #include "itkFEMElementBase.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 /**
  * \class ElementStd
@@ -98,7 +96,7 @@ public:
   ElementStd();
 
   /** Methods that define the geometry of an element. */
-  unsigned int
+  [[nodiscard]] unsigned int
   GetNumberOfNodes() const override
   {
     return NumberOfNodes;
@@ -134,7 +132,7 @@ public:
   }
 
   /** Get the number of spatial dimensions. */
-  unsigned int
+  [[nodiscard]] unsigned int
   GetNumberOfSpatialDimensions() const override
   {
     return NumberOfSpatialDimensions;
@@ -159,8 +157,7 @@ protected:
   const Node * m_node[NumberOfNodes]{};
 };
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkFEMElementStd.hxx"

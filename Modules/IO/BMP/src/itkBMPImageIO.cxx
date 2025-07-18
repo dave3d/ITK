@@ -82,10 +82,10 @@ BMPImageIO::CanReadFile(const char * filename)
     return false;
   }
   {
-    char magic_number1;
-    inputStream.read((char *)&magic_number1, sizeof(char));
-    char magic_number2;
-    inputStream.read((char *)&magic_number2, sizeof(char));
+    char magic_number1 = 0;
+    inputStream.read(&magic_number1, sizeof(char));
+    char magic_number2 = 0;
+    inputStream.read(&magic_number2, sizeof(char));
 
     if ((magic_number1 != 'B') || (magic_number2 != 'M'))
     {
@@ -99,28 +99,28 @@ BMPImageIO::CanReadFile(const char * filename)
   constexpr size_t sizeLong = sizeof(long);
   if (sizeLong == 4)
   {
-    long tmp;
-    inputStream.read((char *)&tmp, 4);
+    long tmp = 0;
+    inputStream.read(reinterpret_cast<char *>(&tmp), 4);
     // skip 4 bytes
-    inputStream.read((char *)&tmp, 4);
+    inputStream.read(reinterpret_cast<char *>(&tmp), 4);
     // read the offset
-    inputStream.read((char *)&tmp, 4);
+    inputStream.read(reinterpret_cast<char *>(&tmp), 4);
   }
   else
   {
-    int itmp; // in case we are on a 64bit machine
-    inputStream.read((char *)&itmp, 4);
+    int itmp = 0; // in case we are on a 64bit machine
+    inputStream.read(reinterpret_cast<char *>(&itmp), 4);
     // skip 4 bytes
-    inputStream.read((char *)&itmp, 4);
+    inputStream.read(reinterpret_cast<char *>(&itmp), 4);
     // read the offset
-    inputStream.read((char *)&itmp, 4);
+    inputStream.read(reinterpret_cast<char *>(&itmp), 4);
   }
 
   // get size of header
   if (sizeLong == 4) // if we are on a 32 bit machine
   {
-    long infoSize;
-    inputStream.read((char *)&infoSize, sizeof(long));
+    long infoSize = 0;
+    inputStream.read(reinterpret_cast<char *>(&infoSize), sizeof(long));
     ByteSwapper<long>::SwapFromSystemToLittleEndian(&infoSize);
     // error checking
     if ((infoSize != 40) && (infoSize != 12))
@@ -131,8 +131,8 @@ BMPImageIO::CanReadFile(const char * filename)
   }
   else // else we are on a 64bit machine
   {
-    int iinfoSize; // in case we are on a 64bit machine
-    inputStream.read((char *)&iinfoSize, 4);
+    int iinfoSize = 0; // in case we are on a 64bit machine
+    inputStream.read(reinterpret_cast<char *>(&iinfoSize), 4);
     ByteSwapper<int>::SwapFromSystemToLittleEndian(&iinfoSize);
     const long infoSize = iinfoSize;
 
@@ -347,10 +347,10 @@ BMPImageIO::ReadImageInformation()
   this->OpenFileForReading(m_Ifstream, m_FileName);
 
   {
-    char magic_number1;
-    m_Ifstream.read((char *)&magic_number1, sizeof(char));
-    char magic_number2;
-    m_Ifstream.read((char *)&magic_number2, sizeof(char));
+    char magic_number1 = 0;
+    m_Ifstream.read(&magic_number1, sizeof(char));
+    char magic_number2 = 0;
+    m_Ifstream.read(&magic_number2, sizeof(char));
 
     if ((magic_number1 != 'B') || (magic_number2 != 'M'))
     {
@@ -363,34 +363,34 @@ BMPImageIO::ReadImageInformation()
   constexpr size_t sizeLong = sizeof(long);
   if (sizeLong == 4)
   {
-    long tmp;
-    m_Ifstream.read((char *)&tmp, 4);
+    long tmp = 0;
+    m_Ifstream.read(reinterpret_cast<char *>(&tmp), 4);
     // skip 4 bytes
-    m_Ifstream.read((char *)&tmp, 4);
+    m_Ifstream.read(reinterpret_cast<char *>(&tmp), 4);
     // read the offset
-    m_Ifstream.read((char *)&tmp, 4);
+    m_Ifstream.read(reinterpret_cast<char *>(&tmp), 4);
     m_BitMapOffset = tmp;
     ByteSwapper<long>::SwapFromSystemToLittleEndian(&m_BitMapOffset);
   }
   else
   {
-    int itmp; // in case we are on a 64bit machine
-    m_Ifstream.read((char *)&itmp, 4);
+    int itmp = 0; // in case we are on a 64bit machine
+    m_Ifstream.read(reinterpret_cast<char *>(&itmp), 4);
     // skip 4 bytes
-    m_Ifstream.read((char *)&itmp, 4);
+    m_Ifstream.read(reinterpret_cast<char *>(&itmp), 4);
     // read the offset
-    m_Ifstream.read((char *)&itmp, 4);
+    m_Ifstream.read(reinterpret_cast<char *>(&itmp), 4);
     ByteSwapper<int>::SwapFromSystemToLittleEndian(&itmp);
     m_BitMapOffset = static_cast<long>(itmp);
   }
 
-  int  xsize;
-  int  ysize;
-  long infoSize;
+  int  xsize = 0;
+  int  ysize = 0;
+  long infoSize = 0;
   // get size of header
   if (sizeLong == 4) // if we are on a 32 bit machine
   {
-    m_Ifstream.read((char *)&infoSize, 4);
+    m_Ifstream.read(reinterpret_cast<char *>(&infoSize), 4);
     ByteSwapper<long>::SwapFromSystemToLittleEndian(&infoSize);
     // error checking
     if ((infoSize != 40) && (infoSize != 12))
@@ -402,27 +402,27 @@ BMPImageIO::ReadImageInformation()
     if (infoSize == 40)
     {
       // now get the dimensions
-      m_Ifstream.read((char *)&xsize, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&xsize), 4);
       ByteSwapper<int>::SwapFromSystemToLittleEndian(&xsize);
-      m_Ifstream.read((char *)&ysize, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&ysize), 4);
       ByteSwapper<int>::SwapFromSystemToLittleEndian(&ysize);
     }
     else
     {
-      short stmp;
-      m_Ifstream.read((char *)&stmp, sizeof(short));
+      short stmp = 0;
+      m_Ifstream.read(reinterpret_cast<char *>(&stmp), sizeof(short));
       ByteSwapper<short>::SwapFromSystemToLittleEndian(&stmp);
       xsize = stmp;
-      m_Ifstream.read((char *)&stmp, sizeof(short));
+      m_Ifstream.read(reinterpret_cast<char *>(&stmp), sizeof(short));
       ByteSwapper<short>::SwapFromSystemToLittleEndian(&stmp);
       ysize = stmp;
     }
   }
   else // else we are on a 64bit machine
   {
-    int iinfoSize; // in case we are on a 64bit machine
+    int iinfoSize = 0; // in case we are on a 64bit machine
 
-    m_Ifstream.read((char *)&iinfoSize, sizeof(int));
+    m_Ifstream.read(reinterpret_cast<char *>(&iinfoSize), sizeof(int));
     ByteSwapper<int>::SwapFromSystemToLittleEndian(&iinfoSize);
     infoSize = iinfoSize;
 
@@ -436,18 +436,18 @@ BMPImageIO::ReadImageInformation()
     if (infoSize == 40)
     {
       // now get the dimensions
-      m_Ifstream.read((char *)&xsize, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&xsize), 4);
       ByteSwapper<int>::SwapFromSystemToLittleEndian(&xsize);
-      m_Ifstream.read((char *)&ysize, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&ysize), 4);
       ByteSwapper<int>::SwapFromSystemToLittleEndian(&ysize);
     }
     else
     {
       short stmp = 0;
-      m_Ifstream.read((char *)&stmp, 2);
+      m_Ifstream.read(reinterpret_cast<char *>(&stmp), 2);
       ByteSwapper<short>::SwapFromSystemToLittleEndian(&stmp);
       xsize = stmp;
-      m_Ifstream.read((char *)&stmp, 2);
+      m_Ifstream.read(reinterpret_cast<char *>(&stmp), 2);
       ByteSwapper<short>::SwapFromSystemToLittleEndian(&stmp);
       ysize = stmp;
     }
@@ -469,10 +469,10 @@ BMPImageIO::ReadImageInformation()
   m_Dimensions[1] = ysize;
 
   // ignore planes
-  short stmp;
-  m_Ifstream.read((char *)&stmp, 2);
+  short stmp = 0;
+  m_Ifstream.read(reinterpret_cast<char *>(&stmp), 2);
   // read depth
-  m_Ifstream.read((char *)&m_Depth, 2);
+  m_Ifstream.read(reinterpret_cast<char *>(&m_Depth), 2);
   ByteSwapper<short>::SwapFromSystemToLittleEndian(&m_Depth);
 
   if ((m_Depth != 8) && (m_Depth != 24) && (m_Depth != 32))
@@ -486,45 +486,45 @@ BMPImageIO::ReadImageInformation()
     if (sizeLong == 4)
     {
       // Compression
-      m_Ifstream.read((char *)&m_BMPCompression, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&m_BMPCompression), 4);
       ByteSwapper<long>::SwapFromSystemToLittleEndian(&m_BMPCompression);
       // Image Data Size
-      m_Ifstream.read((char *)&m_BMPDataSize, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&m_BMPDataSize), 4);
       ByteSwapper<unsigned long>::SwapFromSystemToLittleEndian(&m_BMPDataSize);
       // Horizontal Resolution
-      long tmp;
-      m_Ifstream.read((char *)&tmp, 4);
+      long tmp = 0;
+      m_Ifstream.read(reinterpret_cast<char *>(&tmp), 4);
       // Vertical Resolution
-      m_Ifstream.read((char *)&tmp, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&tmp), 4);
       // Number of colors
-      m_Ifstream.read((char *)&tmp, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&tmp), 4);
       m_NumberOfColors = static_cast<unsigned short>(tmp);
       // Number of important colors
-      m_Ifstream.read((char *)&tmp, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&tmp), 4);
     }
     else
     {
-      int itmp; // in case we are on a 64bit machine
+      int itmp = 0; // in case we are on a 64bit machine
       // Compression
-      m_Ifstream.read((char *)&itmp, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&itmp), 4);
       ByteSwapper<int>::SwapFromSystemToLittleEndian(&itmp);
       m_BMPCompression = static_cast<long>(itmp);
       // Image Data Size
-      m_Ifstream.read((char *)&itmp, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&itmp), 4);
       ByteSwapper<int>::SwapFromSystemToLittleEndian(&itmp);
       m_BMPDataSize = static_cast<unsigned long>(itmp);
       // Horizontal Resolution
-      m_Ifstream.read((char *)&itmp, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&itmp), 4);
       ByteSwapper<int>::SwapFromSystemToLittleEndian(&itmp);
       // Vertical Resolution
-      m_Ifstream.read((char *)&itmp, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&itmp), 4);
       ByteSwapper<int>::SwapFromSystemToLittleEndian(&itmp);
       // Number of colors
-      m_Ifstream.read((char *)&itmp, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&itmp), 4);
       ByteSwapper<int>::SwapFromSystemToLittleEndian(&itmp);
       m_NumberOfColors = static_cast<unsigned short>(itmp);
       // Number of important colors
-      m_Ifstream.read((char *)&itmp, 4);
+      m_Ifstream.read(reinterpret_cast<char *>(&itmp), 4);
     }
   }
 
@@ -551,19 +551,19 @@ BMPImageIO::ReadImageInformation()
   {
     m_ColorPaletteSize = 0;
   }
-  unsigned char uctmp;
+  unsigned char uctmp = 0;
   m_ColorPalette.resize(m_ColorPaletteSize);
   for (unsigned long i = 0; i < m_ColorPaletteSize; ++i)
   {
     RGBPixelType p;
-    m_Ifstream.read((char *)&uctmp, 1);
+    m_Ifstream.read(reinterpret_cast<char *>(&uctmp), 1);
     p.SetRed(uctmp);
-    m_Ifstream.read((char *)&uctmp, 1);
+    m_Ifstream.read(reinterpret_cast<char *>(&uctmp), 1);
     p.SetGreen(uctmp);
-    m_Ifstream.read((char *)&uctmp, 1);
+    m_Ifstream.read(reinterpret_cast<char *>(&uctmp), 1);
     p.SetBlue(uctmp);
-    long tmp;
-    m_Ifstream.read((char *)&tmp, 1);
+    long tmp = 0;
+    m_Ifstream.read(reinterpret_cast<char *>(&tmp), 1);
     m_ColorPalette[i] = p;
   }
 
@@ -610,38 +610,20 @@ BMPImageIO::SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels)
   switch (m_ComponentType)
   {
     case IOComponentEnum::CHAR:
-    {
-      if (m_ByteOrder == IOByteOrderEnum::LittleEndian)
-      {
-        ByteSwapper<char>::SwapRangeFromSystemToLittleEndian((char *)buffer, numberOfPixels);
-      }
-      else if (m_ByteOrder == IOByteOrderEnum::BigEndian)
-      {
-        ByteSwapper<char>::SwapRangeFromSystemToBigEndian((char *)buffer, numberOfPixels);
-      }
-      break;
-    }
     case IOComponentEnum::UCHAR:
     {
-      if (m_ByteOrder == IOByteOrderEnum::LittleEndian)
-      {
-        ByteSwapper<unsigned char>::SwapRangeFromSystemToLittleEndian((unsigned char *)buffer, numberOfPixels);
-      }
-      else if (m_ByteOrder == IOByteOrderEnum::BigEndian)
-      {
-        ByteSwapper<unsigned char>::SwapRangeFromSystemToBigEndian((unsigned char *)buffer, numberOfPixels);
-      }
+      // For CHAR and UCHAR, it is not necessary to swap bytes.
       break;
     }
     case IOComponentEnum::SHORT:
     {
       if (m_ByteOrder == IOByteOrderEnum::LittleEndian)
       {
-        ByteSwapper<short>::SwapRangeFromSystemToLittleEndian((short *)buffer, numberOfPixels);
+        ByteSwapper<short>::SwapRangeFromSystemToLittleEndian(static_cast<short *>(buffer), numberOfPixels);
       }
       else if (m_ByteOrder == IOByteOrderEnum::BigEndian)
       {
-        ByteSwapper<short>::SwapRangeFromSystemToBigEndian((short *)buffer, numberOfPixels);
+        ByteSwapper<short>::SwapRangeFromSystemToBigEndian(static_cast<short *>(buffer), numberOfPixels);
       }
       break;
     }
@@ -649,11 +631,13 @@ BMPImageIO::SwapBytesIfNecessary(void * buffer, SizeValueType numberOfPixels)
     {
       if (m_ByteOrder == IOByteOrderEnum::LittleEndian)
       {
-        ByteSwapper<unsigned short>::SwapRangeFromSystemToLittleEndian((unsigned short *)buffer, numberOfPixels);
+        ByteSwapper<unsigned short>::SwapRangeFromSystemToLittleEndian(static_cast<unsigned short *>(buffer),
+                                                                       numberOfPixels);
       }
       else if (m_ByteOrder == IOByteOrderEnum::BigEndian)
       {
-        ByteSwapper<unsigned short>::SwapRangeFromSystemToBigEndian((unsigned short *)buffer, numberOfPixels);
+        ByteSwapper<unsigned short>::SwapRangeFromSystemToBigEndian(static_cast<unsigned short *>(buffer),
+                                                                    numberOfPixels);
       }
       break;
     }

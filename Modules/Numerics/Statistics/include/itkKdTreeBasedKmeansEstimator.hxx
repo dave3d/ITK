@@ -20,9 +20,7 @@
 
 #include "itkStatisticsAlgorithm.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TKdTree>
 KdTreeBasedKmeansEstimator<TKdTree>::KdTreeBasedKmeansEstimator()
@@ -66,12 +64,10 @@ double
 KdTreeBasedKmeansEstimator<TKdTree>::GetSumOfSquaredPositionChanges(InternalParametersType & previous,
                                                                     InternalParametersType & current)
 {
-  double temp;
   double sum = 0.0;
-
   for (unsigned int i = 0; i < static_cast<unsigned int>(previous.size()); ++i)
   {
-    temp = m_DistanceMetric->Evaluate(previous[i], current[i]);
+    double temp = m_DistanceMetric->Evaluate(previous[i], current[i]);
     sum += temp;
   }
   return sum;
@@ -83,12 +79,11 @@ KdTreeBasedKmeansEstimator<TKdTree>::GetClosestCandidate(ParameterType & measure
 {
   int    closest = 0;
   double closestDistance = NumericTraits<double>::max();
-  double tempDistance;
 
   auto iter = validIndexes.begin();
   while (iter != validIndexes.end())
   {
-    tempDistance = m_DistanceMetric->Evaluate(m_CandidateVector[*iter].Centroid, measurements);
+    double tempDistance = m_DistanceMetric->Evaluate(m_CandidateVector[*iter].Centroid, measurements);
     if (tempDistance < closestDistance)
     {
       closest = *iter;
@@ -203,7 +198,7 @@ KdTreeBasedKmeansEstimator<TKdTree>::Filter(KdTreeNodeType *        node,
     }
     else
     {
-      unsigned int    partitionDimension;
+      unsigned int    partitionDimension = 0;
       MeasurementType partitionValue;
       MeasurementType tempValue;
       node->GetParameters(partitionDimension, partitionValue);
@@ -434,7 +429,6 @@ KdTreeBasedKmeansEstimator<TKdTree>::PrintPoint(ParameterType & point)
   }
   std::cout << ']';
 }
-} // end of namespace Statistics
-} // end namespace itk
+} // namespace itk::Statistics
 
 #endif

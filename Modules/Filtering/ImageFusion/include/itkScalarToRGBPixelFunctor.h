@@ -20,9 +20,7 @@
 
 #include "itkRGBPixel.h"
 
-namespace itk
-{
-namespace Functor
+namespace itk::Functor
 {
 /**
  * \class ScalarToRGBPixelFunctor
@@ -72,7 +70,7 @@ public:
     m_UseMSBForHashing = value;
   }
 
-  bool
+  [[nodiscard]] bool
   GetUseMSBForHashing() const
   {
     return m_UseMSBForHashing;
@@ -95,8 +93,7 @@ private:
   bool         m_UseMSBForHashing;
   unsigned int m_ColorIndex[3];
 };
-} // end namespace Functor
-} // end namespace itk
+} // namespace itk::Functor
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkScalarToRGBPixelFunctor.hxx"

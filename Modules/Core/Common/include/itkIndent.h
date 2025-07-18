@@ -64,7 +64,9 @@ public:
   }
 
   /** Construct the object with an initial indentation level. */
-  Indent(int ind = 0) { m_Indent = ind; }
+  Indent(int ind = 0)
+    : m_Indent(ind)
+  {}
 
   /** Return the name of the class. */
   static const char *
@@ -75,7 +77,7 @@ public:
 
   /** Determine the next indentation level. Keep indenting by two until the
    * a maximum of forty spaces is reached.  */
-  Indent
+  [[nodiscard]] Indent
   GetNextIndent() const;
 
   /** Print out the indentation. Basically output a bunch of spaces.  */

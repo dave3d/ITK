@@ -26,33 +26,37 @@
 #include "itkFEMLoadLandmark.h"
 #include "itkMath.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 #define TOTE
 
 
 template <unsigned int VDimension>
 SolverCrankNicolson<VDimension>::SolverCrankNicolson()
+  : m_TimeStep(0.5)
+  , m_Rho(1.)
+  , m_Alpha(0.5)
+  , m_CurrentMaxSolution(1.0)
+  , m_UseMassMatrix(true)
+  , m_ForceTotalIndex(5)
+  , m_ForceTMinus1Index(2)
+  , m_SolutionTMinus1Index(2)
+  , m_SolutionVectorTMinus1Index(3)
+  , m_TotalSolutionIndex(1)
+  , m_DifferenceMatrixIndex(1)
+  , m_DiffMatrixBySolutionTMinus1Index(4)
 {
-  m_TimeStep = 0.5;
-  m_Rho = 1.;
-  m_Alpha = 0.5;
   // BUG FIXME NOT SURE IF SOLVER IS USING VECTOR INDEX 1 FOR BCs
-  m_ForceTIndex = 0;                      // vector
-  m_ForceTMinus1Index = 2;                // vector
-  m_SolutionVectorTMinus1Index = 3;       // vector
-  m_DiffMatrixBySolutionTMinus1Index = 4; // vector
-  m_ForceTotalIndex = 5;                  // vector
-  m_SolutionTIndex = 0;                   // solution
-  m_TotalSolutionIndex = 1;               // solution
-  m_SolutionTMinus1Index = 2;             // solution
-  m_SumMatrixIndex = 0;                   // matrix
-  m_DifferenceMatrixIndex = 1;            // matrix
-  m_CurrentMaxSolution = 1.0;
-  m_UseMassMatrix = true;
-  m_Iterations = 0;
+  // vector
+  // vector
+  // vector
+  // vector
+  // vector
+  // solution
+  // solution
+  // solution
+  // matrix
+  // matrix
 }
 
 template <unsigned int VDimension>
@@ -876,7 +880,6 @@ SolverCrankNicolson<VDimension>::PrintForce()
   }
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif

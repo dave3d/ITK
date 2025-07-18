@@ -155,23 +155,22 @@ StimulateImageIO::Read(void * buffer)
   switch (this->GetComponentType())
   {
     case IOComponentEnum::CHAR:
-      ByteSwapper<char>::SwapRangeFromSystemToBigEndian((char *)buffer,
-                                                        static_cast<SizeValueType>(this->GetImageSizeInComponents()));
+      // For CHAR, it is not necessary to swap bytes. (It would not have any effect anyway.)
       break;
     case IOComponentEnum::SHORT:
-      ByteSwapper<short>::SwapRangeFromSystemToBigEndian((short *)buffer,
+      ByteSwapper<short>::SwapRangeFromSystemToBigEndian(static_cast<short *>(buffer),
                                                          static_cast<SizeValueType>(this->GetImageSizeInComponents()));
       break;
     case IOComponentEnum::INT:
-      ByteSwapper<int>::SwapRangeFromSystemToBigEndian((int *)buffer,
+      ByteSwapper<int>::SwapRangeFromSystemToBigEndian(static_cast<int *>(buffer),
                                                        static_cast<SizeValueType>(this->GetImageSizeInComponents()));
       break;
     case IOComponentEnum::FLOAT:
-      ByteSwapper<float>::SwapRangeFromSystemToBigEndian((float *)buffer,
+      ByteSwapper<float>::SwapRangeFromSystemToBigEndian(static_cast<float *>(buffer),
                                                          static_cast<SizeValueType>(this->GetImageSizeInComponents()));
       break;
     case IOComponentEnum::DOUBLE:
-      ByteSwapper<double>::SwapRangeFromSystemToBigEndian((double *)buffer,
+      ByteSwapper<double>::SwapRangeFromSystemToBigEndian(static_cast<double *>(buffer),
                                                           static_cast<SizeValueType>(this->GetImageSizeInComponents()));
       break;
     default:
@@ -220,7 +219,7 @@ StimulateImageIO::InternalReadImageInformation(std::ifstream & file)
 
     if (text.find("numDim") < text.length())
     {
-      unsigned int dim;
+      unsigned int dim = 0;
       sscanf(line, "%*s %u", &dim);
       this->SetNumberOfDimensions(dim);
     }
@@ -536,8 +535,7 @@ StimulateImageIO::Write(const void * buffer)
     {
       case IOComponentEnum::CHAR:
         file << "BYTE";
-        ByteSwapper<char>::SwapRangeFromSystemToBigEndian(reinterpret_cast<char *>(tempmemory.get()),
-                                                          numberOfComponents);
+        // For CHAR, it is not necessary to swap bytes. (It would not have any effect anyway.)
         break;
       case IOComponentEnum::SHORT:
         file << "WORD";

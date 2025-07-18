@@ -50,26 +50,25 @@ public:
     : m_Coefficients(CoordType{})
     , m_A(PointDimension, PointDimension, CoordType{})
     , m_B(CoordType{})
+    , m_Rank(PointDimension)
     , m_SVDAbsoluteThreshold(static_cast<CoordType>(1e-6))
     , m_SVDRelativeThreshold(static_cast<CoordType>(1e-3))
-  {
-    this->m_Rank = PointDimension;
-  }
+  {}
 
   QuadEdgeMeshDecimationQuadricElementHelper(const CoefficientVectorType & iCoefficients)
     : m_Coefficients(iCoefficients)
     , m_A(PointDimension, PointDimension, CoordType{})
     , m_B(CoordType{})
+    , m_Rank(PointDimension)
     , m_SVDAbsoluteThreshold(static_cast<CoordType>(1e-3))
     , m_SVDRelativeThreshold(static_cast<CoordType>(1e-3))
   {
-    this->m_Rank = PointDimension;
     this->ComputeAMatrixAndBVector();
   }
 
   ~QuadEdgeMeshDecimationQuadricElementHelper() = default;
 
-  CoefficientVectorType
+  [[nodiscard]] CoefficientVectorType
   GetCoefficients() const
   {
     return this->m_Coefficients;
@@ -89,14 +88,14 @@ public:
     return m_B;
   }
 
-  unsigned int
+  [[nodiscard]] unsigned int
   GetRank() const
   {
     return m_Rank;
   }
 
   /// TODO this method should be really optimized!!!
-  inline CoordType
+  [[nodiscard]] inline CoordType
   ComputeError(const PointType & iP) const
   {
     //     ComputeAMatrixAndBVector();

@@ -22,9 +22,7 @@
 #include "itkMacro.h"
 #include "itkObjectFactory.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /**
  * \class Subsample
@@ -143,20 +141,13 @@ public:
     ConstIterator(const Self * sample) { *this = sample->Begin(); }
 
     ConstIterator(const ConstIterator & iter)
-    {
-      m_Iter = iter.m_Iter;
-      m_Subsample = iter.m_Subsample;
-      m_Sample = iter.m_Sample;
-    }
+      : m_Iter(iter.m_Iter)
+      , m_Subsample(iter.m_Subsample)
+      , m_Sample(iter.m_Sample)
+    {}
 
     ConstIterator &
-    operator=(const ConstIterator & iter)
-    {
-      m_Iter = iter.m_Iter;
-      m_Subsample = iter.m_Subsample;
-      m_Sample = iter.m_Sample;
-      return *this;
-    }
+    operator=(const ConstIterator & iter) = default;
 
     bool
     operator==(const ConstIterator & it) const
@@ -173,19 +164,19 @@ public:
       return *this;
     }
 
-    AbsoluteFrequencyType
+    [[nodiscard]] AbsoluteFrequencyType
     GetFrequency() const
     {
       return m_Sample->GetFrequency(*m_Iter);
     }
 
-    const MeasurementVectorType &
+    [[nodiscard]] const MeasurementVectorType &
     GetMeasurementVector() const
     {
       return m_Sample->GetMeasurementVector(*m_Iter);
     }
 
-    InstanceIdentifier
+    [[nodiscard]] InstanceIdentifier
     GetInstanceIdentifier() const
     {
       return (m_Iter - m_Subsample->GetIdHolder().begin());
@@ -298,8 +289,7 @@ private:
   unsigned int               m_ActiveDimension{};
   TotalAbsoluteFrequencyType m_TotalFrequency{};
 }; // end of class
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "itkSubsample.hxx"

@@ -932,13 +932,11 @@ FlatStructuringElement<VDimension>::Ball(RadiusType radius, bool radiusIsParamet
   res.m_Decomposable = false;
   res.SetRadiusIsParametric(radiusIsParametric);
 
-  unsigned int i;
-
   // Create an image to hold the ellipsoid
   //
   auto       sourceImage = ImageType::New();
   RadiusType size = radius;
-  for (i = 0; i < int{ VDimension }; ++i)
+  for (unsigned int i = 0; i < int{ VDimension }; ++i)
   {
     size[i] = 2 * size[i] + 1;
   }
@@ -969,7 +967,7 @@ FlatStructuringElement<VDimension>::Ball(RadiusType radius, bool radiusIsParamet
 
   // Define and set the axes lengths for the ellipsoid
   typename EllipsoidType::InputType axes;
-  for (i = 0; i < VDimension; ++i)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     if (res.GetRadiusIsParametric())
     {
@@ -984,7 +982,7 @@ FlatStructuringElement<VDimension>::Ball(RadiusType radius, bool radiusIsParamet
 
   // Define and set the center of the ellipsoid in physical space
   typename EllipsoidType::InputType center;
-  for (i = 0; i < VDimension; ++i)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     // put the center of ellipse in the middle of the center pixel
     center[i] = res.GetRadius(i) + 0.5;
@@ -999,7 +997,7 @@ FlatStructuringElement<VDimension>::Ball(RadiusType radius, bool radiusIsParamet
   spatialFunction->SetOrientations(orientations);
 
   typename ImageType::IndexType seed;
-  for (i = 0; i < VDimension; ++i)
+  for (unsigned int i = 0; i < VDimension; ++i)
   {
     seed[i] = res.GetRadius(i);
   }
@@ -1080,12 +1078,14 @@ FlatStructuringElement<VDimension>::Annulus(RadiusType   radius,
     if (result.GetRadiusIsParametric())
     {
       axesOuter[i] = 2 * result.GetRadius(i);
-      axesInner[i] = std::max(2 * (OffsetValueType)radius[i] - 2 * (OffsetValueType)thickness, (OffsetValueType)1);
+      axesInner[i] = std::max(2 * (OffsetValueType)radius[i] - 2 * static_cast<OffsetValueType>(thickness),
+                              static_cast<OffsetValueType>(1));
     }
     else
     {
       axesOuter[i] = result.GetSize(i);
-      axesInner[i] = std::max(2 * (OffsetValueType)radius[i] + 1 - 2 * (OffsetValueType)thickness, (OffsetValueType)1);
+      axesInner[i] = std::max(2 * (OffsetValueType)radius[i] + 1 - 2 * static_cast<OffsetValueType>(thickness),
+                              static_cast<OffsetValueType>(1));
     }
   }
   ellipsoidOuter->SetAxes(axesOuter);

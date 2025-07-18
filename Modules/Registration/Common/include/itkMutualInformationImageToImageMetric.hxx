@@ -28,22 +28,19 @@ namespace itk
 
 template <typename TFixedImage, typename TMovingImage>
 MutualInformationImageToImageMetric<TFixedImage, TMovingImage>::MutualInformationImageToImageMetric()
+  : m_MovingImageStandardDeviation(0.4)
+  , m_FixedImageStandardDeviation(0.4)
+  , m_MinProbability(0.0001)
+  , m_DerivativeCalculator(DerivativeFunctionType::New())
 {
-  m_NumberOfSpatialSamples = 0;
   this->SetNumberOfSpatialSamples(50);
 
   m_KernelFunction = dynamic_cast<KernelFunctionType *>(GaussianKernelFunction<double>::New().GetPointer());
-
-  m_FixedImageStandardDeviation = 0.4;
-  m_MovingImageStandardDeviation = 0.4;
-
-  m_MinProbability = 0.0001;
 
   //
   // Following initialization is related to
   // calculating image derivatives
   this->SetComputeGradient(false); // don't use the default gradient for now
-  m_DerivativeCalculator = DerivativeFunctionType::New();
   m_DerivativeCalculator->UseImageDirectionOn();
 }
 
@@ -215,13 +212,10 @@ MutualInformationImageToImageMetric<TFixedImage, TMovingImage>::GetValue(const P
     dSumJoint += m_MinProbability;
     for (aiter = m_SampleA.begin(); aiter != aend; ++aiter)
     {
-      double valueFixed;
-      double valueMoving;
-
-      valueFixed = (biter->FixedImageValue - aiter->FixedImageValue) / m_FixedImageStandardDeviation;
+      double valueFixed = (biter->FixedImageValue - aiter->FixedImageValue) / m_FixedImageStandardDeviation;
       valueFixed = m_KernelFunction->Evaluate(valueFixed);
 
-      valueMoving = (biter->MovingImageValue - aiter->MovingImageValue) / m_MovingImageStandardDeviation;
+      double valueMoving = (biter->MovingImageValue - aiter->MovingImageValue) / m_MovingImageStandardDeviation;
       valueMoving = m_KernelFunction->Evaluate(valueMoving);
 
       dSumFixed += valueFixed;
@@ -324,13 +318,10 @@ MutualInformationImageToImageMetric<TFixedImage, TMovingImage>::GetValueAndDeriv
     dSumFixed += m_MinProbability;
     for (aiter = m_SampleA.begin(); aiter != aend; ++aiter)
     {
-      double valueFixed;
-      double valueMoving;
-
-      valueFixed = (biter->FixedImageValue - aiter->FixedImageValue) / m_FixedImageStandardDeviation;
+      double valueFixed = (biter->FixedImageValue - aiter->FixedImageValue) / m_FixedImageStandardDeviation;
       valueFixed = m_KernelFunction->Evaluate(valueFixed);
 
-      valueMoving = (biter->MovingImageValue - aiter->MovingImageValue) / m_MovingImageStandardDeviation;
+      double valueMoving = (biter->MovingImageValue - aiter->MovingImageValue) / m_MovingImageStandardDeviation;
       valueMoving = m_KernelFunction->Evaluate(valueMoving);
 
       dDenominatorMoving += valueMoving;
@@ -358,22 +349,16 @@ MutualInformationImageToImageMetric<TFixedImage, TMovingImage>::GetValueAndDeriv
     SumType totalWeight;
     for (aiter = m_SampleA.begin(), aditer = sampleADerivatives.begin(); aiter != aend; ++aiter, ++aditer)
     {
-      double valueFixed;
-      double valueMoving;
-      double weightMoving;
-      double weightJoint;
-      double weight;
-
-      valueFixed = (biter->FixedImageValue - aiter->FixedImageValue) / m_FixedImageStandardDeviation;
+      double valueFixed = (biter->FixedImageValue - aiter->FixedImageValue) / m_FixedImageStandardDeviation;
       valueFixed = m_KernelFunction->Evaluate(valueFixed);
 
-      valueMoving = (biter->MovingImageValue - aiter->MovingImageValue) / m_MovingImageStandardDeviation;
+      double valueMoving = (biter->MovingImageValue - aiter->MovingImageValue) / m_MovingImageStandardDeviation;
       valueMoving = m_KernelFunction->Evaluate(valueMoving);
 
-      weightMoving = valueMoving / dDenominatorMoving.GetSum();
-      weightJoint = valueMoving * valueFixed / dDenominatorJoint.GetSum();
+      double weightMoving = valueMoving / dDenominatorMoving.GetSum();
+      double weightJoint = valueMoving * valueFixed / dDenominatorJoint.GetSum();
 
-      weight = (weightMoving - weightJoint);
+      double weight = (weightMoving - weightJoint);
       weight *= biter->MovingImageValue - aiter->MovingImageValue;
 
       totalWeight += weight;

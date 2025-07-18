@@ -195,11 +195,12 @@ protected:
           // which line to keep. This is necessary to avoid the case where a
           // part of a label is over
           // a second label, and below in another part of the image.
-          bool                                                  keepCurrent;
+
           const typename TAttributeAccessor::AttributeValueType prevAttr = accessor(prev.labelObject);
           const typename TAttributeAccessor::AttributeValueType attr = accessor(l.labelObject);
           // this may be changed to a single boolean expression, but may become
           // quite difficult to read
+          bool keepCurrent = false;
           if (Math::ExactlyEquals(attr, prevAttr))
           {
             if (l.labelObject->GetLabel() > prev.labelObject->GetLabel())
@@ -331,10 +332,9 @@ private:
   {
     using LineType = typename LabelObjectType::LineType;
     LineOfLabelObject(const LineType _line, LabelObjectType * _lo)
-    {
-      this->line = _line;
-      this->labelObject = _lo;
-    }
+      : line(_line)
+      , labelObject(_lo)
+    {}
 
     LineType          line;
     LabelObjectType * labelObject;

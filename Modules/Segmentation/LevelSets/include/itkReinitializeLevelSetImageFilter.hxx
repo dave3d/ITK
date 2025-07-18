@@ -26,18 +26,13 @@ namespace itk
 
 template <typename TLevelSet>
 ReinitializeLevelSetImageFilter<TLevelSet>::ReinitializeLevelSetImageFilter()
-{
-  m_LevelSetValue = 0.0;
-
-  m_Locator = LocatorType::New();
-  m_Marcher = FastMarchingImageFilterType::New();
-
-  m_NarrowBanding = false;
-  m_InputNarrowBandwidth = 12.0;
-  m_OutputNarrowBandwidth = 12.0;
-  m_InputNarrowBand = nullptr;
-  m_OutputNarrowBand = nullptr;
-}
+  : m_Locator(LocatorType::New())
+  , m_Marcher(FastMarchingImageFilterType::New())
+  , m_InputNarrowBandwidth(12.0)
+  , m_OutputNarrowBandwidth(12.0)
+  , m_InputNarrowBand(nullptr)
+  , m_OutputNarrowBand(nullptr)
+{}
 
 template <typename TLevelSet>
 void
@@ -144,8 +139,6 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataFull()
   ConstIteratorType inputIt(inputPtr, inputPtr->GetBufferedRegion());
   IteratorType      outputIt(outputPtr, outputPtr->GetBufferedRegion());
 
-  IteratorType tempIt;
-
   this->UpdateProgress(0.0);
 
   // locate the level set
@@ -159,13 +152,10 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataFull()
   m_Marcher->SetTrialPoints(m_Locator->GetOutsidePoints());
   m_Marcher->Update();
 
-  tempIt = IteratorType(tempLevelSet, tempLevelSet->GetBufferedRegion());
-
-  double value;
-
+  IteratorType tempIt = IteratorType(tempLevelSet, tempLevelSet->GetBufferedRegion());
   while (!inputIt.IsAtEnd())
   {
-    value = static_cast<double>(inputIt.Get());
+    auto value = static_cast<double>(inputIt.Get());
     if (value - m_LevelSetValue > 0)
     {
       outputIt.Set(tempIt.Get());
@@ -188,7 +178,7 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataFull()
 
   while (!inputIt.IsAtEnd())
   {
-    value = static_cast<double>(inputIt.Get());
+    auto value = static_cast<double>(inputIt.Get());
     if (value - m_LevelSetValue <= 0)
     {
       value = static_cast<double>(tempIt.Get());
@@ -217,19 +207,14 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataNarrowBand()
 
   IteratorType outputIt(outputPtr, outputPtr->GetBufferedRegion());
 
-  PixelType posInfinity;
-  PixelType negInfinity;
-
-  posInfinity = NumericTraits<PixelType>::max();
-  negInfinity = NumericTraits<PixelType>::NonpositiveMin();
+  PixelType posInfinity = NumericTraits<PixelType>::max();
+  PixelType negInfinity = NumericTraits<PixelType>::NonpositiveMin();
 
   // set all internal pixels to minus infinity and
   // all external pixels to positive infinity
-  double value;
-
   while (!inputIt.IsAtEnd())
   {
-    value = static_cast<double>(inputIt.Get());
+    auto value = static_cast<double>(inputIt.Get());
     if (value - m_LevelSetValue <= 0)
     {
       outputIt.Set(negInfinity);
@@ -276,21 +261,13 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataNarrowBand()
 
   NodeContainerPointer procPoints = m_Marcher->GetProcessedPoints();
 
-  typename NodeContainer::ConstIterator pointsIt;
-  typename NodeContainer::ConstIterator pointsEnd;
-
-  pointsIt = procPoints->Begin();
-  pointsEnd = procPoints->End();
-
-  NodeType  node;
-  PixelType inPixel;
-
-  for (; pointsIt != pointsEnd; ++pointsIt)
+  typename NodeContainer::ConstIterator pointsEnd = procPoints->End();
+  for (typename NodeContainer::ConstIterator pointsIt = procPoints->Begin(); pointsIt != pointsEnd; ++pointsIt)
   {
-    node = pointsIt.Value();
-    inPixel = inputPtr->GetPixel(node.GetIndex());
+    NodeType  node = pointsIt.Value();
+    PixelType inPixel = inputPtr->GetPixel(node.GetIndex());
 
-    value = static_cast<double>(inPixel);
+    auto value = static_cast<double>(inPixel);
     if (value - m_LevelSetValue > 0)
     {
       inPixel = tempLevelSet->GetPixel(node.GetIndex());
@@ -306,15 +283,13 @@ ReinitializeLevelSetImageFilter<TLevelSet>::GenerateDataNarrowBand()
   m_Marcher->Update();
 
   procPoints = m_Marcher->GetProcessedPoints();
-  pointsIt = procPoints->Begin();
   pointsEnd = procPoints->End();
-
-  for (; pointsIt != pointsEnd; ++pointsIt)
+  for (typename NodeContainer::ConstIterator pointsIt = procPoints->Begin(); pointsIt != pointsEnd; ++pointsIt)
   {
-    node = pointsIt.Value();
-    inPixel = inputPtr->GetPixel(node.GetIndex());
+    NodeType  node = pointsIt.Value();
+    PixelType inPixel = inputPtr->GetPixel(node.GetIndex());
 
-    value = static_cast<double>(inPixel);
+    auto value = static_cast<double>(inPixel);
     if (value - m_LevelSetValue <= 0)
     {
       inPixel = tempLevelSet->GetPixel(node.GetIndex());

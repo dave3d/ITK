@@ -27,20 +27,15 @@ template <typename TInputImage, typename TOutputImage>
 DirectFourierReconstructionImageToImageFilter<TInputImage,
                                               TOutputImage>::DirectFourierReconstructionImageToImageFilter()
   : Superclass()
+  , m_ZeroPadding(2)
+  , m_OverSampling(2)
+  , m_Cutoff(1.0)
+  , m_AlphaRange(180)
+  , m_ZDirection(1)
+  , m_AlphaDirection(2)
+  , m_RadialSplineOrder(3)
 {
   constexpr double RADIANS = 1.0;
-
-  m_ZeroPadding = 2;
-  m_OverSampling = 2;
-  m_Cutoff = 1.0;
-  m_AlphaRange = 180;
-
-  m_ZDirection = 1;
-  m_RDirection = 0;
-  m_AlphaDirection = 2;
-
-  m_RadialSplineOrder = 3;
-
   m_PI = 4 * std::atan(RADIANS);
 }
 
@@ -177,7 +172,7 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
   InputSliceIteratorType inputIt(inputImage, inputROI);
   inputIt.SetFirstDirection(m_RDirection);      // Iterate first along r
   inputIt.SetSecondDirection(m_AlphaDirection); // then alpha (slice), and
-                                                // finally z (stack)
+  // finally z (stack)
   inputIt.GoToBegin();
 
   // Setup projection line
@@ -281,22 +276,17 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
       inputIt.NextLine();
     } // while ( !inputIt.IsAtEndOfSlice() )
 
-    double       u, v;
-    double       theta, r;
-    double       alpha;
-    unsigned int a_lo;
-
     // Resample the cartesian FFT Slice from polar lines
     for (FFTSliceIt.GoToBegin(); !FFTSliceIt.IsAtEnd(); ++FFTSliceIt)
     {
       sIdx = FFTSliceIt.GetIndex();
 
       // center on DC
-      u = static_cast<double>(sIdx[0]) - static_cast<double>(FFTSliceSize[0]) / 2;
-      v = static_cast<double>(sIdx[1]) - static_cast<double>(FFTSliceSize[1]) / 2;
+      double u = static_cast<double>(sIdx[0]) - static_cast<double>(FFTSliceSize[0]) / 2;
+      double v = static_cast<double>(sIdx[1]) - static_cast<double>(FFTSliceSize[1]) / 2;
 
       // Calculate polar radius
-      r = sqrt(u * u + v * v) / m_OverSampling;
+      double r = sqrt(u * u + v * v) / m_OverSampling;
 
       // Radial cutoff frequency
       if (r >= r_max)
@@ -305,11 +295,8 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
       }
 
       // Get polar angle - and map into [0 PI]
-      if (u == 0.0 && v == 0.0)
-      {
-        theta = 0.0;
-      }
-      else
+      double theta = 0.0;
+      if (!(u == 0.0 && v == 0.0))
       {
         theta = std::atan2(v, u);
       }
@@ -320,7 +307,7 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
       }
 
       // Convert into alpha-image indices
-      alpha = theta * alpha_size / m_PI;
+      double alpha = theta * alpha_size / m_PI;
       if (alpha >= alpha_size)
       {
         alpha -= alpha_size;
@@ -330,7 +317,7 @@ DirectFourierReconstructionImageToImageFilter<TInputImage, TOutputImage>::Genera
       FFTLineType::PixelType out;
 
       // radial BSpline / linear angle interpolation
-      a_lo = Math::Floor<unsigned int>(alpha);
+      auto a_lo = Math::Floor<unsigned int>(alpha);
 
       if (a_lo < alpha_size - 1) // no date-line crossing
       {

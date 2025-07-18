@@ -18,9 +18,7 @@
 
 #include "itkFEMElement2DC1Beam.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 // Overload the CreateAnother() method.
 itk::LightObject::Pointer
@@ -44,6 +42,7 @@ Element2DC1Beam::Element2DC1Beam()
 {}
 
 Element2DC1Beam::Element2DC1Beam(NodeIDType n1_, NodeIDType n2_, Material::ConstPointer m_)
+  : m_mat(dynamic_cast<const MaterialLinearElasticity *>(m_.GetPointer()))
 {
   // Set the geometrical points
   this->SetNode(0, n1_);
@@ -54,7 +53,6 @@ Element2DC1Beam::Element2DC1Beam(NodeIDType n1_, NodeIDType n2_, Material::Const
    * we were given the pointer to the right class.
    * If the material class was incorrect an exception is thrown.
    */
-  m_mat = dynamic_cast<const MaterialLinearElasticity *>(m_.GetPointer());
   if (!m_mat)
   {
     throw FEMExceptionWrongClass(__FILE__, __LINE__, "Element2DC0LinearLineStress::Element2DC0LinearLineStress()");
@@ -348,5 +346,4 @@ Element2DC1Beam::PrintSelf(std::ostream & os, Indent indent) const
   os << indent << "Materials: " << this->m_mat << std::endl;
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem

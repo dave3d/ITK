@@ -49,7 +49,7 @@ public:
     return m_Pointer;
   }
 
-  const TNodeType *
+  [[nodiscard]] const TNodeType *
   GetPointer() const
   {
     return m_Pointer;
@@ -82,9 +82,13 @@ public:
     return *this;
   }
 
-  ConstSparseFieldLayerIterator() { m_Pointer = nullptr; }
+  ConstSparseFieldLayerIterator()
+    : m_Pointer(nullptr)
+  {}
 
-  ConstSparseFieldLayerIterator(TNodeType * p) { m_Pointer = p; }
+  ConstSparseFieldLayerIterator(TNodeType * p)
+    : m_Pointer(p)
+  {}
 
   ~ConstSparseFieldLayerIterator() = default;
 

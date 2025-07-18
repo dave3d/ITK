@@ -25,19 +25,15 @@ namespace itk
 {
 template <typename TInputImage, typename TMembershipFunction>
 ImageKmeansModelEstimator<TInputImage, TMembershipFunction>::ImageKmeansModelEstimator()
-{
-  m_ValidInCodebook = false;
-  m_DoubleMaximum = NumericTraits<double>::max();
-  m_Threshold = 0.01;
-  m_OffsetAdd = 0.01;
-  m_OffsetMultiply = 0.01;
-  m_MaxSplitAttempts = 10;
-  m_OutputDistortion = 0.0;
-  m_OutputNumberOfEmptyCells = 0;
-  m_VectorDimension = 1;
-  m_NumberOfCodewords = 1;
-  m_CurrentNumberOfCodewords = 1;
-}
+  : m_Threshold(0.01)
+  , m_OffsetAdd(0.01)
+  , m_OffsetMultiply(0.01)
+  , m_MaxSplitAttempts(10)
+  , m_DoubleMaximum(NumericTraits<double>::max())
+  , m_VectorDimension(1)
+  , m_NumberOfCodewords(1)
+  , m_CurrentNumberOfCodewords(1)
+{}
 
 template <typename TInputImage, typename TMembershipFunction>
 void
@@ -146,7 +142,7 @@ ImageKmeansModelEstimator<TInputImage, TMembershipFunction>::Allocate()
 
     // Set the initial and final codebook size
 
-    const auto initCodebookSize = (SizeValueType)1;
+    const auto initCodebookSize = static_cast<SizeValueType>(1);
     m_Codebook.set_size(initCodebookSize, m_VectorDimension);
 
     // Initialize m_Codebook to 0 (it now has only one row)
@@ -282,7 +278,7 @@ ImageKmeansModelEstimator<TInputImage, TMembershipFunction>::WithCodebookUseGLA(
   int pass = 0; // no empty cells have been found yet
   m_CurrentNumberOfCodewords = m_Codebook.rows();
 
-  double distortion;
+  double distortion = NAN;
   do
   {
     // Encode all of the input vectors using the given codebook

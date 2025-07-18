@@ -22,9 +22,7 @@
 #include "itkMath.h"
 #include "itkMakeUniqueForOverwrite.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TImage, typename THistogramFrequencyContainer>
 ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::ScalarImageToRunLengthFeaturesFilter()
@@ -140,7 +138,7 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Full
              ++fnameIt, featureNum++)
         {
           features[offsetNum][featureNum] =
-            runLengthMatrixCalculator->GetFeature((InternalRunLengthFeatureName)fnameIt.Value());
+            runLengthMatrixCalculator->GetFeature(static_cast<InternalRunLengthFeatureName>(fnameIt.Value()));
         }
       }
     }
@@ -228,7 +226,7 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Fast
        ++fnameIt)
   {
     this->m_FeatureMeans->push_back(
-      runLengthMatrixCalculator->GetFeature((InternalRunLengthFeatureName)fnameIt.Value()));
+      runLengthMatrixCalculator->GetFeature(static_cast<InternalRunLengthFeatureName>(fnameIt.Value())));
     this->m_FeatureStandardDeviations->push_back(0.0);
   }
 
@@ -351,7 +349,6 @@ ScalarImageToRunLengthFeaturesFilter<TImage, THistogramFrequencyContainer>::Prin
   os << indent << "Offsets: " << this->GetOffsets() << std::endl;
   os << indent << "FeatureMeans: " << this->GetFeatureMeans() << std::endl;
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

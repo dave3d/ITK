@@ -1,21 +1,23 @@
 if(ITK_USE_GPU)
-
   itk_module_test()
 
-  set(ITKGPUCommon-tests itkGPUImageTest.cxx itkGPUReductionTest.cxx)
+  set(
+    ITKGPUCommon-tests
+    itkGPUImageTest.cxx
+    itkGPUReductionTest.cxx
+  )
 
   createtestdriver(ITKGPUCommon "${ITKGPUCommon-Test_LIBRARIES}" "${ITKGPUCommon-tests}")
   itk_add_test(
-    NAME
-    itkGPUImageTest
+    NAME itkGPUImageTest
     COMMAND
-    ITKGPUCommonTestDriver
-    itkGPUImageTest)
+      ITKGPUCommonTestDriver
+      itkGPUImageTest
+  )
   itk_add_test(
-    NAME
-    itkGPUReductionTest
+    NAME itkGPUReductionTest
     COMMAND
-    ITKGPUCommonTestDriver
-    itkGPUReductionTest)
-
+      ITKGPUCommonTestDriver
+      itkGPUReductionTest
+  )
 endif()

@@ -38,24 +38,19 @@ public:
 
   Point1D() = default;
   Point1D(const double p, const int s)
-  {
-    m_X = p;
-    m_Sign = s;
-  }
+    : m_X(p)
+    , m_Sign(s)
+  {}
 
-  Point1D(const Point1D & point)
-  {
-    m_X = point.m_X;
-    m_Sign = point.m_Sign;
-  }
+  Point1D(const Point1D & point) = default;
 
-  double
+  [[nodiscard]] double
   getX() const
   {
     return m_X;
   }
 
-  int
+  [[nodiscard]] int
   getSign() const
   {
     return m_Sign;

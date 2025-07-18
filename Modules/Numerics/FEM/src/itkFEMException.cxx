@@ -19,10 +19,9 @@
 #include "itkFEMException.h"
 
 #include <iostream>
+#include <utility>
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 FEMException::FEMException(std::string file, unsigned int lineNumber, std::string location)
   : ExceptionObject(std::move(file), lineNumber, "Unhandled exception in FEM class!", std::move(location))
@@ -55,9 +54,9 @@ FEMExceptionObjectNotFound::FEMExceptionObjectNotFound(std::string  file,
                                                        std::string  baseClassName,
                                                        int          GN)
   : FEMException(std::move(file), lineNumber, std::move(location))
+  , m_baseClassName(std::move(baseClassName))
+  , m_GlobalNumber(GN)
 {
-  m_baseClassName = baseClassName;
-  m_GlobalNumber = GN;
   std::ostringstream buf;
   buf << "Object not found (" << m_baseClassName << ", GlobalNumber=" << m_GlobalNumber << ")!";
   SetDescription(buf.str().c_str());
@@ -76,5 +75,4 @@ FEMExceptionSolution::FEMExceptionSolution(std::string  file,
 
 FEMExceptionSolution::~FEMExceptionSolution() noexcept = default;
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem

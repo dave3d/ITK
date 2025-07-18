@@ -20,13 +20,9 @@
 namespace itk
 {
 ProgressAccumulator::ProgressAccumulator()
+  : m_MiniPipelineFilter(nullptr)
+// Initialize the progress values
 {
-  m_MiniPipelineFilter = nullptr;
-
-  // Initialize the progress values
-  m_AccumulatedProgress = 0.0f;
-  m_BaseAccumulatedProgress = 0.0f;
-
   // Create a member command
   m_CallbackCommand = CommandType::New();
   m_CallbackCommand->SetCallbackFunction(this, &Self::ReportProgress);
@@ -81,9 +77,9 @@ ProgressAccumulator::ResetProgress()
   m_BaseAccumulatedProgress = 0.0f;
 
   // Reset each of the individual progress meters
-  for (auto it = m_FilterRecord.begin(); it != m_FilterRecord.end(); ++it)
+  for (auto & record : m_FilterRecord)
   {
-    it->Filter->UpdateProgress(0.0f);
+    record.Filter->UpdateProgress(0.0f);
   }
 }
 #endif

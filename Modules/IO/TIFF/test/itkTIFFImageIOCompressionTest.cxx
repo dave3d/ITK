@@ -60,6 +60,10 @@ itkTIFFImageIOCompressionTestHelper(int, char * argv[], int JPEGQuality)
   ITK_TRY_EXPECT_NO_EXCEPTION(imageIO->SetCompressor("Deflate"));
   ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressor(), "Deflate");
 
+  ITK_TRY_EXPECT_NO_EXCEPTION(imageIO->SetCompressor("AdobeDeflate"));
+  ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressor(), "AdobeDeflate");
+
+
   imageIO->SetCompressionLevel(2);
   ITK_TEST_EXPECT_EQUAL(imageIO->GetCompressionLevel(), 2);
 
@@ -82,6 +86,14 @@ itkTIFFImageIOCompressionTestHelper(int, char * argv[], int JPEGQuality)
   {
 
     io->SetCompressionToDeflate();
+
+    ITK_TEST_EXPECT_EQUAL(compression, io->GetCompressor());
+    ITK_TEST_EXPECT_TRUE(io->GetUseCompression());
+  }
+  else if (compression == "AdobeDeflate")
+  {
+    std::cout << "Using AdobeDeflate\n";
+    io->SetCompressionToAdobeDeflate();
 
     ITK_TEST_EXPECT_EQUAL(compression, io->GetCompressor());
     ITK_TEST_EXPECT_TRUE(io->GetUseCompression());
@@ -166,10 +178,10 @@ itkTIFFImageIOCompressionTest(int argc, char * argv[])
   std::cout << "Compression: " << argv[3] << std::endl;
   std::cout << "JPEGQuality: " << JPEGQuality << std::endl;
 
-  std::cout << " Pixel type (string): " << imageIO->GetPixelTypeAsString(imageIO->GetPixelType()) << std::endl;
+  std::cout << " Pixel type (string): " << itk::ImageIOBase::GetPixelTypeAsString(imageIO->GetPixelType()) << std::endl;
 
   const ScalarPixelType componentType = imageIO->GetComponentType();
-  std::cout << " Component Type is " << imageIO->GetComponentTypeAsString(componentType) << std::endl;
+  std::cout << " Component Type is " << itk::ImageIOBase::GetComponentTypeAsString(componentType) << std::endl;
 
   std::cout << " Component size: " << imageIO->GetComponentSize() << std::endl;
 
@@ -188,7 +200,7 @@ itkTIFFImageIOCompressionTest(int argc, char * argv[])
         }
         case itk::IOComponentEnum::CHAR:
         {
-          using PixelType = char;
+          using PixelType = signed char;
           return itkTIFFImageIOCompressionTestHelper<itk::Image<PixelType, 2>>(argc, argv, JPEGQuality);
         }
         case itk::IOComponentEnum::USHORT:

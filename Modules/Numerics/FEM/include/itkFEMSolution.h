@@ -21,9 +21,7 @@
 
 #include "ITKFEMExport.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 /**
  * \class Solution
@@ -63,7 +61,7 @@ public:
    * \note If the solution vector doesn't exist (problem was not yet solved),
    *       or the index i is out of range, the function returns 0.0.
    */
-  virtual Float
+  [[nodiscard]] virtual Float
   GetSolutionValue(unsigned int i, unsigned int solutionIndex = 0) const = 0;
 
   /**
@@ -72,7 +70,6 @@ public:
    */
   virtual ~Solution();
 };
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif // itkFEMSolution_h

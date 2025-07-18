@@ -18,19 +18,14 @@
 #ifndef itkKdTreeGenerator_hxx
 #define itkKdTreeGenerator_hxx
 
-
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TSample>
 KdTreeGenerator<TSample>::KdTreeGenerator()
-{
-  m_SourceSample = nullptr;
-  m_BucketSize = 16;
-  m_Subsample = SubsampleType::New();
-  m_MeasurementVectorSize = 0;
-}
+  : m_SourceSample(nullptr)
+  , m_Subsample(SubsampleType::New())
+  , m_BucketSize(16)
+{}
 
 template <typename TSample>
 void
@@ -121,14 +116,8 @@ KdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int            beginI
                                                   unsigned int            level) -> KdTreeNodeType *
 {
   using NodeType = typename KdTreeType::KdTreeNodeType;
-  MeasurementType dimensionLowerBound;
-  MeasurementType dimensionUpperBound;
-  MeasurementType partitionValue;
-  unsigned int    partitionDimension = 0;
-  unsigned int    i;
-  MeasurementType spread;
-  MeasurementType maxSpread;
-  unsigned int    medianIndex;
+
+  unsigned int partitionDimension = 0;
 
   const SubsamplePointer subsample = this->GetSubsample();
 
@@ -136,10 +125,10 @@ KdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int            beginI
   Algorithm::FindSampleBoundAndMean<SubsampleType>(
     subsample, beginIndex, endIndex, m_TempLowerBound, m_TempUpperBound, m_TempMean);
 
-  maxSpread = NumericTraits<MeasurementType>::NonpositiveMin();
-  for (i = 0; i < m_MeasurementVectorSize; ++i)
+  MeasurementType maxSpread = NumericTraits<MeasurementType>::NonpositiveMin();
+  for (unsigned int i = 0; i < m_MeasurementVectorSize; ++i)
   {
-    spread = m_TempUpperBound[i] - m_TempLowerBound[i];
+    MeasurementType spread = m_TempUpperBound[i] - m_TempLowerBound[i];
     if (spread >= maxSpread)
     {
       maxSpread = spread;
@@ -147,20 +136,20 @@ KdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int            beginI
     }
   }
 
-  medianIndex = (endIndex - beginIndex) / 2;
+  unsigned int medianIndex = (endIndex - beginIndex) / 2;
 
   //
   // Find the medial element by using the NthElement function
   // based on the STL implementation of the QuickSelect algorithm.
   //
-  partitionValue =
+  MeasurementType partitionValue =
     Algorithm::NthElement<SubsampleType>(m_Subsample, partitionDimension, beginIndex, endIndex, medianIndex);
 
   medianIndex += beginIndex;
 
   // save bounds for cutting dimension
-  dimensionLowerBound = lowerBound[partitionDimension];
-  dimensionUpperBound = upperBound[partitionDimension];
+  MeasurementType dimensionLowerBound = lowerBound[partitionDimension];
+  MeasurementType dimensionUpperBound = upperBound[partitionDimension];
 
   upperBound[partitionDimension] = partitionValue;
   const unsigned int beginLeftIndex = beginIndex;
@@ -215,7 +204,6 @@ KdTreeGenerator<TSample>::GenerateTreeLoop(unsigned int            beginIndex,
     return this->GenerateNonterminalNode(beginIndex, endIndex, lowerBound, upperBound, level + 1);
   }
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

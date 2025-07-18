@@ -21,9 +21,7 @@
 
 #include "itkFEMLoadElementBase.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 /**
  * \class LoadTest
@@ -71,7 +69,7 @@ public:
   /**
    * Default constructor
    */
-  LoadTest() {}
+  LoadTest() = default;
 
   /**
    * Some data that this load defines.
@@ -80,7 +78,6 @@ public:
 
 private:
 };
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif // itkFEMLoadTest_h

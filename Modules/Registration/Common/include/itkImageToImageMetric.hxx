@@ -55,8 +55,8 @@ ImageToImageMetric<TFixedImage, TMovingImage>::ImageToImageMetric()
   , m_BSplineInterpolator(nullptr)
   , m_DerivativeCalculator(nullptr)
   , m_Threader(MultiThreaderType::New())
+  , m_ConstSelfWrapper(std::make_unique<ConstantPointerWrapper>(this))
 {
-  m_ConstSelfWrapper = std::make_unique<ConstantPointerWrapper>(this);
   this->m_NumberOfWorkUnits = this->m_Threader->GetNumberOfWorkUnits();
 
   /* if 100% backward compatible, we should include this...but...
@@ -513,7 +513,7 @@ ImageToImageMetric<TFixedImage, TMovingImage>::SampleFixedImageRegion(FixedImage
 
       if (m_FixedImageMask.IsNotNull())
       {
-        double val;
+        double val = NAN;
         if (m_FixedImageMask->ValueAtInWorldSpace(inputPoint, val))
         {
           if (Math::AlmostEquals(val, 0.0))
@@ -727,7 +727,7 @@ ImageToImageMetric<TFixedImage, TMovingImage>::PreComputeTransformValues()
   // Cycle through each sampled fixed image point
   BSplineTransformWeightsType    weights;
   BSplineTransformIndexArrayType indices;
-  bool                           valid;
+  bool                           valid = false;
   MovingImagePointType           mappedPoint;
 
   // Declare iterators for iteration over the sample container
@@ -762,7 +762,7 @@ ImageToImageMetric<TFixedImage, TMovingImage>::TransformPoint(unsigned int      
                                                               ThreadIdType           threadId) const
 {
   sampleOk = true;
-  TransformType * transform;
+  TransformType * transform = nullptr;
 
   if (threadId > 0)
   {
@@ -809,8 +809,8 @@ ImageToImageMetric<TFixedImage, TMovingImage>::TransformPoint(unsigned int      
     }
     else
     {
-      BSplineTransformWeightsType *    weightsHelper;
-      BSplineTransformIndexArrayType * indicesHelper;
+      BSplineTransformWeightsType *    weightsHelper = nullptr;
+      BSplineTransformIndexArrayType * indicesHelper = nullptr;
 
       if (threadId > 0)
       {
@@ -870,7 +870,7 @@ ImageToImageMetric<TFixedImage, TMovingImage>::TransformPointWithDerivatives(uns
                                                                              ImageDerivativesType & movingImageGradient,
                                                                              ThreadIdType           threadId) const
 {
-  TransformType * transform;
+  TransformType * transform = nullptr;
 
   sampleOk = true;
 
@@ -919,8 +919,8 @@ ImageToImageMetric<TFixedImage, TMovingImage>::TransformPointWithDerivatives(uns
     }
     else
     {
-      BSplineTransformWeightsType *    weightsHelper;
-      BSplineTransformIndexArrayType * indicesHelper;
+      BSplineTransformWeightsType *    weightsHelper = nullptr;
+      BSplineTransformIndexArrayType * indicesHelper = nullptr;
 
       if (threadId > 0)
       {
@@ -1072,8 +1072,8 @@ ImageToImageMetric<TFixedImage, TMovingImage>::GetValueThread(ThreadIdType threa
   for (int count = 0; count < chunkSize; ++count, ++fixedImageSample)
   {
     MovingImagePointType mappedPoint;
-    bool                 sampleOk;
-    double               movingImageValue;
+    bool                 sampleOk = false;
+    double               movingImageValue = NAN;
     // Get moving image value
     this->TransformPoint(fixedImageSample, mappedPoint, sampleOk, movingImageValue, threadId);
 
@@ -1169,8 +1169,8 @@ ImageToImageMetric<TFixedImage, TMovingImage>::GetValueAndDerivativeThread(Threa
 
   // Process the samples
   MovingImagePointType mappedPoint;
-  bool                 sampleOk;
-  double               movingImageValue;
+  bool                 sampleOk = false;
+  double               movingImageValue = NAN;
   ImageDerivativesType movingImageGradientValue;
   for (int count = 0; count < chunkSize; ++count, ++fixedImageSample)
   {

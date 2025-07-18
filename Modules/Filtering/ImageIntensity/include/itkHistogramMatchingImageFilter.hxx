@@ -338,23 +338,20 @@ HistogramMatchingImageFilter<TInputImage, TOutputImage, THistogramMeasurement>::
       }
     }
 
-    double mappedValue;
-    if (j == 0)
-    {
-      // Linear interpolate from min to point[0]
-      mappedValue = m_ReferenceMinValue + (srcValue - m_SourceMinValue) * m_LowerGradient;
-    }
-    else if (j == m_NumberOfMatchPoints + 2)
-    {
-      // Linear interpolate from point[m_NumberOfMatchPoints+1] to max
-      mappedValue = m_ReferenceMaxValue + (srcValue - m_SourceMaxValue) * m_UpperGradient;
-    }
-    else
-    {
-      // Linear interpolate from point[j] and point[j+1].
-      mappedValue = m_QuantileTable[1][j - 1] + (srcValue - m_QuantileTable[0][j - 1]) * m_Gradients[j - 1];
-    }
-
+    const double mappedValue = [this, j, srcValue]() -> double {
+      if (j == 0)
+      {
+        // Linearly interpolate from min to point[0]
+        return m_ReferenceMinValue + (srcValue - m_SourceMinValue) * m_LowerGradient;
+      }
+      if (j == m_NumberOfMatchPoints + 2)
+      {
+        // Linearly interpolate from point[m_NumberOfMatchPoints+1] to max
+        return m_ReferenceMaxValue + (srcValue - m_SourceMaxValue) * m_UpperGradient;
+      }
+      // Linearly interpolate from point[j] and point[j+1].
+      return m_QuantileTable[1][j - 1] + (srcValue - m_QuantileTable[0][j - 1]) * m_Gradients[j - 1];
+    }();
     outIter.Set(static_cast<OutputPixelType>(mappedValue));
   }
 }

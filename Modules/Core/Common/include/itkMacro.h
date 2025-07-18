@@ -121,12 +121,22 @@ namespace itk
 #if defined(__clang__) && defined(__has_warning)
 #  define ITK_CLANG_PRAGMA_PUSH ITK_PRAGMA(clang diagnostic push)
 #  define ITK_CLANG_PRAGMA_POP ITK_PRAGMA(clang diagnostic pop)
-#  define ITK_CLANG_SUPPRESS_Wzero_as_null_pointer_constant \
-    ITK_PRAGMA(clang diagnostic ignored "-Wzero-as-null-pointer-constant")
+#  if __has_warning("-Wzero-as-null-pointer-constant")
+#    define ITK_CLANG_SUPPRESS_Wzero_as_null_pointer_constant \
+      ITK_PRAGMA(clang diagnostic ignored "-Wzero-as-null-pointer-constant")
+#  else
+#    define ITK_CLANG_SUPPRESS_Wzero_as_null_pointer_constant
+#  endif
+#  if __has_warning("-Wduplicate-enum")
+#    define ITK_CLANG_SUPPRESS_Wduplicate_enum ITK_PRAGMA(clang diagnostic ignored "-Wduplicate-enum")
+#  else
+#    define ITK_CLANG_SUPPRESS_Wduplicate_enum
+#  endif
 #else
 #  define ITK_CLANG_PRAGMA_PUSH
 #  define ITK_CLANG_PRAGMA_POP
 #  define ITK_CLANG_SUPPRESS_Wzero_as_null_pointer_constant
+#  define ITK_CLANG_SUPPRESS_Wduplicate_enum
 #endif
 
 // These were not intended as public API, but some code was nevertheless using them.
@@ -134,6 +144,13 @@ namespace itk
 #define CLANG_PRAGMA_PUSH ITK_CLANG_PRAGMA_PUSH
 #define CLANG_PRAGMA_POP ITK_CLANG_PRAGMA_POP
 #define CLANG_SUPPRESS_Wfloat_equal ITK_GCC_SUPPRESS_Wfloat_equal
+
+// For GCC/Clang, to decorate printf-like functions allowing for compiler checks of format strings.
+#if defined(__GNUC__)
+#  define ITK_FORMAT_PRINTF(a, b) __attribute__((format(printf, a, b)))
+#else
+#  define ITK_FORMAT_PRINTF(a, b)
+#endif
 
 #if !defined(ITK_LEGACY_REMOVE)
 // Issue warning if deprecated preprocessor flag is used.
@@ -199,10 +216,8 @@ namespace itk
 // define a minimum __sgi version that will work.
 #  error "The SGI compiler is not supported"
 #endif
-#if defined(__APPLE__)
-#  if defined(__clang__) && (__cplusplus < 201703L)
-#    error "Apple LLVM compiling with a standard less than C++17 is not supported"
-#  endif
+#if defined(__apple_build_version__) && (__apple_build_version__ < 12000032)
+#  error "AppleClang < Xcode 12.4 is not supported"
 #elif defined(__clang__) && (__clang_major__ < 5)
 #  error "Clang < 5 is not supported"
 #endif
@@ -692,7 +707,7 @@ OutputWindowDisplayDebugText(const char *);
 // the cache lines. By aligning multi-threaded structures with the
 // cache lines, false shared can be reduced, and performance
 // increased.
-#define ITK_CACHE_LINE_ALIGNMENT 64
+constexpr size_t ITK_CACHE_LINE_ALIGNMENT = 64;
 
 //
 // itkPadStruct will add padding to a structure to ensure a minimum size

@@ -19,14 +19,13 @@
 #include "itpack.h"
 #include "itkFEMLinearSystemWrapperItpack.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 /**
  * constructor
  */
 LinearSystemWrapperItpack::LinearSystemWrapperItpack()
+
 {
   /* fill m_Methods with pointers to solver functions */
   m_Methods[0] = jcg_;
@@ -36,7 +35,7 @@ LinearSystemWrapperItpack::LinearSystemWrapperItpack()
   m_Methods[4] = ssorsi_;
   m_Methods[5] = rscg_;
   m_Methods[6] = rssi_;
-  m_Method = 0; /* set default method to jcg_ */
+  /* set default method to jcg_ */
 
   /* Set solving parameters */
   dfault_(&(m_IPARM[0]), &(m_RPARM[0]));
@@ -52,11 +51,6 @@ LinearSystemWrapperItpack::LinearSystemWrapperItpack()
   /* itpack recommended (but not default) value */
 #undef min
   m_RPARM[7] = 500.0 * NumericTraits<double>::min();
-
-  m_MaximumNonZeroValues = 0;
-  m_Matrices = nullptr;
-  m_Vectors = nullptr;
-  m_Solutions = nullptr;
 }
 
 void
@@ -1077,5 +1071,4 @@ FEMExceptionItpackSolver::FEMExceptionItpackSolver(std::string  file,
   SetDescription(buf.str().c_str());
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem

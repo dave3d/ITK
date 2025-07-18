@@ -21,10 +21,9 @@ namespace itk
 {
 SingleValuedVnlCostFunctionAdaptorv4::SingleValuedVnlCostFunctionAdaptorv4(unsigned int spaceDimension)
   : vnl_cost_function(spaceDimension)
+  , m_CachedValue(MeasureType{})
 {
-  m_ScalesInitialized = false;
   m_Reporter = Object::New();
-  m_CachedValue = MeasureType{};
   m_CachedDerivative.Fill(0);
 }
 
@@ -111,7 +110,6 @@ SingleValuedVnlCostFunctionAdaptorv4::compute(const InternalParametersType & x,
 {
   // delegate the computation to the ObjectMetric
   ParametersType parameters(x.size());
-  double         measure;
 
   if (m_ScalesInitialized)
   {
@@ -126,6 +124,7 @@ SingleValuedVnlCostFunctionAdaptorv4::compute(const InternalParametersType & x,
   }
 
   this->m_ObjectMetric->SetParameters(parameters);
+  double measure = NAN;
   this->m_ObjectMetric->GetValueAndDerivative(measure, m_CachedDerivative);
   if (g) // sometimes Vnl doesn't pass a valid pointer
   {

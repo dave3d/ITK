@@ -32,9 +32,9 @@
 #include "itk_tiff.h"
 
 /* Structure with LSM-specific data ( only in the first image directory). */
-#define TIF_CZ_LSMINFO 34412 /* 0x866c, Type: TIF_BYTE, Length: 512 */
-#define TIF_CZ_LSMINFO_SIZE_RESERVED 90 + 6
-#define TIF_CZ_LSMINFO_SIZE 512
+constexpr uint32_t TIF_CZ_LSMINFO = 34412; /* 0x866c, Type: TIF_BYTE, Length: 512 */
+constexpr uint32_t TIF_CZ_LSMINFO_SIZE_RESERVED = 90 + 6;
+constexpr uint32_t TIF_CZ_LSMINFO_SIZE = 512;
 
 namespace itk
 {
@@ -168,7 +168,7 @@ LSMImageIO::ReadImageInformation()
 
   // Now is a good time to check what was read and replaced it with LSM
   // information
-  unsigned int tif_cz_lsminfo_size;
+  unsigned int tif_cz_lsminfo_size = 0;
   void *       praw = this->TIFFImageIO::ReadRawByteFromTag(TIF_CZ_LSMINFO, tif_cz_lsminfo_size);
   auto *       zi = static_cast<zeiss_info *>(praw);
   if (praw == nullptr || tif_cz_lsminfo_size != TIF_CZ_LSMINFO_SIZE)
@@ -231,7 +231,7 @@ LSMImageIO::FillZeissStruct(char * cz)
 void
 LSMImageIO::Write(const void * buffer)
 {
-  const auto * outPtr = (const unsigned char *)buffer;
+  const auto * outPtr = static_cast<const unsigned char *>(buffer);
 
   unsigned int pages = 1;
   if (this->GetNumberOfDimensions() < 2)
@@ -246,7 +246,7 @@ LSMImageIO::Write(const void * buffer)
   }
 
   const uint16_t scomponents = this->GetNumberOfComponents();
-  uint16_t       bps;
+  uint16_t       bps = 0;
   switch (this->GetComponentType())
   {
     case IOComponentEnum::UCHAR:
@@ -308,7 +308,7 @@ LSMImageIO::Write(const void * buffer)
       TIFFSetField(tif, TIFFTAG_EXTRASAMPLES, extra_samples, sample_info.get());
     }
 
-    uint16_t compression;
+    uint16_t compression = 0;
 
     if (m_UseCompression)
     {
@@ -339,7 +339,7 @@ LSMImageIO::Write(const void * buffer)
 
     uint16_t photometric = (scomponents == 1) ? PHOTOMETRIC_MINISBLACK : PHOTOMETRIC_RGB;
 
-    uint16_t predictor;
+    uint16_t predictor = 0;
     if (compression == COMPRESSION_JPEG)
     {
       TIFFSetField(tif, TIFFTAG_JPEGQUALITY, this->GetCompressionLevel()); // Parameter
@@ -373,7 +373,7 @@ LSMImageIO::Write(const void * buffer)
       TIFFSetField(tif, TIFFTAG_SUBFILETYPE, FILETYPE_PAGE);
     }
 
-    int rowLength; // in bytes
+    int rowLength = 0; // in bytes
     switch (this->GetComponentType())
     {
       case IOComponentEnum::UCHAR:

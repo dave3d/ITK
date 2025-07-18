@@ -1,16 +1,19 @@
-set(DOCUMENTATION "This module contains the classes for the input and output
-of itkTransform object in txt format.")
+set(
+  DOCUMENTATION
+  "This module contains the classes for the input and output
+of itkTransform object in txt format."
+)
 
 itk_module(
   ITKIOTransformInsightLegacy
   ENABLE_SHARED
   DEPENDS
-  ITKIOTransformBase
+    ITKIOTransformBase
   PRIVATE_DEPENDS
-  ITKDoubleConversion
+    ITKDoubleConversion
   TEST_DEPENDS
-  ITKTestKernel
+    ITKTestKernel
   FACTORY_NAMES
-  TransformIO::Txt
-  DESCRIPTION
-  "${DOCUMENTATION}")
+    TransformIO::Txt
+  DESCRIPTION "${DOCUMENTATION}"
+)

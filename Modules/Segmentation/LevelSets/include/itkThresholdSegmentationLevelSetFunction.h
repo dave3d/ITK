@@ -156,7 +156,7 @@ public:
     m_SmoothingIterations = p;
   }
 
-  int
+  [[nodiscard]] int
   GetSmoothingIterations() const
   {
     return m_SmoothingIterations;
@@ -179,9 +179,9 @@ public:
 
 protected:
   ThresholdSegmentationLevelSetFunction()
+    : m_UpperThreshold(NumericTraits<FeatureScalarType>::max())
+    , m_LowerThreshold(NumericTraits<FeatureScalarType>::NonpositiveMin())
   {
-    m_UpperThreshold = NumericTraits<FeatureScalarType>::max();
-    m_LowerThreshold = NumericTraits<FeatureScalarType>::NonpositiveMin();
     this->SetAdvectionWeight(0.0);
     this->SetPropagationWeight(1.0);
     this->SetCurvatureWeight(1.0);

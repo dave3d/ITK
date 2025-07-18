@@ -297,14 +297,16 @@ MRCImageIO::Read(void * buffer)
       break;
     case 2:
       this->GetByteOrder() == IOByteOrderEnum::BigEndian
-        ? ByteSwapper<uint16_t>::SwapRangeFromSystemToBigEndian((uint16_t *)buffer, this->GetImageSizeInComponents())
-        : ByteSwapper<uint16_t>::SwapRangeFromSystemToLittleEndian((uint16_t *)buffer,
+        ? ByteSwapper<uint16_t>::SwapRangeFromSystemToBigEndian(static_cast<uint16_t *>(buffer),
+                                                                this->GetImageSizeInComponents())
+        : ByteSwapper<uint16_t>::SwapRangeFromSystemToLittleEndian(static_cast<uint16_t *>(buffer),
                                                                    this->GetImageSizeInComponents());
       break;
     case 4:
       this->GetByteOrder() == IOByteOrderEnum::BigEndian
-        ? ByteSwapper<uint32_t>::SwapRangeFromSystemToBigEndian((uint32_t *)buffer, this->GetImageSizeInComponents())
-        : ByteSwapper<uint32_t>::SwapRangeFromSystemToLittleEndian((uint32_t *)buffer,
+        ? ByteSwapper<uint32_t>::SwapRangeFromSystemToBigEndian(static_cast<uint32_t *>(buffer),
+                                                                this->GetImageSizeInComponents())
+        : ByteSwapper<uint32_t>::SwapRangeFromSystemToLittleEndian(static_cast<uint32_t *>(buffer),
                                                                    this->GetImageSizeInComponents());
       break;
     default:
@@ -417,8 +419,8 @@ MRCImageIO::UpdateHeaderFromImageIO()
   if (header.mode == -1)
   {
     itkExceptionMacro("Unsupported pixel type: "
-                      << this->GetPixelTypeAsString(this->GetPixelType()) << ' '
-                      << this->GetComponentTypeAsString(this->GetComponentType()) << std::endl
+                      << ImageIOBase::GetPixelTypeAsString(this->GetPixelType()) << ' '
+                      << ImageIOBase::GetComponentTypeAsString(this->GetComponentType()) << std::endl
                       << "Supported pixel types include unsigned byte, unsigned short, short, float, rgb "
                          "unsigned char, float complex");
   }

@@ -16,11 +16,11 @@
  *
  *=========================================================================*/
 
+#include <utility>
+
 #include "itkFEMLoadBCMFC.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 // Overload the CreateAnother() method.
 itk::LightObject::Pointer
@@ -44,12 +44,12 @@ LoadBCMFC::CreateAnother() const
  * Fix a DOF to a prescribed value
  */
 LoadBCMFC::LoadBCMFC(Element::ConstPointer element, int dof, vnl_vector<Element::Float> val)
+  : m_RightHandSide(std::move(val))
 {
   m_LeftHandSide.clear();
 
   /** Set the correct weight */
-  m_LeftHandSide.push_back(MFCTerm(element, dof, 1.0));
-  m_RightHandSide = val;
+  m_LeftHandSide.emplace_back(element, dof, 1.0);
 }
 
 void
@@ -147,5 +147,4 @@ LoadBCMFC::PrintSelf(std::ostream & os, Indent indent) const
   os << indent << "Right HandSide: " << this->m_RightHandSide << std::endl;
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem

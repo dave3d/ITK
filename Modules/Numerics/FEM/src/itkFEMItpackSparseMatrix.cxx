@@ -18,59 +18,63 @@
 #include "itkFEMItpackSparseMatrix.h"
 #include "itpack.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 ItpackSparseMatrix::ItpackSparseMatrix()
+  : m_MatrixFinalized(0)
+  , m_MatrixInitialized(0)
+  , m_N(0)
+  , m_NZ(0)
+  , m_IA(nullptr)
+  , m_JA(nullptr)
+  , m_A(nullptr)
+  , m_IWORK(nullptr)
+  , m_MODE(1)
+  , m_NOUT(0)
+  , m_LEVEL(-1)
 {
-  m_MatrixFinalized = 0;
-  m_MatrixInitialized = 0;
-  m_NZ = 0;
-  m_N = 0;
   /* m_IER = 0; */ /* initialize */
-  m_MODE = 1;      /* add to existing entries when building matrix */
-  m_LEVEL = -1;    /* no error messages */
-  m_NOUT = 0;      /* output unit number */
-
-  m_IA = nullptr;
-  m_JA = nullptr;
-  m_IWORK = nullptr;
-  m_A = nullptr;
+                   /* add to existing entries when building matrix */
+                   /* no error messages */
+                   /* output unit number */
 }
 
 ItpackSparseMatrix::ItpackSparseMatrix(integer order)
+  : m_MatrixFinalized(0)
+  , m_MatrixInitialized(0)
+  , m_N(order)
+  , m_NZ(0)
+  , m_IA(nullptr)
+  , m_JA(nullptr)
+  , m_A(nullptr)
+  , m_IWORK(nullptr)
+  , m_MODE(1)
+  , m_NOUT(0)
+  , m_LEVEL(-1)
 {
-  m_MatrixFinalized = 0;
-  m_MatrixInitialized = 0;
-  m_NZ = 0;
-  m_N = order;
   /* m_IER = 0; */ /* initialize */
-  m_MODE = 1;      /* add to existing entries when building matrix */
-  m_LEVEL = -1;    /* no error messages */
-  m_NOUT = 0;      /* output unit number */
-
-  m_IA = nullptr;
-  m_JA = nullptr;
-  m_IWORK = nullptr;
-  m_A = nullptr;
+                   /* add to existing entries when building matrix */
+                   /* no error messages */
+                   /* output unit number */
 }
 
 ItpackSparseMatrix::ItpackSparseMatrix(integer order, integer maxNonZeroValues)
+  : m_MatrixFinalized(0)
+  , m_MatrixInitialized(0)
+  , m_N(order)
+  , m_NZ(maxNonZeroValues)
+  , m_IA(nullptr)
+  , m_JA(nullptr)
+  , m_A(nullptr)
+  , m_IWORK(nullptr)
+  , m_MODE(1)
+  , m_NOUT(0)
+  , m_LEVEL(-1)
 {
-  m_MatrixFinalized = 0;
-  m_MatrixInitialized = 0;
-  m_N = order;
-  m_NZ = maxNonZeroValues;
   /* m_IER = 0; */ /* initialize */
-  m_MODE = 1;      /* add to existing entries when building matrix */
-  m_LEVEL = -1;    /* no error messages */
-  m_NOUT = 0;      /* output unit number */
-
-  m_IA = nullptr;
-  m_JA = nullptr;
-  m_IWORK = nullptr;
-  m_A = nullptr;
+                   /* add to existing entries when building matrix */
+                   /* no error messages */
+                   /* output unit number */
 }
 
 void
@@ -482,5 +486,4 @@ FEMExceptionItpackSparseMatrixSbsij::FEMExceptionItpackSparseMatrixSbsij(std::st
 
 FEMExceptionItpackSparseMatrixSbsij::~FEMExceptionItpackSparseMatrixSbsij() noexcept = default;
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem

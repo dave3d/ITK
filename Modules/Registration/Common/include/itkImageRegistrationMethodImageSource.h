@@ -31,10 +31,8 @@
  *
  *  Therefore the solution of the registration is |-7 -3|
  */
-namespace itk
-{
 
-namespace testhelper
+namespace itk::testhelper
 {
 
 template <typename TFixedPixelType, typename TMovingPixelType, unsigned int VDimension>
@@ -139,9 +137,9 @@ public:
 
 protected:
   ImageRegistrationMethodImageSource()
+    : m_FixedImage(FixedImageType::New())
+    , m_MovingImage(MovingImageType::New())
   {
-    m_MovingImage = MovingImageType::New();
-    m_FixedImage = FixedImageType::New();
     m_Parameters = ParametersType(2);
     m_Parameters[0] = 7.0;
     m_Parameters[1] = 3.0;
@@ -154,7 +152,7 @@ private:
   ParametersType m_Parameters{};
 };
 
-} // end namespace testhelper
+} // namespace itk::testhelper
 
-} // end namespace itk
+// end namespace itk
 #endif

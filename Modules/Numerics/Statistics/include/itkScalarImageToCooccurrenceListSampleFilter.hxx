@@ -18,10 +18,7 @@
 #ifndef itkScalarImageToCooccurrenceListSampleFilter_hxx
 #define itkScalarImageToCooccurrenceListSampleFilter_hxx
 
-
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TImage>
 ScalarImageToCooccurrenceListSampleFilter<TImage>::ScalarImageToCooccurrenceListSampleFilter()
@@ -99,8 +96,6 @@ ScalarImageToCooccurrenceListSampleFilter<TImage>::GenerateData()
 
   constexpr OffsetType center_offset{};
 
-  bool isInside;
-
   for (const auto & face : faceList)
   {
     ShapedNeighborhoodIteratorType it(radius, input, face);
@@ -122,6 +117,7 @@ ScalarImageToCooccurrenceListSampleFilter<TImage>::GenerateData()
 
         // Check if the point is inside and add the measurement vector
         // only if its inside
+        bool            isInside = false;
         const PixelType pixel_intensity = it.GetPixel(ci.GetNeighborhoodIndex(), isInside);
         if (isInside)
         {
@@ -164,7 +160,6 @@ ScalarImageToCooccurrenceListSampleFilter<TImage>::UseNeighbor(const OffsetType 
     m_OffsetTable.push_back(offset);
   }
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

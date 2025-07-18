@@ -323,7 +323,6 @@ SLICImageFilter<TInputImage, TOutputImage, TDistancePixel>::ThreadedPerturbClust
 
 
   auto          radius = itk::Size<ImageDimension>::Filled(1);
-  unsigned long center;
   unsigned long stride[ImageDimension];
 
 
@@ -334,7 +333,7 @@ SLICImageFilter<TInputImage, TOutputImage, TDistancePixel>::ThreadedPerturbClust
 
   // get center and dimension strides for iterator neighborhoods
   NeighborhoodType it(radius, inputImage, inputImage->GetLargestPossibleRegion());
-  center = it.Size() / 2;
+  unsigned long    center = it.Size() / 2;
   for (unsigned int i = 0; i < ImageDimension; ++i)
   {
     stride[i] = it.GetStride(i);
@@ -424,7 +423,9 @@ SLICImageFilter<TInputImage, TOutputImage, TDistancePixel>::ThreadedConnectivity
   const unsigned int     numberOfClusterComponents = numberOfComponents + ImageDimension;
 
   const size_t minSuperSize =
-    std::accumulate(m_SuperGridSize.cbegin(), m_SuperGridSize.cend(), size_t(1), std::multiplies<size_t>()) / 4;
+    std::accumulate(
+      m_SuperGridSize.cbegin(), m_SuperGridSize.cend(), static_cast<size_t>(1), std::multiplies<size_t>()) /
+    4;
 
   ConstantBoundaryCondition<TOutputImage> lbc;
   lbc.SetConstant(NumericTraits<typename OutputImageType::PixelType>::max());
@@ -510,7 +511,9 @@ SLICImageFilter<TInputImage, TOutputImage, TDistancePixel>::SingleThreadedConnec
   OutputPixelType prevLabel = m_Clusters.size() / numberOfClusterComponents;
 
   const size_t minSuperSize =
-    std::accumulate(m_SuperGridSize.cbegin(), m_SuperGridSize.cend(), size_t(1), std::multiplies<size_t>()) / 4;
+    std::accumulate(
+      m_SuperGridSize.cbegin(), m_SuperGridSize.cend(), static_cast<size_t>(1), std::multiplies<size_t>()) /
+    4;
 
   std::vector<IndexType> indexStack;
 
@@ -758,7 +761,6 @@ SLICImageFilter<TInputImage, TOutputImage, TDistancePixel>::RelabelConnectedRegi
   lbc.SetConstant(NumericTraits<typename OutputImageType::PixelType>::max());
 
   auto          radius = itk::Size<ImageDimension>::Filled(1);
-  unsigned long center;
   unsigned long stride[ImageDimension];
 
   using NeighborhoodType = NeighborhoodIterator<TOutputImage, ConstantBoundaryCondition<TOutputImage>>;
@@ -766,7 +768,7 @@ SLICImageFilter<TInputImage, TOutputImage, TDistancePixel>::RelabelConnectedRegi
   NeighborhoodType labelIt(radius, outputImage, outputImage->GetRequestedRegion());
   labelIt.OverrideBoundaryCondition(&lbc);
 
-  center = labelIt.Size() / 2;
+  unsigned long center = labelIt.Size() / 2;
   for (unsigned int j = 0; j < ImageDimension; ++j)
   {
     stride[j] = labelIt.GetStride(j);

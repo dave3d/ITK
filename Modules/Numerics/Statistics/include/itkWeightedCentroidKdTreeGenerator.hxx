@@ -18,10 +18,7 @@
 #ifndef itkWeightedCentroidKdTreeGenerator_hxx
 #define itkWeightedCentroidKdTreeGenerator_hxx
 
-
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 
 template <typename TSample>
@@ -39,16 +36,6 @@ WeightedCentroidKdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int  
                                                                   MeasurementVectorType & upperBound,
                                                                   unsigned int            level) -> KdTreeNodeType *
 {
-  MeasurementType dimensionLowerBound;
-  MeasurementType dimensionUpperBound;
-  MeasurementType partitionValue;
-  unsigned int    partitionDimension = 0;
-  unsigned int    i;
-  unsigned int    j;
-  MeasurementType spread;
-  MeasurementType maxSpread;
-  unsigned int    medianIndex;
-
   const SubsamplePointer subsample = this->GetSubsample();
 
   // Sanity check. Verify that the subsample has measurement vectors of the
@@ -65,10 +52,10 @@ WeightedCentroidKdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int  
   MeasurementVectorType tempVector;
   weightedCentroid.Fill(MeasurementType{});
 
-  for (i = beginIndex; i < endIndex; ++i)
+  for (unsigned int i = beginIndex; i < endIndex; ++i)
   {
     tempVector = subsample->GetMeasurementVectorByIndex(i);
-    for (j = 0; j < this->GetMeasurementVectorSize(); ++j)
+    for (unsigned int j = 0; j < this->GetMeasurementVectorSize(); ++j)
     {
       weightedCentroid[j] += tempVector[j];
     }
@@ -78,10 +65,11 @@ WeightedCentroidKdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int  
   Algorithm::FindSampleBoundAndMean<SubsampleType>(
     this->GetSubsample(), beginIndex, endIndex, m_TempLowerBound, m_TempUpperBound, m_TempMean);
 
-  maxSpread = NumericTraits<MeasurementType>::NonpositiveMin();
-  for (i = 0; i < this->GetMeasurementVectorSize(); ++i)
+  unsigned int    partitionDimension = 0;
+  MeasurementType maxSpread = NumericTraits<MeasurementType>::NonpositiveMin();
+  for (unsigned int i = 0; i < this->GetMeasurementVectorSize(); ++i)
   {
-    spread = m_TempUpperBound[i] - m_TempLowerBound[i];
+    MeasurementType spread = m_TempUpperBound[i] - m_TempLowerBound[i];
     if (spread >= maxSpread)
     {
       maxSpread = spread;
@@ -89,20 +77,20 @@ WeightedCentroidKdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int  
     }
   }
 
-  medianIndex = (endIndex - beginIndex) / 2;
+  unsigned int medianIndex = (endIndex - beginIndex) / 2;
 
   //
   // Find the medial element by using the NthElement function
   // based on the STL implementation of the QuickSelect algorithm.
   //
-  partitionValue =
+  MeasurementType partitionValue =
     Algorithm::NthElement<SubsampleType>(this->GetSubsample(), partitionDimension, beginIndex, endIndex, medianIndex);
 
   medianIndex += beginIndex;
 
   // save bounds for cutting dimension
-  dimensionLowerBound = lowerBound[partitionDimension];
-  dimensionUpperBound = upperBound[partitionDimension];
+  MeasurementType dimensionLowerBound = lowerBound[partitionDimension];
+  MeasurementType dimensionUpperBound = upperBound[partitionDimension];
 
   upperBound[partitionDimension] = partitionValue;
   const unsigned int beginLeftIndex = beginIndex;
@@ -125,7 +113,6 @@ WeightedCentroidKdTreeGenerator<TSample>::GenerateNonterminalNode(unsigned int  
 
   return nonTerminalNode;
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

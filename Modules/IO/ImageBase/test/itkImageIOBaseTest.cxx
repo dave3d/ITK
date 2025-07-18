@@ -19,9 +19,137 @@
 #include "itkMetaImageIO.h"
 #include "itkTestingMacros.h"
 #include "itkImage.h"
+#include "itkIntTypes.h"
 #include "itkVectorImage.h"
 
 #include "itkImageIOFactory.h" // required to instantiate an instance of ImageIOBase
+
+namespace
+{
+// Tests `MapPixelType<TPixel>::CType` and the estimation of component type traits.
+class TestMapPixelTypeAndComponentTypeTraits : private itk::ImageIOBase
+{
+  struct UnknownComponentType
+  {};
+  static_assert(MapPixelType<UnknownComponentType>::CType == IOComponentEnum::UNKNOWNCOMPONENTTYPE);
+
+  // Test built-in types:
+  static_assert(MapPixelType<unsigned char>::CType == IOComponentEnum::UCHAR);
+  static_assert(MapPixelType<signed char>::CType == IOComponentEnum::CHAR);
+  static_assert(MapPixelType<char>::CType == (std::is_signed_v<char> ? IOComponentEnum::CHAR : IOComponentEnum::UCHAR));
+  static_assert(MapPixelType<unsigned short>::CType == IOComponentEnum::USHORT);
+  static_assert(MapPixelType<short>::CType == IOComponentEnum::SHORT);
+  static_assert(MapPixelType<unsigned int>::CType == IOComponentEnum::UINT);
+  static_assert(MapPixelType<int>::CType == IOComponentEnum::INT);
+  static_assert(MapPixelType<unsigned long>::CType == IOComponentEnum::ULONG);
+  static_assert(MapPixelType<long>::CType == IOComponentEnum::LONG);
+  static_assert(MapPixelType<unsigned long long>::CType == IOComponentEnum::ULONGLONG);
+  static_assert(MapPixelType<long long>::CType == IOComponentEnum::LONGLONG);
+  static_assert(MapPixelType<float>::CType == IOComponentEnum::FLOAT);
+  static_assert(MapPixelType<double>::CType == IOComponentEnum::DOUBLE);
+
+  // Test fixed width types:
+  static_assert(MapPixelType<uint8_t>::CType == IOComponentEnum::UINT8);
+  static_assert(MapPixelType<int8_t>::CType == IOComponentEnum::INT8);
+  static_assert(MapPixelType<uint16_t>::CType == IOComponentEnum::UINT16);
+  static_assert(MapPixelType<int16_t>::CType == IOComponentEnum::INT16);
+  static_assert(MapPixelType<uint32_t>::CType == IOComponentEnum::UINT32);
+  static_assert(MapPixelType<int32_t>::CType == IOComponentEnum::INT32);
+  static_assert(MapPixelType<uint64_t>::CType == IOComponentEnum::UINT64);
+  static_assert(MapPixelType<int64_t>::CType == IOComponentEnum::INT64);
+  static_assert(MapPixelType<float>::CType == IOComponentEnum::FLOAT32);
+  static_assert(MapPixelType<double>::CType == IOComponentEnum::FLOAT64);
+
+  // Tests IsComponentTypeFloatingPoint:
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::UNKNOWNCOMPONENTTYPE));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::UCHAR));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::CHAR));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::USHORT));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::SHORT));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::UINT));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::INT));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::ULONG));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::LONG));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::LONGLONG));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::ULONGLONG));
+  static_assert(IsComponentTypeFloatingPoint(IOComponentEnum::FLOAT));
+  static_assert(IsComponentTypeFloatingPoint(IOComponentEnum::DOUBLE));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::UINT8));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::INT8));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::UINT16));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::INT16));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::UINT32));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::INT32));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::UINT64));
+  static_assert(!IsComponentTypeFloatingPoint(IOComponentEnum::INT64));
+  static_assert(IsComponentTypeFloatingPoint(IOComponentEnum::FLOAT32));
+  static_assert(IsComponentTypeFloatingPoint(IOComponentEnum::FLOAT64));
+
+  // Tests IsComponentTypeUnsigned:
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::UNKNOWNCOMPONENTTYPE));
+  static_assert(IsComponentTypeUnsigned(IOComponentEnum::UCHAR));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::CHAR));
+  static_assert(IsComponentTypeUnsigned(IOComponentEnum::USHORT));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::SHORT));
+  static_assert(IsComponentTypeUnsigned(IOComponentEnum::UINT));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::INT));
+  static_assert(IsComponentTypeUnsigned(IOComponentEnum::ULONG));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::LONG));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::LONGLONG));
+  static_assert(IsComponentTypeUnsigned(IOComponentEnum::ULONGLONG));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::FLOAT));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::DOUBLE));
+  static_assert(IsComponentTypeUnsigned(IOComponentEnum::UINT8));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::INT8));
+  static_assert(IsComponentTypeUnsigned(IOComponentEnum::UINT16));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::INT16));
+  static_assert(IsComponentTypeUnsigned(IOComponentEnum::UINT32));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::INT32));
+  static_assert(IsComponentTypeUnsigned(IOComponentEnum::UINT64));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::INT64));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::FLOAT32));
+  static_assert(!IsComponentTypeUnsigned(IOComponentEnum::FLOAT64));
+
+  // Tests GetNumberOfBitsOfComponentType:
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::UINT8) == 8);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::INT8) == 8);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::UINT16) == 16);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::INT16) == 16);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::UINT32) == 32);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::INT32) == 32);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::UINT64) == 64);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::INT64) == 64);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::FLOAT32) == 32);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::FLOAT64) == 64);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::UNKNOWNCOMPONENTTYPE) == 0);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::UCHAR) == sizeof(char) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::CHAR) == sizeof(char) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::USHORT) == sizeof(short) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::SHORT) == sizeof(short) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::UINT) == sizeof(int) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::INT) == sizeof(int) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::ULONG) == sizeof(long) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::LONG) == sizeof(long) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::LONGLONG) == sizeof(long long) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::ULONGLONG) == sizeof(long long) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::FLOAT) == sizeof(float) * CHAR_BIT);
+  static_assert(GetNumberOfBitsOfComponentType(IOComponentEnum::DOUBLE) == sizeof(double) * CHAR_BIT);
+
+  // Tests GetComponentTypeFromTypeTraits:
+  static_assert(GetComponentTypeFromTypeTraits(false, false, 0) == IOComponentEnum::UNKNOWNCOMPONENTTYPE);
+  static_assert(GetComponentTypeFromTypeTraits(false, true, 8) == IOComponentEnum::UINT8);
+  static_assert(GetComponentTypeFromTypeTraits(false, false, 8) == IOComponentEnum::INT8);
+  static_assert(GetComponentTypeFromTypeTraits(false, true, 16) == IOComponentEnum::UINT16);
+  static_assert(GetComponentTypeFromTypeTraits(false, false, 16) == IOComponentEnum::INT16);
+  static_assert(GetComponentTypeFromTypeTraits(false, true, 32) == IOComponentEnum::UINT32);
+  static_assert(GetComponentTypeFromTypeTraits(false, false, 32) == IOComponentEnum::INT32);
+  static_assert(GetComponentTypeFromTypeTraits(false, true, 64) == IOComponentEnum::UINT64);
+  static_assert(GetComponentTypeFromTypeTraits(false, false, 64) == IOComponentEnum::INT64);
+  static_assert(GetComponentTypeFromTypeTraits(true, false, 32) == IOComponentEnum::FLOAT32);
+  static_assert(GetComponentTypeFromTypeTraits(true, false, 64) == IOComponentEnum::FLOAT64);
+};
+} // namespace
+
 
 // Specific ImageIO test
 
@@ -170,97 +298,48 @@ itkImageIOBaseTest(int, char *[])
 
     constexpr size_t listComponentSize = std::size(listComponentType);
     constexpr size_t listPixelSize = std::size(listIOPixelType);
-    { // Test the static version of the string <-> type conversions
-      for (size_t i = 0; i < listComponentSize; ++i)
-      {
-        const std::string componentTypeString = itk::ImageIOBase::GetComponentTypeAsString(listComponentType[i]);
-        if (componentTypeString.compare(listComponentTypeString[i]) != 0)
-        {
-          std::cerr << "GetComponentTypeAsString(" << listComponentType[i] << ") should return '"
-                    << listComponentTypeString[i] << '\'' << std::endl;
-          return EXIT_FAILURE;
-        }
-      }
-      for (size_t i = 0; i < listPixelSize; ++i)
-      {
-        const std::string pixelTypeString = itk::ImageIOBase::GetPixelTypeAsString(listIOPixelType[i]);
-        if (pixelTypeString.compare(listIOPixelTypeString[i]) != 0)
-        {
-          std::cerr << "GetPixelTypeAsString(" << listIOPixelType[i] << ") should return '" << listIOPixelTypeString[i]
-                    << '\'' << std::endl;
-          return EXIT_FAILURE;
-        }
-      }
-      for (size_t i = 0; i < listComponentSize; ++i)
-      {
-        const itk::IOComponentEnum componentType =
-          itk::ImageIOBase::GetComponentTypeFromString(listComponentTypeString[i]);
-        if (componentType != listComponentType[i])
-        {
-          std::cerr << "GetComponentTypeFromString('" << listComponentTypeString[i] << "') should return "
-                    << listComponentType[i] << std::endl;
-          return EXIT_FAILURE;
-        }
-      }
-      for (size_t i = 0; i < listPixelSize; ++i)
-      {
-        const itk::IOPixelEnum pixelType = itk::ImageIOBase::GetPixelTypeFromString(listIOPixelTypeString[i]);
-        if (pixelType != listIOPixelType[i])
-        {
-          std::cerr << "GetPixelTypeFromString('" << listIOPixelTypeString[i] << "') should return "
-                    << listIOPixelType[i] << std::endl;
-          return EXIT_FAILURE;
-        }
-      }
-    } // end Test the static version of the string <-> type conversions
 
-    // Test the non-static version of the string <-> type conversions
+    for (size_t i = 0; i < listComponentSize; ++i)
     {
-      // Create an instance of ImageIOBase. It does not matter that 'test' is not a valid image to read,
-      // we just want the ImageIOBase object.
-      const itk::ImageIOBase::Pointer imageIOBase =
-        itk::ImageIOFactory::CreateImageIO("test", itk::ImageIOFactory::IOFileModeEnum::ReadMode);
-      for (size_t i = 0; i < listComponentSize; ++i)
+      const std::string componentTypeString = itk::ImageIOBase::GetComponentTypeAsString(listComponentType[i]);
+      if (componentTypeString.compare(listComponentTypeString[i]) != 0)
       {
-        const std::string componentTypeString = imageIOBase->GetComponentTypeAsString(listComponentType[i]);
-        if (componentTypeString.compare(listComponentTypeString[i]) != 0)
-        {
-          std::cerr << "GetComponentTypeAsString(" << listComponentType[i] << ") should return '"
-                    << listComponentTypeString[i] << '\'' << std::endl;
-          return EXIT_FAILURE;
-        }
+        std::cerr << "GetComponentTypeAsString(" << listComponentType[i] << ") should return '"
+                  << listComponentTypeString[i] << '\'' << std::endl;
+        return EXIT_FAILURE;
       }
-      for (size_t i = 0; i < listPixelSize; ++i)
+    }
+    for (size_t i = 0; i < listPixelSize; ++i)
+    {
+      const std::string pixelTypeString = itk::ImageIOBase::GetPixelTypeAsString(listIOPixelType[i]);
+      if (pixelTypeString.compare(listIOPixelTypeString[i]) != 0)
       {
-        const std::string pixelTypeString = imageIOBase->GetPixelTypeAsString(listIOPixelType[i]);
-        if (pixelTypeString.compare(listIOPixelTypeString[i]) != 0)
-        {
-          std::cerr << "GetPixelTypeAsString(" << listIOPixelType[i] << ") should return " << listIOPixelTypeString[i]
-                    << std::endl;
-          return EXIT_FAILURE;
-        }
+        std::cerr << "GetPixelTypeAsString(" << listIOPixelType[i] << ") should return '" << listIOPixelTypeString[i]
+                  << '\'' << std::endl;
+        return EXIT_FAILURE;
       }
-      for (size_t i = 0; i < listComponentSize; ++i)
+    }
+    for (size_t i = 0; i < listComponentSize; ++i)
+    {
+      const itk::IOComponentEnum componentType =
+        itk::ImageIOBase::GetComponentTypeFromString(listComponentTypeString[i]);
+      if (componentType != listComponentType[i])
       {
-        const itk::IOComponentEnum componentType = imageIOBase->GetComponentTypeFromString(listComponentTypeString[i]);
-        if (componentType != listComponentType[i])
-        {
-          std::cerr << "GetComponentTypeFromString('" << listComponentTypeString[i] << "') should return "
-                    << listComponentType[i] << std::endl;
-          return EXIT_FAILURE;
-        }
+        std::cerr << "GetComponentTypeFromString('" << listComponentTypeString[i] << "') should return "
+                  << listComponentType[i] << std::endl;
+        return EXIT_FAILURE;
       }
-      for (size_t i = 0; i < listPixelSize; ++i)
+    }
+    for (size_t i = 0; i < listPixelSize; ++i)
+    {
+      const itk::IOPixelEnum pixelType = itk::ImageIOBase::GetPixelTypeFromString(listIOPixelTypeString[i]);
+      if (pixelType != listIOPixelType[i])
       {
-        const itk::IOPixelEnum pixelType = imageIOBase->GetPixelTypeFromString(listIOPixelTypeString[i]);
-        if (pixelType != listIOPixelType[i])
-        {
-          std::cerr << "GetPixelTypeFromString('" << listIOPixelTypeString[i] << "') should return "
-                    << listIOPixelType[i] << std::endl;
-          return EXIT_FAILURE;
-        }
+        std::cerr << "GetPixelTypeFromString('" << listIOPixelTypeString[i] << "') should return " << listIOPixelType[i]
+                  << std::endl;
+        return EXIT_FAILURE;
       }
-    } // end Test the non-static version of the string <-> type conversions
+    }
   }
 
   { // Test SetPixelTypeInfo

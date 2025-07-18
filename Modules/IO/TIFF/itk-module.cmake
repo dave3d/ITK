@@ -1,16 +1,19 @@
-set(DOCUMENTATION "This module contains classes for reading and writing image
-files in the Tagged Image File Format (TIFF).")
+set(
+  DOCUMENTATION
+  "This module contains classes for reading and writing image
+files in the Tagged Image File Format (TIFF)."
+)
 
 itk_module(
   ITKIOTIFF
   ENABLE_SHARED
   DEPENDS
-  ITKIOImageBase
+    ITKIOImageBase
   PRIVATE_DEPENDS
-  ITKTIFF
+    ITKTIFF
   TEST_DEPENDS
-  ITKTestKernel
+    ITKTestKernel
   FACTORY_NAMES
-  ImageIO::TIFF
-  DESCRIPTION
-  "${DOCUMENTATION}")
+    ImageIO::TIFF
+  DESCRIPTION "${DOCUMENTATION}"
+)

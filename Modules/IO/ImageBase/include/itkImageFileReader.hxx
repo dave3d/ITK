@@ -33,11 +33,10 @@ namespace itk
 {
 template <typename TOutputImage, typename ConvertPixelTraits>
 ImageFileReader<TOutputImage, ConvertPixelTraits>::ImageFileReader()
+  : m_ImageIO(nullptr)
+  , m_UseStreaming(true)
 {
-  m_ImageIO = nullptr;
   this->SetFileName("");
-  m_UserSpecifiedImageIO = false;
-  m_UseStreaming = true;
 }
 
 template <typename TOutputImage, typename ConvertPixelTraits>
@@ -399,8 +398,8 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>::GenerateData()
     // the pixel types don't match so a type conversion needs to be
     // performed
     itkDebugMacro("Buffer conversion required from: "
-                  << m_ImageIO->GetComponentTypeAsString(m_ImageIO->GetComponentType())
-                  << " to: " << m_ImageIO->GetComponentTypeAsString(ioType) << " ConvertPixelTraits::NumComponents "
+                  << ImageIOBase::GetComponentTypeAsString(m_ImageIO->GetComponentType())
+                  << " to: " << ImageIOBase::GetComponentTypeAsString(ioType) << " ConvertPixelTraits::NumComponents "
                   << ConvertPixelTraits::GetNumberOfComponents() << " m_ImageIO->NumComponents "
                   << m_ImageIO->GetNumberOfComponents());
 
@@ -483,7 +482,7 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>::DoConvertBuffer(const void * 
   {
   }
   ITK_CONVERT_BUFFER_IF_BLOCK(IOComponentEnum::UCHAR, unsigned char)
-  ITK_CONVERT_BUFFER_IF_BLOCK(IOComponentEnum::CHAR, char)
+  ITK_CONVERT_BUFFER_IF_BLOCK(IOComponentEnum::CHAR, signed char)
   ITK_CONVERT_BUFFER_IF_BLOCK(IOComponentEnum::USHORT, unsigned short)
   ITK_CONVERT_BUFFER_IF_BLOCK(IOComponentEnum::SHORT, short)
   ITK_CONVERT_BUFFER_IF_BLOCK(IOComponentEnum::UINT, unsigned int)
@@ -496,12 +495,12 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>::DoConvertBuffer(const void * 
   ITK_CONVERT_BUFFER_IF_BLOCK(IOComponentEnum::DOUBLE, double)
   else
   {
-#define TYPENAME(x) m_ImageIO->GetComponentTypeAsString(ImageIOBase::MapPixelType<x>::CType)
+#define TYPENAME(x) ImageIOBase::GetComponentTypeAsString(ImageIOBase::MapPixelType<x>::CType)
 
     ImageFileReaderException e(__FILE__, __LINE__);
     std::ostringstream       msg;
     msg << "Couldn't convert component type: " << std::endl
-        << "    " << m_ImageIO->GetComponentTypeAsString(m_ImageIO->GetComponentType()) << std::endl
+        << "    " << ImageIOBase::GetComponentTypeAsString(m_ImageIO->GetComponentType()) << std::endl
         << "to one of: " << std::endl
         << "    " << TYPENAME(unsigned char) << std::endl
         << "    " << TYPENAME(char) << std::endl

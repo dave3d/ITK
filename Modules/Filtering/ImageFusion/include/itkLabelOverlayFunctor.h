@@ -21,9 +21,7 @@
 #include "itkLabelToRGBFunctor.h"
 #include "itkMath.h"
 
-namespace itk
-{
-namespace Functor
+namespace itk::Functor
 {
 /**
  * \class LabelOverlayFunctor
@@ -49,12 +47,11 @@ class LabelOverlayFunctor
 {
 public:
   LabelOverlayFunctor()
+    : m_BackgroundValue(TLabel{})
   {
     // provide some default value for external use (outside
     // LabelOverlayFunctorImageFilter) Inside LabelOverlayFunctorImageFilter,
     // the values are always initialized
-    m_Opacity = 1.0;
-    m_BackgroundValue = TLabel{};
   }
 
   inline TRGBPixel
@@ -117,7 +114,7 @@ public:
     m_RGBFunctor.ResetColors();
   }
 
-  unsigned int
+  [[nodiscard]] unsigned int
   GetNumberOfColors() const
   {
     return m_RGBFunctor.GetNumberOfColors();
@@ -134,12 +131,11 @@ public:
 
 protected:
 private:
-  double m_Opacity;
+  double m_Opacity{ 1.0 };
   TLabel m_BackgroundValue;
 
   typename Functor::LabelToRGBFunctor<TLabel, TRGBPixel> m_RGBFunctor;
 };
-} // end namespace Functor
-} // end namespace itk
+} // namespace itk::Functor
 
 #endif

@@ -193,13 +193,12 @@ itkSupervisedImageClassifierTest(int, char *[])
 
   ClassImageIterator classoutIt(classImage, classImage->GetBufferedRegion());
 
-  ClassImagePixelType outputPixel;
   //--------------------------------------------------------------------------
   // Manually create and store each vector
   //--------------------------------------------------------------------------
   // Slice 1
   // Pixel no. 1
-  outputPixel = 2;
+  ClassImagePixelType outputPixel = 2;
   classoutIt.Set(outputPixel);
   ++classoutIt;
 
@@ -340,7 +339,7 @@ itkSupervisedImageClassifierTest(int, char *[])
   applyClassifier->SetInputImage(vecImage);
 
   // Set the decision rule
-  applyClassifier->SetDecisionRule((DecisionRuleBasePointer)myDecisionRule);
+  applyClassifier->SetDecisionRule(DecisionRuleBasePointer(myDecisionRule));
 
   // Add the membership functions
   for (unsigned int i = 0; i < NUM_CLASSES; ++i)

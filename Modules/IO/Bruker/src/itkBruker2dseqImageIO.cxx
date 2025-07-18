@@ -237,7 +237,7 @@ ReadJCAMPDX(const std::string & filename, MetaDataDictionary & dict)
         {
           // An array of numbers
           std::stringstream   lineStream(lines);
-          double              doubleValue;
+          double              doubleValue = NAN;
           std::vector<double> doubleArray;
           while (lineStream >> doubleValue)
           {
@@ -289,7 +289,7 @@ ReadJCAMPDX(const std::string & filename, MetaDataDictionary & dict)
           {
             std::istringstream  arrayStream(lines.substr(leftBracket, rightBracket - leftBracket));
             std::vector<double> doubleArray;
-            double              doubleValue;
+            double              doubleValue = NAN;
             while (arrayStream >> doubleValue)
             {
               doubleArray.push_back(doubleValue);
@@ -311,7 +311,7 @@ ReadJCAMPDX(const std::string & filename, MetaDataDictionary & dict)
     {
       // A single value
       std::istringstream streamPar(par);
-      double             value;
+      double             value = NAN;
       streamPar >> value;
       if (streamPar.fail())
       {
@@ -361,10 +361,8 @@ Bruker2dseqImageIO::SwapBytesIfNecessary(void * buff, SizeValueType components)
     switch (this->m_OnDiskComponentType)
     {
       case IOComponentEnum::CHAR:
-        BYTE_SWAP(char);
-        break;
       case IOComponentEnum::UCHAR:
-        BYTE_SWAP(unsigned char);
+        // For CHAR and UCHAR, it is not necessary to swap bytes.
         break;
       case IOComponentEnum::SHORT:
         BYTE_SWAP(short);
@@ -401,10 +399,8 @@ Bruker2dseqImageIO::SwapBytesIfNecessary(void * buff, SizeValueType components)
     switch (this->m_OnDiskComponentType)
     {
       case IOComponentEnum::CHAR:
-        BYTE_SWAP(char);
-        break;
       case IOComponentEnum::UCHAR:
-        BYTE_SWAP(unsigned char);
+        // For CHAR and UCHAR, it is not necessary to swap bytes.
         break;
       case IOComponentEnum::SHORT:
         BYTE_SWAP(short);
@@ -582,7 +578,7 @@ Bruker2dseqImageIO::Read(void * buffer)
       Rescale(static_cast<double *>(buffer), slopes, offsets, frameSize, frameCount);
       break;
     default:
-      itkExceptionMacro("Datatype not supported: " << this->GetComponentTypeAsString(this->m_ComponentType));
+      itkExceptionMacro("Datatype not supported: " << ImageIOBase::GetComponentTypeAsString(this->m_ComponentType));
   }
 
   //
@@ -641,7 +637,7 @@ Bruker2dseqImageIO::Read(void * buffer)
           SwapSlicesAndVolumes(static_cast<double *>(buffer), x, y, z, sizeToSwap, noswap);
           break;
         default:
-          itkExceptionMacro("Datatype not supported: " << this->GetComponentTypeAsString(this->m_ComponentType));
+          itkExceptionMacro("Datatype not supported: " << ImageIOBase::GetComponentTypeAsString(this->m_ComponentType));
       }
     }
   }
@@ -686,7 +682,7 @@ Bruker2dseqImageIO::Read(void * buffer)
         ReverseSliceOrder(static_cast<double *>(buffer), x, y, z, v);
         break;
       default:
-        itkExceptionMacro("Datatype not supported: " << this->GetComponentTypeAsString(this->m_ComponentType));
+        itkExceptionMacro("Datatype not supported: " << ImageIOBase::GetComponentTypeAsString(this->m_ComponentType));
     }
   }
 }

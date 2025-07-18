@@ -21,19 +21,16 @@
 namespace itk
 {
 LoggerBase::LoggerBase()
+  : m_PriorityLevel(LoggerBase::PriorityLevelEnum::NOTSET)
+  , m_LevelForFlushing(LoggerBase::PriorityLevelEnum::MUSTFLUSH)
+  , m_TimeStampFormat(TimeStampFormatEnum::REALVALUE)
+  , m_HumanReadableFormat("%Y %b %d %H:%M:%S")
 {
-  this->m_PriorityLevel = LoggerBase::PriorityLevelEnum::NOTSET;
-  this->m_LevelForFlushing = LoggerBase::PriorityLevelEnum::MUSTFLUSH;
   this->m_Clock = RealTimeClock::New();
   this->m_Output = MultipleLogOutput::New();
-  this->m_TimeStampFormat = TimeStampFormatEnum::REALVALUE;
-  this->m_HumanReadableFormat = "%Y %b %d %H:%M:%S";
 }
 
-LoggerBase::~LoggerBase()
-{
-  //  this->m_Output->Flush();
-}
+LoggerBase::~LoggerBase() = default;
 
 /** Adds an output stream to the MultipleLogOutput for writing. */
 void

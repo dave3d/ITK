@@ -18,19 +18,15 @@
 #ifndef itkMixtureModelComponentBase_hxx
 #define itkMixtureModelComponentBase_hxx
 
-
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 template <typename TSample>
 MixtureModelComponentBase<TSample>::MixtureModelComponentBase()
-{
-  m_Sample = nullptr;
-  m_MembershipFunction = nullptr;
-  m_MinimalParametersChange = 1.0e-06;
-  m_ParametersModified = true;
-}
+  : m_Sample(nullptr)
+  , m_MinimalParametersChange(1.0e-06)
+  , m_MembershipFunction(nullptr)
+  , m_ParametersModified(true)
+{}
 
 template <typename TSample>
 void
@@ -157,7 +153,6 @@ MixtureModelComponentBase<TSample>::Update()
 {
   this->GenerateData();
 }
-} // end of namespace Statistics
-} // end of namespace itk
+} // namespace itk::Statistics
 
 #endif

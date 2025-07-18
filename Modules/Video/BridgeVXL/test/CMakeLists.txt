@@ -1,5 +1,10 @@
 itk_module_test()
-set(ITKVideoBridgeVXLTests itkVXLVideoIOFactoryTest.cxx itkVXLVideoIOTest.cxx vidl_itk_istreamTest.cxx)
+set(
+  ITKVideoBridgeVXLTests
+  itkVXLVideoIOFactoryTest.cxx
+  itkVXLVideoIOTest.cxx
+  vidl_itk_istreamTest.cxx
+)
 
 if(ITK_USE_SYSTEM_VXL)
   include(${VXL_CMAKE_DIR}/UseVXL.cmake)
@@ -25,27 +30,27 @@ createtestdriver(ITKVideoBridgeVXL "${ITKVideoBridgeVXL-Test_LIBRARIES};vul;vidl
 #                 )
 
 itk_add_test(
-  NAME
-  VXLVideoIOFactoryTest
+  NAME VXLVideoIOFactoryTest
   COMMAND
-  ITKVideoBridgeVXLTestDriver
-  itkVXLVideoIOFactoryTest
-  # Video Input:
-  DATA{Input/inde-circulation.avi}
-  # Output:
-  ${ITK_TEST_OUTPUT_DIR}/VXLVideoIOTest_Out.avi
-  # Webcam Number:
-  0)
+    ITKVideoBridgeVXLTestDriver
+    itkVXLVideoIOFactoryTest
+    # Video Input:
+    DATA{Input/inde-circulation.avi}
+    # Output:
+    ${ITK_TEST_OUTPUT_DIR}/VXLVideoIOTest_Out.avi
+    # Webcam Number:
+    0
+)
 itk_add_test(
-  NAME
-  vidl_itk_istreamTest
+  NAME vidl_itk_istreamTest
   COMMAND
-  ITKVideoBridgeVXLTestDriver
-  vidl_itk_istreamTest
-  # Video Input:
-  DATA{Input/inde-circulation_short.avi}
-  # Output:
-  ${ITK_TEST_OUTPUT_DIR}/vidl_itk_istreamTest_Out.avi
-  # Width Height
-  320
-  240)
+    ITKVideoBridgeVXLTestDriver
+    vidl_itk_istreamTest
+    # Video Input:
+    DATA{Input/inde-circulation_short.avi}
+    # Output:
+    ${ITK_TEST_OUTPUT_DIR}/vidl_itk_istreamTest_Out.avi
+    # Width Height
+    320
+    240
+)

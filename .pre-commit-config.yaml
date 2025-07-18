@@ -53,9 +53,16 @@ repos:
      exclude: "\\/ThirdParty\\/"
      args: ['--pytest-test-first']
    - id: no-commit-to-branch
-     args: ['--branch','dashboard','--branch','python-builds','--branch','release','--branch','hooks','--branch', 'main','--branch','master','--pattern','release-*']
+     args: ['--branch','dashboard','--branch','python-builds','--branch','release','--branch','hooks','--branch', 'main','--branch','main','--pattern','release-*']
    - id: trailing-whitespace
      exclude: "\\.(sha|sha512|svg|vtk|vtp)$|\\/ThirdParty\\/|\\/Data\\/"
+- repo: https://github.com/BlankSpruce/gersemi
+  rev: 0.19.3
+  hooks:
+  - id: gersemi
+    args: [ '--config', '.gersemi.config', '-i' ]
+    files: '.(cmake|wrap)$|CMakeLists.txt'
+    exclude: "\\/ThirdParty\\/|Modules\\/Remote\\/|\\/ExternalData.cmake|\\/.pixi\\/|\\/cmake-build.*\\/"
 - repo: https://github.com/pre-commit/mirrors-clang-format
   rev: v19.1.7
   hooks:
@@ -87,19 +94,23 @@ repos:
       name: 'Check version of SetupForDevelopment'
       entry: 'Utilities/Hooks/check-setup-for-development'
       language: system
+      pass_filenames: false
       stages: [pre-commit]
     - id: local-pre-commit
       name: 'local pre-commit'
       entry: 'Utilities/Hooks/pre-commit'
       language: system
+      pass_filenames: false
       stages: [pre-commit]
     - id: kw-commit-msg
       name: 'kw commit-msg'
-      entry: 'Utilities/Hooks/kw-commit-msg'
+      entry: 'Utilities/Hooks/run-pixi-python.sh Utilities/Hooks/kw-commit-msg.py'
       language: system
       stages: [commit-msg]
+      exclude: "\\/ThirdParty\\/"
     - id: kw-pre-commit
       name: 'kw-pre-commit'
       entry: 'Utilities/Hooks/kw-pre-commit'
       language: system
+      pass_filenames: false
       stages: [pre-commit]

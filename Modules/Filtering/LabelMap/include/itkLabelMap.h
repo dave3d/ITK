@@ -323,19 +323,19 @@ public:
     ConstIterator() = default;
 
     ConstIterator(const Self * lm)
+      : m_Begin(lm->m_LabelObjectContainer.begin())
+      , m_End(lm->m_LabelObjectContainer.end())
     {
-      m_Begin = lm->m_LabelObjectContainer.begin();
-      m_End = lm->m_LabelObjectContainer.end();
       m_Iterator = m_Begin;
     }
 
-    const LabelObjectType *
+    [[nodiscard]] const LabelObjectType *
     GetLabelObject() const
     {
       return m_Iterator->second;
     }
 
-    const LabelType &
+    [[nodiscard]] const LabelType &
     GetLabel() const
     {
       return m_Iterator->first;
@@ -370,7 +370,7 @@ public:
       m_Iterator = m_Begin;
     }
 
-    bool
+    [[nodiscard]] bool
     IsAtEnd() const
     {
       return m_Iterator == m_End;
@@ -394,9 +394,9 @@ public:
     Iterator() = default;
 
     Iterator(Self * lm)
+      : m_Begin(lm->m_LabelObjectContainer.begin())
+      , m_End(lm->m_LabelObjectContainer.end())
     {
-      m_Begin = lm->m_LabelObjectContainer.begin();
-      m_End = lm->m_LabelObjectContainer.end();
       m_Iterator = m_Begin;
     }
 
@@ -406,7 +406,7 @@ public:
       return m_Iterator->second;
     }
 
-    const LabelType &
+    [[nodiscard]] const LabelType &
     GetLabel() const
     {
       return m_Iterator->first;
@@ -441,7 +441,7 @@ public:
       m_Iterator = m_Begin;
     }
 
-    bool
+    [[nodiscard]] bool
     IsAtEnd() const
     {
       return m_Iterator == m_End;

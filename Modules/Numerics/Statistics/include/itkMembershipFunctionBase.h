@@ -22,9 +22,7 @@
 #include "itkMeasurementVectorTraits.h"
 #include "itkNumericTraitsCovariantVectorPixel.h"
 
-namespace itk
-{
-namespace Statistics
+namespace itk::Statistics
 {
 /**
  * \class MembershipFunctionBase
@@ -123,9 +121,8 @@ public:
 
 protected:
   MembershipFunctionBase()
-  {
-    m_MeasurementVectorSize = NumericTraits<MeasurementVectorType>::GetLength(MeasurementVectorType());
-  }
+    : m_MeasurementVectorSize(NumericTraits<MeasurementVectorType>::GetLength(MeasurementVectorType()))
+  {}
 
   ~MembershipFunctionBase() override = default;
 
@@ -140,7 +137,6 @@ private:
   MeasurementVectorSizeType m_MeasurementVectorSize{};
 
 }; // end of class
-} // end of namespace Statistics
-} // end namespace itk
+} // namespace itk::Statistics
 
 #endif

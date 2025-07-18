@@ -21,26 +21,22 @@
 #include <iostream>
 #include "itkTimeProbe.h"
 
-
-namespace itk
-{
-
-namespace fem
+namespace itk::fem
 {
 
 template <typename TFixedImage, typename TMovingImage, typename TMaskImage, typename TMesh, typename TDeformationField>
 PhysicsBasedNonRigidRegistrationMethod<TFixedImage, TMovingImage, TMaskImage, TMesh, TDeformationField>::
   PhysicsBasedNonRigidRegistrationMethod()
+  : m_FeatureSelectionFilter(FeatureSelectionFilterType::New())
+  , m_BlockMatchingFilter(BlockMatchingFilterType::New())
+  , m_FEMFilter(FEMFilterType::New())
 {
   this->m_BlockRadius.Fill(2);
   this->m_SearchRadius.Fill(5);
 
   // Set up internal pipeline
-  this->m_FeatureSelectionFilter = FeatureSelectionFilterType::New();
   this->m_FeatureSelectionFilter->ComputeStructureTensorsOn();
-  this->m_BlockMatchingFilter = BlockMatchingFilterType::New();
   this->m_BlockMatchingFilter->SetFeaturePoints(this->m_FeatureSelectionFilter->GetOutput());
-  this->m_FEMFilter = FEMFilterType::New();
   this->m_FEMFilter->SetConfidencePointSet(this->m_BlockMatchingFilter->GetSimilarities());
   this->m_FEMFilter->SetTensorPointSet(this->m_FeatureSelectionFilter->GetOutput());
 
@@ -117,7 +113,6 @@ PhysicsBasedNonRigidRegistrationMethod<TFixedImage, TMovingImage, TMaskImage, TM
   itkPrintSelfObjectMacro(BlockMatchingFilter);
   itkPrintSelfObjectMacro(FEMFilter);
 }
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif

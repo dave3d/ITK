@@ -98,10 +98,9 @@ public:
   }; // end TestDomainThreader class
 
   CompensatedSummationTest2Associate()
+    : m_ClassDescriptor("enclosing class")
   {
     m_TestDomainThreader = TestDomainThreader::New();
-    m_ClassDescriptor = "enclosing class";
-    m_UncompensatedSumOfThreads = 0.0;
   }
 
   double
@@ -110,7 +109,7 @@ public:
     return this->m_CompensatedSumOfThreads.GetSum();
   }
 
-  double
+  [[nodiscard]] double
   GetUncompensatedSumOfThreads() const
   {
     return this->m_UncompensatedSumOfThreads;
@@ -133,7 +132,7 @@ private:
 
   std::string                       m_ClassDescriptor;
   itk::CompensatedSummation<double> m_CompensatedSumOfThreads;
-  double                            m_UncompensatedSumOfThreads;
+  double                            m_UncompensatedSumOfThreads{ 0.0 };
 };
 
 int

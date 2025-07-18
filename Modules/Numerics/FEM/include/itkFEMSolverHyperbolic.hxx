@@ -21,20 +21,18 @@
 
 #include "itkMath.h"
 
-namespace itk
-{
-namespace fem
+namespace itk::fem
 {
 
 template <unsigned int VDimension>
 SolverHyperbolic<VDimension>::SolverHyperbolic()
+  : m_TimeStep(1.0)
+  , m_Gamma(0.5)
+  , m_Beta(0.25)
+  , m_NumberOfIterations(1)
 {
   this->InitializeLinearSystemWrapper();
   this->InitializeMatrixForAssembly(2);
-  this->m_Beta = 0.25;
-  this->m_Gamma = 0.5;
-  this->m_TimeStep = 1.0;
-  this->m_NumberOfIterations = 1;
 }
 
 template <unsigned int VDimension>
@@ -238,7 +236,6 @@ SolverHyperbolic<VDimension>::PrintSelf(std::ostream & os, Indent indent) const
   os << indent << "Gamma: " << this->m_Gamma << std::endl;
 }
 
-} // end namespace fem
-} // end namespace itk
+} // namespace itk::fem
 
 #endif

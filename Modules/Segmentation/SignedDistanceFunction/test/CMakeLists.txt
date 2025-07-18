@@ -1,18 +1,23 @@
 itk_module_test()
-set(ITKSignedDistanceFunctionTests itkSphereSignedDistanceFunctionTest.cxx itkPCAShapeSignedDistanceFunctionTest.cxx)
+set(
+  ITKSignedDistanceFunctionTests
+  itkSphereSignedDistanceFunctionTest.cxx
+  itkPCAShapeSignedDistanceFunctionTest.cxx
+)
 
 createtestdriver(ITKSignedDistanceFunction "${ITKSignedDistanceFunction-Test_LIBRARIES}"
-                 "${ITKSignedDistanceFunctionTests}")
+                 "${ITKSignedDistanceFunctionTests}"
+)
 
 itk_add_test(
-  NAME
-  itkSphereSignedDistanceFunctionTest
+  NAME itkSphereSignedDistanceFunctionTest
   COMMAND
-  ITKSignedDistanceFunctionTestDriver
-  itkSphereSignedDistanceFunctionTest)
+    ITKSignedDistanceFunctionTestDriver
+    itkSphereSignedDistanceFunctionTest
+)
 itk_add_test(
-  NAME
-  itkPCAShapeSignedDistanceFunctionTest
+  NAME itkPCAShapeSignedDistanceFunctionTest
   COMMAND
-  ITKSignedDistanceFunctionTestDriver
-  itkPCAShapeSignedDistanceFunctionTest)
+    ITKSignedDistanceFunctionTestDriver
+    itkPCAShapeSignedDistanceFunctionTest
+)

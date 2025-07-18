@@ -24,21 +24,17 @@ namespace itk
 template <typename TInput, typename TOutput, typename TCriterion>
 EdgeDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::EdgeDecimationQuadEdgeMeshFilter()
   : Superclass()
+  , m_PriorityQueue(PriorityQueueType::New())
   , m_Element(nullptr)
-
-{
-  m_JoinVertexFunction = OperatorType::New();
-  m_PriorityQueue = PriorityQueueType::New();
-}
+  , m_JoinVertexFunction(OperatorType::New())
+{}
 
 template <typename TInput, typename TOutput, typename TCriterion>
 EdgeDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::~EdgeDecimationQuadEdgeMeshFilter()
 {
-  OutputQEType * edge;
-
   while (!m_PriorityQueue->Empty())
   {
-    edge = m_PriorityQueue->Peek()->m_Element;
+    OutputQEType * edge = m_PriorityQueue->Peek()->m_Element;
     m_PriorityQueue->Pop();
 
     auto it = m_QueueMapper.find(edge);
@@ -58,7 +54,7 @@ EdgeDecimationQuadEdgeMeshFilter<TInput, TOutput, TCriterion>::FillPriorityQueue
   OutputCellsContainerIterator       it = output->GetEdgeCells()->Begin();
   const OutputCellsContainerIterator end = output->GetEdgeCells()->End();
 
-  OutputEdgeCellType * edge;
+  OutputEdgeCellType * edge = nullptr;
 
   // cache for use in MeasureEdge
   this->m_OutputMesh = this->GetOutput();

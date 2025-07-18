@@ -159,11 +159,12 @@ MRCHeaderObject::SetExtendedHeader(const void * buffer)
 
     if (this->m_BigEndianHeader)
     {
-      ByteSwapper<float>::SwapRangeFromSystemToBigEndian((float *)this->m_ExtendedHeader, this->m_ExtendedHeaderSize);
+      ByteSwapper<float>::SwapRangeFromSystemToBigEndian(static_cast<float *>(this->m_ExtendedHeader),
+                                                         this->m_ExtendedHeaderSize);
     }
     else
     {
-      ByteSwapper<float>::SwapRangeFromSystemToLittleEndian((float *)this->m_ExtendedHeader,
+      ByteSwapper<float>::SwapRangeFromSystemToLittleEndian(static_cast<float *>(this->m_ExtendedHeader),
                                                             this->m_ExtendedHeaderSize);
     }
   }
@@ -176,7 +177,9 @@ MRCHeaderObject::IsOriginalHeaderBigEndian() const
   return this->m_BigEndianHeader;
 }
 
-MRCHeaderObject::MRCHeaderObject() { this->m_BigEndianHeader = ByteSwapper<void *>::SystemIsBE(); }
+MRCHeaderObject::MRCHeaderObject()
+  : m_BigEndianHeader(ByteSwapper<void *>::SystemIsBE())
+{}
 
 MRCHeaderObject::~MRCHeaderObject() { delete[] static_cast<char *>(this->m_ExtendedHeader); }
 

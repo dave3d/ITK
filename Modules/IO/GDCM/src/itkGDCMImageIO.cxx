@@ -78,38 +78,25 @@ public:
 };
 
 GDCMImageIO::GDCMImageIO()
+  : m_RescaleSlope(1.0)
+  , m_UIDPrefix("1.2.826.0.1.3680043.2.1125."
+                "1")
+  , m_StudyInstanceUID("")
+  , m_SeriesInstanceUID("")
+  , m_FrameOfReferenceInstanceUID("")
+  , m_ReadYBRtoRGB(true)
+  , m_GlobalNumberOfDimensions(2)
+  , m_InternalComponentType(IOComponentEnum::UNKNOWNCOMPONENTTYPE)
+  // UIDPrefix is the ITK root id tacked with a ".1"
+  // allowing to designate a subspace of the id space for ITK generated DICOM
+  , m_DICOMHeader(new InternalHeader)
 {
-  this->m_DICOMHeader = new InternalHeader;
   this->SetNumberOfDimensions(3);              // needed for getting the 3 coordinates of
                                                // the origin, even if it is a 2D slice.
   m_ByteOrder = IOByteOrderEnum::LittleEndian; // default
   m_FileType = IOFileEnum::Binary;             // default...always true
-  m_RescaleSlope = 1.0;
-  m_RescaleIntercept = 0.0;
-  // UIDPrefix is the ITK root id tacked with a ".1"
-  // allowing to designate a subspace of the id space for ITK generated DICOM
-  m_UIDPrefix = "1.2.826.0.1.3680043.2.1125."
-                "1";
-
-  // Purely internal use, no user access:
-  m_StudyInstanceUID = "";
-  m_SeriesInstanceUID = "";
-  m_FrameOfReferenceInstanceUID = "";
-
-  m_KeepOriginalUID = false;
-
-  m_LoadPrivateTags = false;
-
-  m_ReadYBRtoRGB = true;
-
-  m_InternalComponentType = IOComponentEnum::UNKNOWNCOMPONENTTYPE;
-
-  // by default assume that images will be 2D.
-  // This number is updated according the information
-  // received through the MetaDataDictionary
-  m_GlobalNumberOfDimensions = 2;
-
-  m_SingleBit = false;
+                                               // Purely internal use, no user access:
+                                               // by default assume that images will be 2D.
 
   // By default use JPEG2000. For legacy system, one should prefer JPEG since
   // JPEG2000 was only recently added to the DICOM standard
@@ -363,7 +350,7 @@ GDCMImageIO::Read(void * pointer)
     image = icpi.GetOutput();
   }
 
-  if (!image.GetBuffer((char *)pointer))
+  if (!image.GetBuffer(static_cast<char *>(pointer)))
   {
     itkExceptionMacro("Failed to get the buffer!");
   }
@@ -386,7 +373,7 @@ GDCMImageIO::Read(void * pointer)
       copy[j + 7] = (c & 0x80) ? 255 : 0;
       j += 8;
     }
-    memcpy((char *)pointer, copy.get(), len);
+    memcpy(static_cast<char *>(pointer), copy.get(), len);
   }
   else
   {
@@ -408,8 +395,8 @@ GDCMImageIO::Read(void * pointer)
       r.SetPixelFormat(pixeltype);
       const gdcm::PixelFormat outputpt = r.ComputeInterceptSlopePixelType();
       const auto              copy = make_unique_for_overwrite<char[]>(len);
-      memcpy(copy.get(), (char *)pointer, len);
-      r.Rescale((char *)pointer, copy.get(), len);
+      memcpy(copy.get(), static_cast<char *>(pointer), len);
+      r.Rescale(static_cast<char *>(pointer), copy.get(), len);
       // WARNING: sizeof(Real World Value) != sizeof(Stored Pixel)
       len = len * outputpt.GetPixelSize() / pixeltype.GetPixelSize();
     }
@@ -434,7 +421,7 @@ GDCMImageIO::Read(void * pointer)
   // \postcondition
   // Now that len was updated (after unpacker 12bits -> 16bits, rescale...) ,
   // can now check compat:
-  const SizeValueType numberOfBytesToBeRead = static_cast<SizeValueType>(this->GetImageSizeInBytes());
+  const auto numberOfBytesToBeRead = static_cast<SizeValueType>(this->GetImageSizeInBytes());
   itkAssertInDebugAndIgnoreInReleaseMacro(numberOfBytesToBeRead == len); // programmer error
 #endif
 }
@@ -797,9 +784,9 @@ GDCMImageIO::InternalReadImageInformation()
 
           const auto bin = make_unique_for_overwrite<char[]>(encodedLengthEstimate);
           auto       encodedLengthActual =
-            static_cast<unsigned int>(itksysBase64_Encode((const unsigned char *)bv->GetPointer(),
+            static_cast<unsigned int>(itksysBase64_Encode(reinterpret_cast<const unsigned char *>(bv->GetPointer()),
                                                           static_cast<SizeValueType>(bv->GetLength()),
-                                                          (unsigned char *)bin.get(),
+                                                          reinterpret_cast<unsigned char *>(bin.get()),
                                                           0));
           const std::string encodedValue(bin.get(), encodedLengthActual);
           EncapsulateMetaData<std::string>(dico, tag.PrintAsPipeSeparatedString(), encodedValue);
@@ -905,14 +892,14 @@ GDCMImageIO::Write(const void * buffer)
         // convert value from Base64
         const auto bin = make_unique_for_overwrite<uint8_t[]>(value.size());
         auto       decodedLengthActual =
-          static_cast<unsigned int>(itksysBase64_Decode((const unsigned char *)value.c_str(),
+          static_cast<unsigned int>(itksysBase64_Decode(reinterpret_cast<const unsigned char *>(value.c_str()),
                                                         static_cast<SizeValueType>(0),
-                                                        (unsigned char *)bin.get(),
+                                                        static_cast<unsigned char *>(bin.get()),
                                                         static_cast<SizeValueType>(value.size())));
         if (/*tag.GetGroup() != 0 ||*/ tag.GetElement() != 0) // ?
         {
           gdcm::DataElement de(tag);
-          de.SetByteValue((char *)bin.get(), decodedLengthActual);
+          de.SetByteValue(reinterpret_cast<char *>(bin.get()), decodedLengthActual);
           de.SetVR(dictEntry.GetVR());
           if (tag.GetGroup() == 0x2)
           {
@@ -1085,7 +1072,7 @@ GDCMImageIO::Write(const void * buffer)
     // save and reset old locale
     const std::locale currentLocale = std::locale::global(std::locale::classic());
     sscanf(tempString.c_str(),
-           "%lf\\%lf\\%lf\\%lf\\%lf\\%lf",
+           R"(%lf\%lf\%lf\%lf\%lf\%lf)",
            &(directions[0]),
            &(directions[1]),
            &(directions[2]),

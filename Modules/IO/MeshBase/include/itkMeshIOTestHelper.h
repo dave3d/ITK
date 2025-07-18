@@ -300,10 +300,10 @@ TestBaseClassMethodsMeshIO(typename TMeshIO::Pointer meshIO)
   const itk::IOComponentEnum floatComponent = itk::IOComponentEnum::FLOAT;
   std::cout << "ComponentSize: " << meshIO->GetComponentSize(floatComponent) << std::endl;
 
-  std::cout << "ComponentTypeAsString: " << meshIO->GetComponentTypeAsString(floatComponent) << std::endl;
+  std::cout << "ComponentTypeAsString: " << itk::MeshIOBase::GetComponentTypeAsString(floatComponent) << std::endl;
 
   const itk::CommonEnums::IOPixel pixelType = itk::CommonEnums::IOPixel::SCALAR;
-  std::cout << "PixelTypeAsString: " << meshIO->GetPixelTypeAsString(pixelType) << std::endl;
+  std::cout << "PixelTypeAsString: " << itk::MeshIOBase::GetPixelTypeAsString(pixelType) << std::endl;
 
   const itk::CommonEnums::IOComponent pointComponentType = itk::CommonEnums::IOComponent::FLOAT;
   meshIO->SetPointComponentType(pointComponentType);
@@ -367,9 +367,7 @@ TestBaseClassMethodsMeshIO(typename TMeshIO::Pointer meshIO)
   return EXIT_SUCCESS;
 }
 
-namespace itk
-{
-namespace MeshIOTestHelper
+namespace itk::MeshIOTestHelper
 {
 
 template <typename T>
@@ -419,7 +417,7 @@ AllocateBuffer(itk::IOComponentEnum componentType, itk::SizeValueType bufferSize
   return nullptr;
 }
 
-} // namespace MeshIOTestHelper
-} // namespace itk
+} // namespace itk::MeshIOTestHelper
+
 
 #endif

@@ -22,27 +22,13 @@
 namespace itk
 {
 PowellOptimizer::PowellOptimizer()
+  : m_MaximumIteration(100)
+  , m_MaximumLineIteration(100)
+  , m_StepLength(1.0)
+  , m_StepTolerance(0.00001)
+  , m_ValueTolerance(0.00001)
+
 {
-  m_CatchGetValueException = false;
-  m_MetricWorstPossibleValue = 0;
-
-  m_Maximize = false;
-
-  m_StepLength = 1.0;
-  m_StepTolerance = 0.00001;
-  m_ValueTolerance = 0.00001;
-
-  m_Stop = false;
-
-  m_CurrentCost = 0;
-  m_CurrentIteration = 0;
-  m_CurrentLineIteration = 0;
-
-  m_MaximumIteration = 100;
-
-  m_MaximumLineIteration = 100;
-  m_SpaceDimension = 0;
-
   m_StopConditionDescription << this->GetNameOfClass() << ": ";
 }
 
@@ -75,7 +61,7 @@ PowellOptimizer::GetLineValue(double x, ParametersType & tempCoord) const
     tempCoord[i] = this->m_LineOrigin[i] + x * this->m_LineDirection[i];
   }
   itkDebugMacro("x = " << x);
-  double val;
+  double val = NAN;
   try
   {
     val = (this->m_CostFunction->GetValue(tempCoord));
@@ -445,8 +431,8 @@ PowellOptimizer::StartOptimization()
       double ax = 0.0;
       double fa = fx;
       xx = m_StepLength;
-      double bx;
-      double fb;
+      double bx = NAN;
+      double fb = NAN;
       this->LineBracket(&ax, &xx, &bx, &fa, &fx, &fb, tempCoord);
       this->BracketedLineOptimize(ax, xx, bx, fa, fx, fb, &xx, &fx, tempCoord);
       this->SetCurrentLinePoint(xx, fx);
@@ -488,8 +474,8 @@ PowellOptimizer::StartOptimization()
         double ax = 0.0;
         double fa = fx;
         xx = 1;
-        double bx;
-        double fb;
+        double bx = NAN;
+        double fb = NAN;
         this->LineBracket(&ax, &xx, &bx, &fa, &fx, &fb, tempCoord);
         this->BracketedLineOptimize(ax, xx, bx, fa, fx, fb, &xx, &fx, tempCoord);
         this->SetCurrentLinePoint(xx, fx);

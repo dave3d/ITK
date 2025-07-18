@@ -33,13 +33,12 @@ template <typename TInputImage, typename TOutputImage>
 CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::CannyEdgeDetectionImageFilter()
   : m_UpperThreshold(OutputImagePixelType{})
   , m_LowerThreshold(OutputImagePixelType{})
+  , m_UpdateBuffer1(OutputImageType::New())
+  , m_GaussianFilter(GaussianImageFilterType::New())
+  , m_MultiplyImageFilter(MultiplyImageFilterType::New())
 {
   m_Variance.Fill(0.0);
   m_MaximumError.Fill(0.01);
-
-  m_GaussianFilter = GaussianImageFilterType::New();
-  m_MultiplyImageFilter = MultiplyImageFilterType::New();
-  m_UpdateBuffer1 = OutputImageType::New();
 
   // Set up neighborhood slices for all the dimensions.
   constexpr auto r = MakeFilled<typename Neighborhood<OutputImagePixelType, ImageDimension>::RadiusType>(1);
@@ -273,9 +272,9 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::HysteresisThresholding
   // gradients of the image. HysteresisThresholding of this image should give
   // the Canny output.
   const typename OutputImageType::Pointer input = m_MultiplyImageFilter->GetOutput();
-  float                                   value;
+  float                                   value = NAN;
 
-  ListNodeType * node;
+  ListNodeType * node = nullptr;
 
   // fix me
   ImageRegionIterator<TOutputImage> oit(input, input->GetRequestedRegion());
@@ -314,10 +313,6 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::FollowEdge(IndexType  
   // the Canny output.
   const InputImageRegionType inputRegion = multiplyImageFilterOutput->GetRequestedRegion();
 
-  IndexType      nIndex;
-  IndexType      cIndex;
-  ListNodeType * node;
-
   // Assign iterator radius
   constexpr auto radius = Size<ImageDimension>::Filled(1);
 
@@ -331,9 +326,9 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::FollowEdge(IndexType  
     // Remove the node if we are not going to follow it!
     //
     // Pop the front node from the list and read its index value.
-    node = m_NodeList->Front(); // get a pointer to the first node
-    m_NodeList->PopFront();     // unlink the front node
-    m_NodeStore->Return(node);  // return the memory for reuse
+    auto node = m_NodeList->Front(); // get a pointer to the first node
+    m_NodeList->PopFront();          // unlink the front node
+    m_NodeStore->Return(node);       // return the memory for reuse
     return;
   }
 
@@ -341,10 +336,10 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::FollowEdge(IndexType  
   while (!m_NodeList->Empty())
   {
     // Pop the front node from the list and read its index value.
-    node = m_NodeList->Front(); // Get a pointer to the first node
-    cIndex = node->m_Value;     // Read the value of the first node
-    m_NodeList->PopFront();     // Unlink the front node
-    m_NodeStore->Return(node);  // Return the memory for reuse
+    auto       node = m_NodeList->Front(); // Get a pointer to the first node
+    const auto cIndex = node->m_Value;     // Read the value of the first node
+    m_NodeList->PopFront();                // Unlink the front node
+    m_NodeStore->Return(node);             // Return the memory for reuse
 
     // Move iterators to the correct index position.
     oit.SetLocation(cIndex);
@@ -354,7 +349,7 @@ CannyEdgeDetectionImageFilter<TInputImage, TOutputImage>::FollowEdge(IndexType  
     // Search the neighbors for new indices to add to the list.
     for (int i = 0; i < nSize; ++i)
     {
-      nIndex = oit.GetIndex(i);
+      const auto nIndex = oit.GetIndex(i);
       uit.SetIndex(nIndex);
       if (inputRegion.IsInside(nIndex))
       {

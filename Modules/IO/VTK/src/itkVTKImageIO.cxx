@@ -25,11 +25,11 @@
 namespace itk
 {
 VTKImageIO::VTKImageIO()
+
 {
   this->SetNumberOfDimensions(2);
   m_ByteOrder = IOByteOrderEnum::LittleEndian;
   m_FileType = IOFileEnum::Binary;
-  m_HeaderSize = 0;
 
   this->AddSupportedReadExtension(".vtk");
   this->AddSupportedWriteExtension(".vtk");
@@ -549,13 +549,16 @@ VTKImageIO::Read(void * buffer)
       case 1:
         break;
       case 2:
-        ByteSwapper<uint16_t>::SwapRangeFromSystemToBigEndian((uint16_t *)buffer, this->GetIORegionSizeInComponents());
+        ByteSwapper<uint16_t>::SwapRangeFromSystemToBigEndian(static_cast<uint16_t *>(buffer),
+                                                              this->GetIORegionSizeInComponents());
         break;
       case 4:
-        ByteSwapper<uint32_t>::SwapRangeFromSystemToBigEndian((uint32_t *)buffer, this->GetIORegionSizeInComponents());
+        ByteSwapper<uint32_t>::SwapRangeFromSystemToBigEndian(static_cast<uint32_t *>(buffer),
+                                                              this->GetIORegionSizeInComponents());
         break;
       case 8:
-        ByteSwapper<uint64_t>::SwapRangeFromSystemToBigEndian((uint64_t *)buffer, this->GetIORegionSizeInComponents());
+        ByteSwapper<uint64_t>::SwapRangeFromSystemToBigEndian(static_cast<uint64_t *>(buffer),
+                                                              this->GetIORegionSizeInComponents());
         break;
       default:
         itkExceptionMacro("Unknown component size" << this->GetComponentSize());
@@ -600,13 +603,16 @@ VTKImageIO::Read(void * buffer)
         case 1:
           break;
         case 2:
-          ByteSwapper<uint16_t>::SwapRangeFromSystemToBigEndian((uint16_t *)buffer, this->GetImageSizeInComponents());
+          ByteSwapper<uint16_t>::SwapRangeFromSystemToBigEndian(static_cast<uint16_t *>(buffer),
+                                                                this->GetImageSizeInComponents());
           break;
         case 4:
-          ByteSwapper<uint32_t>::SwapRangeFromSystemToBigEndian((uint32_t *)buffer, this->GetImageSizeInComponents());
+          ByteSwapper<uint32_t>::SwapRangeFromSystemToBigEndian(static_cast<uint32_t *>(buffer),
+                                                                this->GetImageSizeInComponents());
           break;
         case 8:
-          ByteSwapper<uint64_t>::SwapRangeFromSystemToBigEndian((uint64_t *)buffer, this->GetImageSizeInComponents());
+          ByteSwapper<uint64_t>::SwapRangeFromSystemToBigEndian(static_cast<uint64_t *>(buffer),
+                                                                this->GetImageSizeInComponents());
           break;
         default:
           itkExceptionMacro("Unknown component size" << this->GetComponentSize());
@@ -686,18 +692,18 @@ VTKImageIO::WriteImageInformation(const void * itkNotUsed(buffer))
   // Prefer the VECTORS representation when possible:
   else if (this->GetPixelType() == IOPixelEnum::VECTOR && this->GetNumberOfComponents() == 3)
   {
-    file << "VECTORS vectors " << this->GetComponentTypeAsString(m_ComponentType) << '\n';
+    file << "VECTORS vectors " << Self::GetComponentTypeAsString(m_ComponentType) << '\n';
   }
   else if (this->GetPixelType() == IOPixelEnum::SYMMETRICSECONDRANKTENSOR)
   {
-    file << "TENSORS tensors " << this->GetComponentTypeAsString(m_ComponentType) << '\n';
+    file << "TENSORS tensors " << Self::GetComponentTypeAsString(m_ComponentType) << '\n';
   }
   else
   {
     // According to VTK documentation number of components should in
     // range (1,4):
     // todo this should be asserted or checked earlier!
-    file << "SCALARS scalars " << this->GetComponentTypeAsString(m_ComponentType) << ' '
+    file << "SCALARS scalars " << Self::GetComponentTypeAsString(m_ComponentType) << ' '
          << this->GetNumberOfComponents() << '\n'
          << "LOOKUP_TABLE default\n";
   }
@@ -856,14 +862,13 @@ VTKImageIO::WriteSymmetricTensorBufferAsBinary(std::ostream &                 os
 {
   std::streamsize bytesRemaining = num;
   const SizeType  componentSize = this->GetComponentSize();
-  SizeType        pixelSize;
   constexpr char  zero[1024]{};
 
   switch (this->GetNumberOfComponents())
   {
     case 3:
     {
-      pixelSize = componentSize * 3;
+      SizeType pixelSize = componentSize * 3;
       while (bytesRemaining)
       {
         // row 1
@@ -883,7 +888,7 @@ VTKImageIO::WriteSymmetricTensorBufferAsBinary(std::ostream &                 os
     }
     case 6:
     {
-      pixelSize = componentSize * 6;
+      SizeType pixelSize = componentSize * 6;
       while (bytesRemaining)
       {
         // row 1
@@ -965,7 +970,9 @@ VTKImageIO::Write(const void * buffer)
       switch (this->GetComponentSize())
       {
         case 1:
-          StreamWriteVTKImageBinaryBlockMACRO(char) break;
+          // When the component size is 1, byte swapping is not needed.
+          this->StreamWriteBufferAsBinary(file, buffer);
+          break;
         case 2:
           StreamWriteVTKImageBinaryBlockMACRO(uint16_t) break;
         case 4:
@@ -1008,26 +1015,7 @@ VTKImageIO::Write(const void * buffer)
     }
     else // binary
     {
-      // the binary data must be written in big endian format
-      if constexpr (!ByteSwapper<uint16_t>::SystemIsBigEndian())
-      {
-        // only swap  when needed
-        switch (this->GetComponentSize())
-        {
-          case 1:
-            WriteVTKImageBinaryBlockMACRO(char) break;
-          case 2:
-            WriteVTKImageBinaryBlockMACRO(uint16_t) break;
-          case 4:
-            WriteVTKImageBinaryBlockMACRO(uint32_t) break;
-          case 8:
-            WriteVTKImageBinaryBlockMACRO(uint64_t) break;
-          default:
-            itkExceptionMacro("Unknown component size" << this->GetComponentSize());
-        }
-      }
-      else
-      {
+      const auto writeBufferAsBinary = [this, &file, buffer] {
         // write the image
         if (this->GetPixelType() == IOPixelEnum::SYMMETRICSECONDRANKTENSOR)
         {
@@ -1040,6 +1028,31 @@ VTKImageIO::Write(const void * buffer)
             itkExceptionMacro("Could not write file: " << m_FileName);
           }
         }
+      };
+
+      // the binary data must be written in big endian format
+      if constexpr (!ByteSwapper<uint16_t>::SystemIsBigEndian())
+      {
+        // only swap  when needed
+        switch (this->GetComponentSize())
+        {
+          case 1:
+            // When the component size is 1, byte swapping is not needed.
+            writeBufferAsBinary();
+            break;
+          case 2:
+            WriteVTKImageBinaryBlockMACRO(uint16_t) break;
+          case 4:
+            WriteVTKImageBinaryBlockMACRO(uint32_t) break;
+          case 8:
+            WriteVTKImageBinaryBlockMACRO(uint64_t) break;
+          default:
+            itkExceptionMacro("Unknown component size" << this->GetComponentSize());
+        }
+      }
+      else
+      {
+        writeBufferAsBinary();
       }
     }
   }
