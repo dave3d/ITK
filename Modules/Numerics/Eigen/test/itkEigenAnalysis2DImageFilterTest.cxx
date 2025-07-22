@@ -41,7 +41,7 @@ class EigenAnalysis2DImageFilterTester
   using myRegionType = itk::ImageRegion<myDimension>;
 
 
-  // Declare Iterator types apropriated for each image
+  // Declare Iterator types appropriated for each image
   using myIteratorType = itk::ImageRegionIteratorWithIndex<myImageType>;
   using myVectorIteratorType = itk::ImageRegionIteratorWithIndex<myVectorImageType>;
 
