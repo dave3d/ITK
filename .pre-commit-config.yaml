@@ -88,7 +88,7 @@ repos:
   hooks:
     - id: comment-spell-check
       args: ['--miss', '--dict','https://raw.githubusercontent.com/SimpleITK/SimpleITK/master/.github/workflows/additional_dictionary.txt', '--dict', '.github/workflows/itk_dict.txt', '--bibtex', 'Documentation/Doxygen/doxygen.bib', '--prefix', '\"gdcm\"', ]
-      exclude: "\\/ThirdParty\\/|\\.md$"
+      exclude: /ThirdParty/|\.md$
 - repo: local
   hooks:
     - id: local-prepare-commit-msg
